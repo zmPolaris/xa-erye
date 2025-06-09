@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="6be365ae-860f-4c9f-9611-c66bf64d8e14" name="Changes" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="FxmlFile" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/snca-ycpc-ca-server/src/main/java/cn/ycpc/ca/service/CertService.java" root0="FORCE_HIGHLIGHTING" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHome" value="D:/Program Files/apache-maven-3.8.4" />
+        <option name="userSettingsFile" value="D:\Program Files\apache-maven-3.8.4\conf\settings.xml" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 3
+}</component>
+  <component name="ProjectId" id="2tqIejcdGvoiqPtkAdpmRymmlHa" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;jdk.selected.JAVA_MODULE&quot;: &quot;jdk1.8.0_281&quot;,
+    &quot;last_opened_file_path&quot;: &quot;F:/projrect/xa-erye/xa-eyre-system/src/main/resources/mapper&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.7110312&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="ReactorSettings">
+    <option name="notificationShown" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="F:\projrect\xa-erye\xa-eyre-system\src\main\resources\mapper" />
+      <recent name="F:\projrect\xa-erye\xa-eyre-system\src\main\resources" />
+      <recent name="F:\projrect\xa-erye\xa-eyre-oracle\src\main\java\cn\xa\eyre\medrec" />
+      <recent name="F:\projrect\xa-erye\xa-eyre-oracle\src\main\resources" />
+      <recent name="F:\projrect\xa-erye\xa-eyre-his-service\src\main\resources" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="F:\projrect\xa-erye\xa-eyre-system\src\main\resources" />
+      <recent name="F:\projrect\xa-erye\xa-eyre-his-service\src\main\java\cn\xa\eyre\his" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="cn.ycpc.ca.common.utils.cssp" />
+      <recent name="cn.ycpc.ca.common.utils.token" />
+      <recent name="cn.ycpc.ca.cssp.response" />
+      <recent name="cn.ycpc.ca.cssp.request" />
+      <recent name="cn.ycpc.ca.cssp.service" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Spring Boot.EyreConvertServerApplication">
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="xa-eyre" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="xa-eyre" />
+      <option name="filePath" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="EyreConvertServerApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
+      <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
+      <module name="xa-eyre-convert-server" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="cn.xa.eyre.EyreConvertServerApplication" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="cn.xa.eyre.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="EyreHisServiceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true">
+      <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
+      <module name="xa-eyre-his-service" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="cn.xa.eyre.EyreHisServiceApplication" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="cn.xa.eyre.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="Spring Boot.EyreConvertServerApplication" />
+      <item itemvalue="Spring Boot.EyreHisServiceApplication" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Spring Boot.EyreConvertServerApplication" />
+        <item itemvalue="Spring Boot.EyreHisServiceApplication" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="SvnConfiguration" cleanupOnStartRun="true">
+    <configuration>C:\Users\zhumi\AppData\Roaming\Subversion</configuration>
+    <supportedVersion>125</supportedVersion>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="6be365ae-860f-4c9f-9611-c66bf64d8e14" name="Changes" comment="" />
+      <created>1741073275269</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1741073275269</updated>
+      <workItem from="1741073276320" duration="2786000" />
+      <workItem from="1741081781523" duration="1452000" />
+      <workItem from="1741136416547" duration="8943000" />
+      <workItem from="1741222812298" duration="3705000" />
+      <workItem from="1741330510406" duration="313000" />
+      <workItem from="1743150071231" duration="4742000" />
+      <workItem from="1743385601448" duration="6325000" />
+      <workItem from="1743469947210" duration="3222000" />
+      <workItem from="1744013019185" duration="12000" />
+      <workItem from="1746770597642" duration="724000" />
+      <workItem from="1747127051051" duration="2137000" />
+      <workItem from="1747816417647" duration="929000" />
+      <workItem from="1748243540300" duration="6993000" />
+      <workItem from="1748311476026" duration="2808000" />
+      <workItem from="1748396996679" duration="42713000" />
+      <workItem from="1748911796487" duration="28845000" />
+      <workItem from="1748950124143" duration="846000" />
+      <workItem from="1748998096065" duration="8537000" />
+      <workItem from="1749022450506" duration="1498000" />
+      <workItem from="1749024060345" duration="905000" />
+      <workItem from="1749024984314" duration="7761000" />
+      <workItem from="1749043648972" duration="4352000" />
+      <workItem from="1749085150076" duration="3058000" />
+      <workItem from="1749371851718" duration="6788000" />
+      <workItem from="1749430498221" duration="947000" />
+      <workItem from="1749473720463" duration="19000" />
+    </task>
+    <task id="LOCAL-00001" summary="印章">
+      <option name="closed" value="true" />
+      <created>1741082068733</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1741082068733</updated>
+    </task>
+    <task id="LOCAL-00002" summary="印章接口修改">
+      <option name="closed" value="true" />
+      <created>1741225985467</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1741225985467</updated>
+    </task>
+    <task id="LOCAL-00003" summary="印章接口修改-交易渠道号配置">
+      <option name="closed" value="true" />
+      <created>1743473321492</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1743473321492</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
+    <option name="CHECK_NEW_TODO" value="false" />
+    <MESSAGE value="印章" />
+    <MESSAGE value="印章接口修改" />
+    <MESSAGE value="印章接口修改-交易渠道号配置" />
+    <option name="LAST_COMMIT_MESSAGE" value="印章接口修改-交易渠道号配置" />
+  </component>
+  <component name="XDebuggerManager">
+    <watches-manager>
+      <configuration name="SpringBootApplicationConfigurationType">
+        <watch expression="StringUtils.isNotBlank(userName)" />
+      </configuration>
+    </watches-manager>
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+</project>
