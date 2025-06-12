@@ -33,93 +33,6 @@ public class Constants
     public static final String HTTPS = "https://";
 
     /**
-     * 通用成功标识
-     */
-    public static final String SUCCESS = "0";
-
-    /**
-     * 通用失败标识
-     */
-    public static final String FAIL = "1";
-
-    /**
-     * 登录成功
-     */
-    public static final String LOGIN_SUCCESS = "Success";
-
-    /**
-     * 注销
-     */
-    public static final String LOGOUT = "Logout";
-
-    /**
-     * 注册
-     */
-    public static final String REGISTER = "Register";
-
-    /**
-     * 登录失败
-     */
-    public static final String LOGIN_FAIL = "Error";
- 
-    /**
-     * 验证码有效期（分钟）
-     */
-    public static final Integer CAPTCHA_EXPIRATION = 2;
-
-    /**
-     * 令牌
-     */
-    public static final String TOKEN = "token";
-
-    /**
-     * 令牌前缀
-     */
-    public static final String TOKEN_PREFIX = "Bearer ";
-
-
-    /**
-     * 用户ID
-     */
-    public static final String JWT_USERID = "userid";
-
-
-    /**
-     * 用户头像
-     */
-    public static final String JWT_AVATAR = "avatar";
-
-    /**
-     * 创建时间
-     */
-    public static final String JWT_CREATED = "created";
-
-    /**
-     * 用户权限
-     */
-    public static final String JWT_AUTHORITIES = "authorities";
-
-    /**
-     * 资源映射路径 前缀
-     */
-    public static final String RESOURCE_PREFIX = "/profile";
-
-    /**
-     * RMI 远程方法调用
-     */
-    public static final String LOOKUP_RMI = "rmi:";
-
-    /**
-     * LDAP 远程方法调用
-     */
-    public static final String LOOKUP_LDAP = "ldap:";
-
-    /**
-     * LDAPS 远程方法调用
-     */
-    public static final String LOOKUP_LDAPS = "ldaps:";
-
-    /**
      * 定时任务白名单配置（仅允许访问的包名，如其他需要可以自行添加）
      */
     public static final String[] JOB_WHITELIST_STR = { "cn.xa.eyre" };
@@ -131,34 +44,25 @@ public class Constants
             "org.springframework", "org.apache", "cn.xa.eyre.common.utils.file" };
 
 
-    /** 证书密钥类型 1：签名，2：加密 **/
-    public static final int CERT_CIPHER_TYPE_SIGN = 1;
-    public static final int CERT_CIPHER_TYPE_ENCRYPT = 2;
-
-    /** 状态（0正常 1停用） */
-    public static final Integer NORMAL_STATUS_INUSE = 0;
-    public static final Integer NORMAL_STATUS_STOP = 1;
-
-    /** 授权方式 1：永久授权 2：单次授权 3：时间授权 **/
-    public static final int GRANT_TYPE_PERMANENT = 1;
-    public static final int GRANT_TYPE_SINGLE = 2;
-    public static final int GRANT_TYPE_TIME = 3;
-
-    /** token主体，1-个人，2-企业 **/
-    public static final String TOKEN_OWNER_PERSONAL = "1";
-    public static final String TOKEN_OWNER_ORG = "2";
+    public static final String CONFIG_XA_ERYE_HUB_SERVICE_URL = "xa.erye.hub.service.url";
+    public static final String CONFIG_XA_ERYE_SAVE_API_LOG = "xa.erye.hub.save.api.log";
 
     /**
-     * token前缀
+     * HTTP请求类型
      */
-    public static final String TOKEN_TYPE_OWNER = "owner_key:";
-    public static final String TOKEN_TYPE_CAPTCHA = "captcha_key:";
-    public static final String TOKEN_TYPE_SIGN= "sign_key:";
+    public static final String HTTP_METHOD_POST = "POST";
+    public static final String HTTP_METHOD_DELETE = "DELETE";
 
     /**
-     * token是否多次使用 1:需要
+     * 调用结果 0:失败,1:成功
      */
-    public static final String SIGN_TOKEN_MANY_FLAG = "1";
+    public static final Integer API_STATUS_SUCCESS = 1;
+    public static final Integer API_STATUS_FAIL = 0;
 
-    public static final String APP_INFO_TAG = "app_info:";
+    /**
+     * 是否记录接口调用日志 1：记录，2：不记录
+     */
+    public static final Integer SAVE_API_LOG_YES = 1;
+    public static final Integer SAVE_API_LOG_NO = 2;
+
 }
