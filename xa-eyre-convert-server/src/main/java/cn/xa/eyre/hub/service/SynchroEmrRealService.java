@@ -5,8 +5,6 @@ import cn.xa.eyre.common.constant.Constants;
 import cn.xa.eyre.common.utils.DateUtils;
 import cn.xa.eyre.common.utils.http.HttpClientUtils;
 import cn.xa.eyre.hub.domain.SynchroResponseVo;
-import cn.xa.eyre.hub.domain.base.BaseDept;
-import cn.xa.eyre.hub.domain.base.BaseUser;
 import cn.xa.eyre.hub.domain.emrreal.EmrActivityInfo;
 import cn.xa.eyre.hub.domain.emrreal.EmrInfReport;
 import cn.xa.eyre.hub.domain.emrreal.EmrPatientInfo;
