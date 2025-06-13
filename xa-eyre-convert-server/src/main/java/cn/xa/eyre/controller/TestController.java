@@ -18,7 +18,7 @@ public class TestController {
     private MedrecFeignClient medrecFeignClient;
 
     @PostMapping("/getCofig")
-    public AjaxResult addOperator(HttpServletRequest request){
+    public AjaxResult getCofig(){
         return AjaxResult.success("测试成功", sysConfigService.selectConfigByKey("snca.ycpc.ca.message.templateId"));
     }
 
