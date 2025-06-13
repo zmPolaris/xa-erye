@@ -30,6 +30,7 @@ logging:
   level:
     cn.xa.eyre: debug
     org.springframework: warn
+    com.yourpackage.feign: DEBUG
 
 # 用户配置
 user:

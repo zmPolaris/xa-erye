@@ -27,7 +27,8 @@
         <druid.version>1.2.20</druid.version>
         <swagger.version>3.0.0</swagger.version>
         <mybatis-spring-boot.version>2.2.2</mybatis-spring-boot.version>
-        <spring-boot.version>2.5.14</spring-boot.version>
+        <spring-boot.version>2.7.18</spring-boot.version>
+        <spring-cloud.version>2021.0.8</spring-cloud.version>
         <fastjson.version>2.0.12</fastjson.version>
         <jna.version>5.10.0</jna.version>
         <mysql-connector.version>8.0.28</mysql-connector.version>
@@ -40,7 +41,7 @@
         <poi-ooxml.version>4.1.2</poi-ooxml.version>
         <snakeyaml.version>1.28</snakeyaml.version>
         <jaxb-api.version>2.3.1</jaxb-api.version>
-        <commons-pool2.version>2.9.0</commons-pool2.version>
+        <commons-pool2.version>2.11.1</commons-pool2.version>
         <javax.servlet-api.version>4.0.1</javax.servlet-api.version>
         <httpclient.version>4.5.13</httpclient.version>
         <poi.version>4.1.2</poi.version>
@@ -49,6 +50,14 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- SpringCloud 微服务 -->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <!-- spring-boot-devtools -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>

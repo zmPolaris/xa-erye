@@ -3,6 +3,7 @@ package cn.xa.eyre;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * @author zm
  */
 @EnableTransactionManagement
+@EnableFeignClients(basePackages = "cn.xa.eyre")
 @SpringBootApplication(exclude = { DataSourceAutoConfiguration.class })
 public class EyreHisServiceApplication
 {
