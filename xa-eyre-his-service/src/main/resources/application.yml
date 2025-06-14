@@ -59,6 +59,19 @@ spring:
     restart:
       # 热部署开关
       enabled: true
+  kafka:
+    bootstrap-servers: 10.10.5.169:9092
+    consumer:
+      group-id: xa-eyre-his-service
+      auto-offset-reset: earliest
+    properties:
+      schema-registry-url: http://10.10.5.169:8081
+
+kafka:
+  topics:
+    - oracle_service.DEBEZIUM.STOCK_EXAMPLE
+    - oracle_service.DEBEZIUM.INDEX_EXAMPLE
+    - oracle_service.COMM.STAFF_DICT
 
 # token配置
 token:

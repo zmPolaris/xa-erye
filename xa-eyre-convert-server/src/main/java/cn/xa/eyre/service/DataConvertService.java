@@ -1,5 +1,6 @@
 package cn.xa.eyre.service;
 
+import cn.xa.eyre.common.core.kafka.DBMessage;
 import cn.xa.eyre.common.utils.DateUtils;
 import cn.xa.eyre.system.dict.domain.DictDisDept;
 import cn.xa.eyre.system.dict.mapper.DictDisDeptMapper;
@@ -82,5 +83,9 @@ public class DataConvertService {
         }
 
         return true;
+    }
+
+    public void baseDept(DBMessage dbMessage) {
+        logger.debug("医院信息系统科室信息接口");
     }
 }
