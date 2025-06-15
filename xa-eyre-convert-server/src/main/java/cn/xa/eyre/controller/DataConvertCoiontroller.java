@@ -4,6 +4,7 @@ import cn.xa.eyre.common.core.domain.AjaxResult;
 import cn.xa.eyre.common.core.kafka.DBMessage;
 import cn.xa.eyre.service.CommConvertService;
 import cn.xa.eyre.service.DataConvertService;
+import cn.xa.eyre.service.MedrecConvertService;
 import com.alibaba.fastjson.JSONObject;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,8 @@ public class DataConvertCoiontroller {
     private DataConvertService dataConvertService;
     @Autowired
     private CommConvertService commConvertService;
+    @Autowired
+    private MedrecConvertService medrecConvertService;
 
     /**
      * 部门信息转码
@@ -50,8 +53,8 @@ public class DataConvertCoiontroller {
             case "comm.dept_dict":
                 commConvertService.deptDict(dbMessage);
                 break;
-            case "eyre_user_role":
-
+            case "medrec.pat_master_index":
+                medrecConvertService.patMasterIndex(dbMessage);
                 break;
             case "eyre_role":
 
