@@ -2,6 +2,7 @@ package cn.xa.eyre.service;
 
 import cn.xa.eyre.common.core.kafka.DBMessage;
 import cn.xa.eyre.common.utils.DateUtils;
+import cn.xa.eyre.hub.service.SynchroBaseService;
 import cn.xa.eyre.system.dict.domain.DictDisDept;
 import cn.xa.eyre.system.dict.mapper.DictDisDeptMapper;
 import cn.xa.eyre.system.temp.domain.DictTemp;
@@ -13,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 @Service
@@ -25,6 +27,9 @@ public class DataConvertService {
     private DictTempMapper dictTempMapper;// 前置软件数据
     @Autowired
     private DictDisDeptMapper dictDisDeptMapper;// 转码表
+
+    @Resource
+    SynchroBaseService synchroBaseService;
 
     public boolean convertDept() {
         List<HisDeptDict> merList = hisDeptDictMapper.selectAll();
@@ -87,5 +92,11 @@ public class DataConvertService {
 
     public void baseDept(DBMessage dbMessage) {
         logger.debug("医院信息系统科室信息接口");
+      //  synchroBaseService.syncBaseDept(dbMessage.getAfterData(), "add");
+    }
+
+    public void baseUser(DBMessage dbMessage) {
+        logger.debug("医院信息系统用户信息接口");
+
     }
 }

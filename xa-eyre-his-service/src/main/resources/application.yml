@@ -73,6 +73,7 @@ kafka:
     - oracle_service.DEBEZIUM.STOCK_EXAMPLE
     - oracle_service.DEBEZIUM.INDEX_EXAMPLE
     - oracle_service.COMM.STAFF_DICT
+    - oracle_service.COMM.DEPT_DICT
 
 # token配置
 token:

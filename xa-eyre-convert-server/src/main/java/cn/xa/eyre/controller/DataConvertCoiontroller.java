@@ -42,10 +42,10 @@ public class DataConvertCoiontroller {
         String dbName = (schema + table).toLowerCase();
         switch (dbName) {
             case "comm.staff_dict":
-                dataConvertService.baseDept(dbMessage);
+                dataConvertService.baseUser(dbMessage);
                 break;
-            case "eyre_user":
-
+            case "comm.dept_dict":
+                dataConvertService.baseDept(dbMessage);
                 break;
             case "eyre_user_role":
 
