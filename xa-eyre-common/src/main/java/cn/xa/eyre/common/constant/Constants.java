@@ -69,4 +69,16 @@ public class Constants
     public static final Integer SAVE_API_LOG_YES = 1;
     public static final Integer SAVE_API_LOG_NO = 2;
 
+    /**
+     * 是否缺省值 0:是,1:不是
+     */
+    public static final Integer IS_NOT_DEFAULT = 1;
+    public static final Integer IS_DEFAULT = 0;
+
+    /**
+     * 通用状态 0:正常,1:停用
+     */
+    public static final Integer STATUS_STOP = 1;
+    public static final Integer STATUS_NORMAL = 0;
+
 }

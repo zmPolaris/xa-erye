@@ -67,11 +67,6 @@
             <artifactId>spring-kafka</artifactId>
             <version>2.9.13</version>
         </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>33.3.0-jre</version>
-        </dependency>
 
         <!-- Schema Registry 集成 -->
         <dependency>

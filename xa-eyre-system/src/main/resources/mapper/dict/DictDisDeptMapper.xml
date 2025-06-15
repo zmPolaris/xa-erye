@@ -28,7 +28,29 @@
     <include refid="Base_Column_List" />
     from dict_dis_dept
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <select id="selectByCondition" parameterType="cn.xa.eyre.system.dict.domain.DictDisDept" resultMap="BaseResultMap">
+      select
+      <include refid="Base_Column_List" />
+      from dict_dis_dept
+      <where>
+        <if test="emrCode != null">
+          emr_code = #{emrCode,jdbcType=VARCHAR},
+        </if>
+        <if test="emrName != null">
+          emr_name = #{emrName,jdbcType=VARCHAR},
+        </if>
+        <if test="hubCode != null">
+          hub_code = #{hubCode,jdbcType=VARCHAR},
+        </if>
+        <if test="hubName != null">
+          hub_name = #{hubName,jdbcType=VARCHAR},
+        </if>
+        <if test="status != null">
+          #{status,jdbcType=INTEGER},
+        </if>
+      </where>
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from dict_dis_dept
     where id = #{id,jdbcType=INTEGER}
   </delete>

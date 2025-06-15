@@ -18,4 +18,6 @@ public interface DictDisDeptMapper {
     int updateByPrimaryKey(DictDisDept record);
 
     List<DictDisDept> selectAll();
+
+    DictDisDept selectByCondition(DictDisDept deptParam);
 }

@@ -1,8 +1,11 @@
 package cn.xa.eyre.hub.domain.base;
 
 import cn.xa.eyre.common.core.domain.BaseEntity;
+import cn.xa.eyre.common.utils.DateUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+
+import java.util.Date;
 
 /**
  * 【科室信息】对象 base_dept
@@ -25,6 +28,8 @@ public class BaseDept extends BaseEntity
 
     /** 前置软件科室名称 */
     private String targetDeptName;
+
+    private String createTime;
 
     public void setDeptCode(String deptCode)
     {
@@ -61,6 +66,11 @@ public class BaseDept extends BaseEntity
     public String getTargetDeptName()
     {
         return targetDeptName;
+    }
+
+    @Override
+    public void setCreateTime(Date createTime) {
+        this.createTime = DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, createTime);
     }
 
     @Override

@@ -2,6 +2,7 @@ package cn.xa.eyre.controller;
 
 import cn.xa.eyre.common.core.domain.AjaxResult;
 import cn.xa.eyre.common.core.kafka.DBMessage;
+import cn.xa.eyre.service.CommConvertService;
 import cn.xa.eyre.service.DataConvertService;
 import com.alibaba.fastjson.JSONObject;
 import org.slf4j.Logger;
@@ -23,6 +24,8 @@ public class DataConvertCoiontroller {
 
     @Autowired
     private DataConvertService dataConvertService;
+    @Autowired
+    private CommConvertService commConvertService;
 
     /**
      * 部门信息转码
@@ -45,7 +48,7 @@ public class DataConvertCoiontroller {
                 dataConvertService.baseUser(dbMessage);
                 break;
             case "comm.dept_dict":
-                dataConvertService.baseDept(dbMessage);
+                commConvertService.deptDict(dbMessage);
                 break;
             case "eyre_user_role":
 
