@@ -39,8 +39,7 @@ public class EmrPatientInfo extends BaseEntity
     private String genderName;
 
     /** 出生日期 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date birthDate;
+    private String birthDate;
 
     /** 国籍/地区 */
     private String nationalityCode;
@@ -100,8 +99,7 @@ public class EmrPatientInfo extends BaseEntity
     private String operatorId;
 
     /** 操作时间 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date operationTime;
+    private String operationTime;
 
     /** 作废标志 */
     private String invalidFlag;
@@ -194,12 +192,12 @@ public class EmrPatientInfo extends BaseEntity
     {
         return genderName;
     }
-    public void setBirthDate(Date birthDate)
+    public void setBirthDate(String birthDate)
     {
         this.birthDate = birthDate;
     }
 
-    public Date getBirthDate()
+    public String getBirthDate()
     {
         return birthDate;
     }
@@ -374,12 +372,12 @@ public class EmrPatientInfo extends BaseEntity
     {
         return operatorId;
     }
-    public void setOperationTime(Date operationTime)
+    public void setOperationTime(String operationTime)
     {
         this.operationTime = operationTime;
     }
 
-    public Date getOperationTime()
+    public String getOperationTime()
     {
         return operationTime;
     }

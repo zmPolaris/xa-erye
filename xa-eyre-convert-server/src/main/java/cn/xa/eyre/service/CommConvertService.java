@@ -27,7 +27,8 @@ public class CommConvertService {
     private SynchroBaseService synchroBaseService;
 
     public void deptDict(DBMessage dbMessage) {
-        logger.debug("科室信息表变更接口");
+        logger.debug("科室信息表DEPT_DICT变更接口");
+        logger.debug("DEPT_DICT表变更需要调用baseDept同步接口");
         BaseDept baseDept = new BaseDept();
         String httpMethod = null;
         if(dbMessage.getOperation().equalsIgnoreCase("DELETE")){
