@@ -1,4 +1,4 @@
-package cn.xa.eyre.oracle.medrec.domain;
+package cn.xa.eyre.medrec.domain;
 
 import java.math.BigDecimal;
 import java.util.Date;

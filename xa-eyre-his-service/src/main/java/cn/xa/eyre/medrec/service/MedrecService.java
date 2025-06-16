@@ -1,7 +1,7 @@
 package cn.xa.eyre.medrec.service;
 
-import cn.xa.eyre.oracle.medrec.domain.PatMasterIndex;
-import cn.xa.eyre.oracle.medrec.mapper.PatMasterIndexMapper;
+import cn.xa.eyre.medrec.domain.PatMasterIndex;
+import cn.xa.eyre.medrec.mapper.PatMasterIndexMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

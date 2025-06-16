@@ -1,4 +1,4 @@
-package cn.xa.eyre.oracle.medrec.domain;
+package cn.xa.eyre.medrec.domain;
 
 public class MrIndexKey {
     private String patientId;

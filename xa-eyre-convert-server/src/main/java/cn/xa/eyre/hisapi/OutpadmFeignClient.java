@@ -4,15 +4,17 @@ package cn.xa.eyre.hisapi;
 import cn.xa.eyre.common.constant.Constants;
 import cn.xa.eyre.common.core.domain.R;
 import cn.xa.eyre.medrec.domain.PatMasterIndex;
+import cn.xa.eyre.outpadm.domain.ClinicMaster;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Component
-@FeignClient(name = "medrecService", url = Constants.HIS_URL)
-public interface MedrecFeignClient {
+@FeignClient(name = "outpadmService", url = Constants.HIS_URL)
+public interface OutpadmFeignClient {
 
-    @GetMapping("/medrec/getPatMasterIndex/{patientId}")
-    public R<PatMasterIndex> getMedrec(@PathVariable("patientId") String patientId);
+    @GetMapping("/outpadm/getClinicMaster")
+    public R<ClinicMaster> getClinicMaster(String patientId, @RequestParam Short serialNo, @RequestParam String visitDate);
 }

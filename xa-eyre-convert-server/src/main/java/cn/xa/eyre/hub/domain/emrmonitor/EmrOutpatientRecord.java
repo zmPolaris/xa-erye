@@ -45,7 +45,6 @@ public class EmrOutpatientRecord extends BaseEntity
     private String allergyHis;
 
     /** 门诊日期 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date outpatientDate;
 
     /** 初步诊断代码 */
@@ -133,7 +132,6 @@ public class EmrOutpatientRecord extends BaseEntity
     private String operatorId;
 
     /** 操作时间 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date operationTime;
 
     /** 作废标志(0有效1作废) */
@@ -143,7 +141,6 @@ public class EmrOutpatientRecord extends BaseEntity
     private String dataStatus;
 
     /** 创建时间 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date createDate;
 
     public void setId(String id)

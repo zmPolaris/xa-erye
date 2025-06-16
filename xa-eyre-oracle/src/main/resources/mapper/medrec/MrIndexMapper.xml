@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cn.xa.eyre.oracle.medrec.mapper.MrIndexMapper">
-  <resultMap id="BaseResultMap" type="cn.xa.eyre.oracle.medrec.domain.MrIndex">
+<mapper namespace="cn.xa.eyre.medrec.mapper.MrIndexMapper">
+  <resultMap id="BaseResultMap" type="cn.xa.eyre.medrec.domain.MrIndex">
     <id column="PATIENT_ID" jdbcType="VARCHAR" property="patientId" />
     <id column="VISIT_ID" jdbcType="NUMERIC" property="visitId" />
     <result column="MR_STATUS" jdbcType="VARCHAR" property="mrStatus" />
@@ -26,19 +26,19 @@
     SUBMIT_DOCTOR_ID, SELF_COMMENT, DEPT_COMMENT, HOS_COMMENT, SELF_ASSESS, SELF_DATE, 
     DEPT_ASSESS, DEPT_DATE, DEPT_DIRECTOR, HOS_ASSESS, HOS_DATE, HOS_QCMAN
   </sql>
-  <select id="selectByPrimaryKey" parameterType="cn.xa.eyre.oracle.medrec.domain.MrIndexKey" resultMap="BaseResultMap">
+  <select id="selectByPrimaryKey" parameterType="cn.xa.eyre.medrec.domain.MrIndexKey" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
     from MR_INDEX
     where PATIENT_ID = #{patientId,jdbcType=VARCHAR}
       and VISIT_ID = #{visitId,jdbcType=NUMERIC}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="cn.xa.eyre.oracle.medrec.domain.MrIndexKey">
+  <delete id="deleteByPrimaryKey" parameterType="cn.xa.eyre.medrec.domain.MrIndexKey">
     delete from MR_INDEX
     where PATIENT_ID = #{patientId,jdbcType=VARCHAR}
       and VISIT_ID = #{visitId,jdbcType=NUMERIC}
   </delete>
-  <insert id="insert" parameterType="cn.xa.eyre.oracle.medrec.domain.MrIndex">
+  <insert id="insert" parameterType="cn.xa.eyre.medrec.domain.MrIndex">
     insert into MR_INDEX (PATIENT_ID, VISIT_ID, MR_STATUS, 
       STORAGE_VOLUME_LABEL, ACCESS_PATH, LAST_ACCESS_DATE_TIME, 
       SUBMIT_DOCTOR_ID, SELF_COMMENT, DEPT_COMMENT, 
@@ -54,7 +54,7 @@
       #{hosAssess,jdbcType=NUMERIC}, #{hosDate,jdbcType=TIMESTAMP}, #{hosQcman,jdbcType=VARCHAR}
       )
   </insert>
-  <insert id="insertSelective" parameterType="cn.xa.eyre.oracle.medrec.domain.MrIndex">
+  <insert id="insertSelective" parameterType="cn.xa.eyre.medrec.domain.MrIndex">
     insert into MR_INDEX
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="patientId != null">
@@ -169,7 +169,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="cn.xa.eyre.oracle.medrec.domain.MrIndex">
+  <update id="updateByPrimaryKeySelective" parameterType="cn.xa.eyre.medrec.domain.MrIndex">
     update MR_INDEX
     <set>
       <if test="mrStatus != null">
@@ -224,7 +224,7 @@
     where PATIENT_ID = #{patientId,jdbcType=VARCHAR}
       and VISIT_ID = #{visitId,jdbcType=NUMERIC}
   </update>
-  <update id="updateByPrimaryKey" parameterType="cn.xa.eyre.oracle.medrec.domain.MrIndex">
+  <update id="updateByPrimaryKey" parameterType="cn.xa.eyre.medrec.domain.MrIndex">
     update MR_INDEX
     set MR_STATUS = #{mrStatus,jdbcType=VARCHAR},
       STORAGE_VOLUME_LABEL = #{storageVolumeLabel,jdbcType=VARCHAR},
