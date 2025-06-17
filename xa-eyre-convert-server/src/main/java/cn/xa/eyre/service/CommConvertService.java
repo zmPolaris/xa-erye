@@ -7,6 +7,7 @@ import cn.xa.eyre.common.constant.Constants;
 import cn.xa.eyre.common.core.kafka.DBMessage;
 import cn.xa.eyre.common.utils.DateUtils;
 import cn.xa.eyre.hub.domain.base.BaseDept;
+import cn.xa.eyre.hub.domain.base.BaseUser;
 import cn.xa.eyre.hub.service.SynchroBaseService;
 import cn.xa.eyre.system.dict.domain.DictDisDept;
 import cn.xa.eyre.system.dict.mapper.DictDisDeptMapper;
@@ -15,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -104,5 +106,32 @@ public class CommConvertService {
         }
         // 调用前置软件接口
         synchroBaseService.syncBaseDept(baseDept, httpMethod);
+    }
+
+    public void baseUser(DBMessage dbMessage) {
+        logger.debug("系统用户信息base_user变更接口");
+        logger.debug("STAFF_DICT表变更需要调用baseUser同步接口");
+        BaseUser baseUser = new BaseUser();
+        String httpMethod = null;
+        StaffDict staffDict = null;
+        if(dbMessage.getOperation().equalsIgnoreCase("DELETE")) {
+            // 删除
+            httpMethod = Constants.HTTP_METHOD_DELETE;
+            staffDict = BeanUtil.toBean(dbMessage.getBeforeData(), StaffDict.class);
+        }else {
+            // 插入 修改
+            httpMethod = Constants.HTTP_METHOD_POST;
+            staffDict = BeanUtil.toBean(dbMessage.getAfterData(), StaffDict.class);
+        }
+        // 院内用户ID
+        baseUser.setId(staffDict.getEmpNo());
+        baseUser.setOrgCode(staffDict.getDeptCode());
+        baseUser.setDeptCode(staffDict.getDeptCode());
+        baseUser.setUserName(staffDict.getName());
+        baseUser.setIdCardTypeCode("01");
+        baseUser.setLoginName(staffDict.getUserName());
+        baseUser.setUserTypeCode("2");
+        baseUser.setCreateTime(new Date());
+        synchroBaseService.syncBaseUser(baseUser, httpMethod);
     }
 }
