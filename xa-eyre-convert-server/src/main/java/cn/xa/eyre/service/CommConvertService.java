@@ -9,6 +9,7 @@ import cn.xa.eyre.common.utils.DateUtils;
 import cn.xa.eyre.hub.domain.base.BaseDept;
 import cn.xa.eyre.hub.domain.base.BaseUser;
 import cn.xa.eyre.hub.service.SynchroBaseService;
+import cn.xa.eyre.hub.staticvalue.HubCodeEnum;
 import cn.xa.eyre.system.dict.domain.DictDisDept;
 import cn.xa.eyre.system.dict.mapper.DictDisDeptMapper;
 import org.slf4j.Logger;
@@ -125,10 +126,20 @@ public class CommConvertService {
         }
         // 院内用户ID
         baseUser.setId(staffDict.getEmpNo());
-        baseUser.setOrgCode(staffDict.getDeptCode());
-        baseUser.setDeptCode(staffDict.getDeptCode());
+        baseUser.setOrgCode(HubCodeEnum.ORG_CODE.getCode());
+        String deptCode = staffDict.getDeptCode();
+        if(deptCode != null && !deptCode.equals("")){
+            DictDisDept deptParam = new DictDisDept();
+            deptParam.setStatus(Constants.STATUS_NORMAL);
+            deptParam.setEmrCode(deptCode);
+            DictDisDept dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
+            if(dictDisDept != null){
+                baseUser.setDeptCode(dictDisDept.getHubCode());
+            }
+        }
+        baseUser.setDeptCode(deptCode);
         baseUser.setUserName(staffDict.getName());
-        baseUser.setIdCardTypeCode("01");
+        baseUser.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE.getCode());
         baseUser.setLoginName(staffDict.getUserName());
         baseUser.setUserTypeCode("2");
         baseUser.setCreateTime(new Date());
