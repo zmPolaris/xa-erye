@@ -7,7 +7,7 @@ import cn.xa.eyre.common.utils.DateUtils;
 import cn.xa.eyre.hub.domain.emrreal.EmrPatientInfo;
 import cn.xa.eyre.hub.service.SynchroEmrRealService;
 import cn.xa.eyre.hub.staticvalue.HubCodeEnum;
-import cn.xa.eyre.oracle.medrec.domain.PatMasterIndex;
+import cn.xa.eyre.medrec.domain.PatMasterIndex;
 import cn.xa.eyre.system.dict.domain.DdNation;
 import cn.xa.eyre.system.dict.mapper.DdNationMapper;
 import org.slf4j.Logger;

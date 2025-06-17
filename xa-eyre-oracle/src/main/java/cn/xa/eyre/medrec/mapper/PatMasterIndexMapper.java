@@ -1,6 +1,6 @@
-package cn.xa.eyre.oracle.medrec.mapper;
+package cn.xa.eyre.medrec.mapper;
 
-import cn.xa.eyre.oracle.medrec.domain.PatMasterIndex;
+import cn.xa.eyre.medrec.domain.PatMasterIndex;
 
 public interface PatMasterIndexMapper {
     int deleteByPrimaryKey(String patientId);

@@ -1,12 +1,12 @@
 package cn.xa.eyre.controller;
 
 import cn.xa.eyre.common.core.domain.AjaxResult;
+import cn.xa.eyre.common.core.domain.R;
 import cn.xa.eyre.hisapi.MedrecFeignClient;
+import cn.xa.eyre.medrec.domain.PatMasterIndex;
 import cn.xa.eyre.system.system.service.ISysConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/test")
@@ -23,7 +23,7 @@ public class TestController {
     }
 
     @GetMapping("/getPatMasterIndex/{patientId}")
-    public AjaxResult getPatMasterIndex(@PathVariable("patientId") String patientId){
+    public R<PatMasterIndex> getPatMasterIndex(@PathVariable("patientId") String patientId){
         return medrecFeignClient.getMedrec(patientId);
     }
 }

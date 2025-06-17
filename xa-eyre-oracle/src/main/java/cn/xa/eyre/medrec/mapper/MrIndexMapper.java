@@ -1,7 +1,7 @@
-package cn.xa.eyre.oracle.medrec.mapper;
+package cn.xa.eyre.medrec.mapper;
 
-import cn.xa.eyre.oracle.medrec.domain.MrIndex;
-import cn.xa.eyre.oracle.medrec.domain.MrIndexKey;
+import cn.xa.eyre.medrec.domain.MrIndex;
+import cn.xa.eyre.medrec.domain.MrIndexKey;
 
 public interface MrIndexMapper {
     int deleteByPrimaryKey(MrIndexKey key);

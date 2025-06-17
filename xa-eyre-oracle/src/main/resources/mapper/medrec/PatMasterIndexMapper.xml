@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cn.xa.eyre.oracle.medrec.mapper.PatMasterIndexMapper">
-  <resultMap id="BaseResultMap" type="cn.xa.eyre.oracle.medrec.domain.PatMasterIndex">
+<mapper namespace="cn.xa.eyre.medrec.mapper.PatMasterIndexMapper">
+  <resultMap id="BaseResultMap" type="cn.xa.eyre.medrec.domain.PatMasterIndex">
     <id column="PATIENT_ID" jdbcType="VARCHAR" property="patientId" />
     <result column="INP_NO" jdbcType="VARCHAR" property="inpNo" />
     <result column="NAME" jdbcType="VARCHAR" property="name" />
@@ -71,7 +71,7 @@
     delete from MEDREC.PAT_MASTER_INDEX
     where PATIENT_ID = #{patientId,jdbcType=VARCHAR}
   </delete>
-  <insert id="insert" parameterType="cn.xa.eyre.oracle.medrec.domain.PatMasterIndex">
+  <insert id="insert" parameterType="cn.xa.eyre.medrec.domain.PatMasterIndex">
     insert into MEDREC.PAT_MASTER_INDEX (PATIENT_ID, INP_NO, NAME, 
       NAME_PHONETIC, SEX, DATE_OF_BIRTH, 
       BIRTH_PLACE, CITIZENSHIP, NATION, 
@@ -107,7 +107,7 @@
       #{mailingAreaCode3,jdbcType=VARCHAR}, #{guardianName,jdbcType=VARCHAR}, #{guardianPhone,jdbcType=VARCHAR}, 
       #{guardianOccupation,jdbcType=VARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="cn.xa.eyre.oracle.medrec.domain.PatMasterIndex">
+  <insert id="insertSelective" parameterType="cn.xa.eyre.medrec.domain.PatMasterIndex">
     insert into MEDREC.PAT_MASTER_INDEX
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="patientId != null">
@@ -402,7 +402,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="cn.xa.eyre.oracle.medrec.domain.PatMasterIndex">
+  <update id="updateByPrimaryKeySelective" parameterType="cn.xa.eyre.medrec.domain.PatMasterIndex">
     update MEDREC.PAT_MASTER_INDEX
     <set>
       <if test="inpNo != null">
@@ -549,7 +549,7 @@
     </set>
     where PATIENT_ID = #{patientId,jdbcType=VARCHAR}
   </update>
-  <update id="updateByPrimaryKey" parameterType="cn.xa.eyre.oracle.medrec.domain.PatMasterIndex">
+  <update id="updateByPrimaryKey" parameterType="cn.xa.eyre.medrec.domain.PatMasterIndex">
     update MEDREC.PAT_MASTER_INDEX
     set INP_NO = #{inpNo,jdbcType=VARCHAR},
       NAME = #{name,jdbcType=VARCHAR},
