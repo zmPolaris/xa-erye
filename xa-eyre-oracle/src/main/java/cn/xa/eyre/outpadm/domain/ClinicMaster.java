@@ -124,12 +124,6 @@ public class ClinicMaster extends ClinicMasterKey {
 
     private Date visitTime;
 
-    private String orgId;
-
-    private String orgAreaId;
-
-    private String regWay;
-
     private String registrationTypeId;
 
     private String regDoctorId;
@@ -644,30 +638,6 @@ public class ClinicMaster extends ClinicMasterKey {
 
     public void setVisitTime(Date visitTime) {
         this.visitTime = visitTime;
-    }
-
-    public String getOrgId() {
-        return orgId;
-    }
-
-    public void setOrgId(String orgId) {
-        this.orgId = orgId == null ? null : orgId.trim();
-    }
-
-    public String getOrgAreaId() {
-        return orgAreaId;
-    }
-
-    public void setOrgAreaId(String orgAreaId) {
-        this.orgAreaId = orgAreaId == null ? null : orgAreaId.trim();
-    }
-
-    public String getRegWay() {
-        return regWay;
-    }
-
-    public void setRegWay(String regWay) {
-        this.regWay = regWay == null ? null : regWay.trim();
     }
 
     public String getRegistrationTypeId() {

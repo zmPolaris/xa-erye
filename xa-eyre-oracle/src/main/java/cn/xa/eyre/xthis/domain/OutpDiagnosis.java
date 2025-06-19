@@ -1,4 +1,4 @@
-package cn.xa.eyre.outpdoct.domain;
+package cn.xa.eyre.xthis.domain;
 
 import java.math.BigDecimal;
 import java.util.Date;
