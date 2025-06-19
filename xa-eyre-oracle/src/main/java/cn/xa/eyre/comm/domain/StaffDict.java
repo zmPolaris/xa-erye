@@ -33,8 +33,6 @@ public class StaffDict {
 
     private Short antibioticDrugLimit;
 
-    private String idNo;
-
     public String getEmpNo() {
         return empNo;
     }
@@ -153,13 +151,5 @@ public class StaffDict {
 
     public void setAntibioticDrugLimit(Short antibioticDrugLimit) {
         this.antibioticDrugLimit = antibioticDrugLimit;
-    }
-
-    public String getIdNo() {
-        return idNo;
-    }
-
-    public void setIdNo(String idNo) {
-        this.idNo = idNo == null ? null : idNo.trim();
     }
 }

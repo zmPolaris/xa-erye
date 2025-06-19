@@ -17,11 +17,10 @@
     <result column="SURGERY_CLASS" jdbcType="VARCHAR" property="surgeryClass" />
     <result column="CANCEL" jdbcType="VARCHAR" property="cancel" />
     <result column="ANTIBIOTIC_DRUG_LIMIT" jdbcType="NUMERIC" property="antibioticDrugLimit" />
-    <result column="ID_NO" jdbcType="VARCHAR" property="idNo" />
   </resultMap>
   <sql id="Base_Column_List">
     EMP_NO, DEPT_CODE, NAME, INPUT_CODE, JOB, TITLE, USER_NAME, INPUT_CODE_WB, ID, CREATE_DATE, 
-    PASSWORD, SYS_FLAG, SURGERY_CLASS, CANCEL, ANTIBIOTIC_DRUG_LIMIT, ID_NO
+    PASSWORD, SYS_FLAG, SURGERY_CLASS, CANCEL, ANTIBIOTIC_DRUG_LIMIT
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
     select 
@@ -38,8 +37,7 @@
       INPUT_CODE, JOB, TITLE, 
       USER_NAME, INPUT_CODE_WB, ID, 
       CREATE_DATE, PASSWORD, SYS_FLAG, 
-      SURGERY_CLASS, CANCEL, ANTIBIOTIC_DRUG_LIMIT, 
-      ID_NO)
+      SURGERY_CLASS, CANCEL, ANTIBIOTIC_DRUG_LIMIT)
     values (#{empNo,jdbcType=VARCHAR}, #{deptCode,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
       #{inputCode,jdbcType=VARCHAR}, #{job,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, 
       #{userName,jdbcType=VARCHAR}, #{inputCodeWb,jdbcType=VARCHAR}, #{id,jdbcType=VARCHAR}, 
@@ -95,9 +93,6 @@
       <if test="antibioticDrugLimit != null">
         ANTIBIOTIC_DRUG_LIMIT,
       </if>
-      <if test="idNo != null">
-        ID_NO,
-      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="empNo != null">
@@ -144,9 +139,6 @@
       </if>
       <if test="antibioticDrugLimit != null">
         #{antibioticDrugLimit,jdbcType=NUMERIC},
-      </if>
-      <if test="idNo != null">
-        #{idNo,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -195,9 +187,6 @@
       <if test="antibioticDrugLimit != null">
         ANTIBIOTIC_DRUG_LIMIT = #{antibioticDrugLimit,jdbcType=NUMERIC},
       </if>
-      <if test="idNo != null">
-        ID_NO = #{idNo,jdbcType=VARCHAR},
-      </if>
     </set>
     where EMP_NO = #{empNo,jdbcType=VARCHAR}
   </update>
@@ -217,7 +206,6 @@
       SURGERY_CLASS = #{surgeryClass,jdbcType=VARCHAR},
       CANCEL = #{cancel,jdbcType=VARCHAR},
       ANTIBIOTIC_DRUG_LIMIT = #{antibioticDrugLimit,jdbcType=NUMERIC},
-      ID_NO = #{idNo,jdbcType=VARCHAR}
     where EMP_NO = #{empNo,jdbcType=VARCHAR}
   </update>
 </mapper>
