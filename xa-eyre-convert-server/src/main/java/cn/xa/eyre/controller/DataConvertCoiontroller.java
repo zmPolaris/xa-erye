@@ -2,10 +2,7 @@ package cn.xa.eyre.controller;
 
 import cn.xa.eyre.common.core.domain.AjaxResult;
 import cn.xa.eyre.common.core.kafka.DBMessage;
-import cn.xa.eyre.service.CommConvertService;
-import cn.xa.eyre.service.DataConvertService;
-import cn.xa.eyre.service.MedrecConvertService;
-import cn.xa.eyre.service.OutpdoctConvertService;
+import cn.xa.eyre.service.*;
 import com.alibaba.fastjson.JSONObject;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +29,8 @@ public class DataConvertCoiontroller {
     private MedrecConvertService medrecConvertService;
     @Autowired
     private OutpdoctConvertService outpdoctConvertService;
+    @Autowired
+    private InpadmConvertService inpadmConvertService;
 
     /**
      * 部门信息转码
@@ -41,6 +40,16 @@ public class DataConvertCoiontroller {
     @PostMapping("/convertDept")
     public AjaxResult convertDept(HttpServletRequest request){
         return AjaxResult.success("转码成功", dataConvertService.convertDept());
+    }
+
+    /**
+     * 部门信息转码
+     * @param request
+     * @return
+     */
+    @PostMapping("/convertDiseaseIcd")
+    public AjaxResult convertDiseaseIcd(HttpServletRequest request){
+        return AjaxResult.success("转码成功", dataConvertService.convertDiseaseIcd());
     }
 
     @PostMapping("/receiveKafkaData")
@@ -61,6 +70,9 @@ public class DataConvertCoiontroller {
                 break;
             case "outpdoct.outp_mr":
                 outpdoctConvertService.outpMr(dbMessage);
+                break;
+            case "inpadm.pats_in_hospital":
+                inpadmConvertService.patsInHospital(dbMessage);
                 break;
             default:
 

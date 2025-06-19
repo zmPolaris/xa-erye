@@ -66,6 +66,11 @@ public class OutpdoctConvertService {
                 emrOutpatientRecord.setPastIllnessHis(outpMr.getAnamnesis());
                 emrOutpatientRecord.setOperationHis(outpMr.getMedicalRecord());
                 emrOutpatientRecord.setMaritalHis(outpMr.getMarrital());
+                if(StrUtil.isNotBlank(outpMr.getIndividual())){
+                    emrOutpatientRecord.setAllergyHisFlag("1");
+                    emrOutpatientRecord.setAllergyHis(outpMr.getIndividual());
+                }
+                emrOutpatientRecord.setMenstrualHis(outpMr.getMenses());
                 emrOutpatientRecord.setFamilyHis(outpMr.getFamilyIll());
                 emrOutpatientRecord.setPhysicalExamination(outpMr.getBodyExam());
                 emrOutpatientRecord.setStudiesSummaryResult(outpMr.getAssistExam());
