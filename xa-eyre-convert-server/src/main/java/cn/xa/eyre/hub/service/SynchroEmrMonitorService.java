@@ -98,7 +98,7 @@ public class SynchroEmrMonitorService {
      * @param method
      * @return
      */
-    public void syncEmrInfReport(EmrAdmissionInfo emrAdmissionInfo, String method){
+    public void syncEmrAdmissionInfo(EmrAdmissionInfo emrAdmissionInfo, String method){
         init();
         String apiUrl = serviceUrl + SyncApiStaticValue.API_EMR_ADMISSION_INFO;
         LogSynchroApiWithBLOBs log = new LogSynchroApiWithBLOBs();
@@ -128,7 +128,7 @@ public class SynchroEmrMonitorService {
      * @param method
      * @return
      */
-    public void syncEmrPatientInfo(EmrFirstCourse emrFirstCourse, String method){
+    public void syncEmrFirstCourse(EmrFirstCourse emrFirstCourse, String method){
         init();
         String apiUrl = serviceUrl + SyncApiStaticValue.API_EMR_FIRST_COURSE;
         LogSynchroApiWithBLOBs log = new LogSynchroApiWithBLOBs();
@@ -158,7 +158,7 @@ public class SynchroEmrMonitorService {
      * @param method
      * @return
      */
-    public void syncEmrActivityInfo(EmrDailyCourse emrDailyCourse, String method){
+    public void syncEmrDailyCourse(EmrDailyCourse emrDailyCourse, String method){
         init();
         String apiUrl = serviceUrl + SyncApiStaticValue.API_EMR_DAILY_COURSE;
         LogSynchroApiWithBLOBs log = new LogSynchroApiWithBLOBs();
@@ -188,7 +188,7 @@ public class SynchroEmrMonitorService {
      * @param method
      * @return
      */
-    public void syncEmrInfReport(EmrAdmissionRecord emrAdmissionRecord, String method){
+    public void syncEmrAdmissionRecord(EmrAdmissionRecord emrAdmissionRecord, String method){
         init();
         String apiUrl = serviceUrl + SyncApiStaticValue.API_EMR_ADMISSION_RECORD;
         LogSynchroApiWithBLOBs log = new LogSynchroApiWithBLOBs();

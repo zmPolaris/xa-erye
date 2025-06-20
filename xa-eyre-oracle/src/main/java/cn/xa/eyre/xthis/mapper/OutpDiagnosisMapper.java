@@ -1,7 +1,7 @@
-package cn.xa.eyre.outpdoct.mapper;
+package cn.xa.eyre.xthis.mapper;
 
-import cn.xa.eyre.outpdoct.domain.OutpDiagnosis;
-import cn.xa.eyre.outpdoct.domain.OutpDiagnosisKey;
+import cn.xa.eyre.xthis.domain.OutpDiagnosis;
+import cn.xa.eyre.xthis.domain.OutpDiagnosisKey;
 
 public interface OutpDiagnosisMapper {
     int deleteByPrimaryKey(OutpDiagnosisKey key);

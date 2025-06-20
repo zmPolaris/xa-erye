@@ -48,8 +48,7 @@ public class EmrAdmissionInfo extends BaseEntity
     private String idCard;
 
     /** 入院日期时间 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date admissionDate;
+    private String admissionDate;
 
     /** 主诉 */
     private String chiefComplaint;
@@ -149,8 +148,7 @@ public class EmrAdmissionInfo extends BaseEntity
     private String tcmRevisedSyndromeCode;
 
     /** 修正诊断日期 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date revisedDiagnosisDate;
+    private String revisedDiagnosisDate;
 
     /** 确定诊断-西医诊断 */
     private String wmConfirmedDiagnosisName;
@@ -171,8 +169,7 @@ public class EmrAdmissionInfo extends BaseEntity
     private String tcmConfirmedSyndromeCode;
 
     /** 确定诊断日期 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date confirmedDiagnosisDate;
+    private String confirmedDiagnosisDate;
 
     /** 补充诊断名称 */
     private String complementaryDiagnosisName;
@@ -181,8 +178,7 @@ public class EmrAdmissionInfo extends BaseEntity
     private String complementaryDiagnosisCode;
 
     /** 补充诊断日期 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date complementaryDiagnosisDate;
+    private String complementaryDiagnosisDate;
 
     /** 入院诊断顺位 */
     private String admissionDiagnosisOrder;
@@ -222,8 +218,7 @@ public class EmrAdmissionInfo extends BaseEntity
     private String dataStatus;
 
     /** 入库日期 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date createDate;
+    private String createDate;
 
     public void setId(String id)
     {
@@ -315,12 +310,12 @@ public class EmrAdmissionInfo extends BaseEntity
     {
         return idCard;
     }
-    public void setAdmissionDate(Date admissionDate)
+    public void setAdmissionDate(String admissionDate)
     {
         this.admissionDate = admissionDate;
     }
 
-    public Date getAdmissionDate()
+    public String getAdmissionDate()
     {
         return admissionDate;
     }
@@ -612,12 +607,12 @@ public class EmrAdmissionInfo extends BaseEntity
     {
         return tcmRevisedSyndromeCode;
     }
-    public void setRevisedDiagnosisDate(Date revisedDiagnosisDate)
+    public void setRevisedDiagnosisDate(String revisedDiagnosisDate)
     {
         this.revisedDiagnosisDate = revisedDiagnosisDate;
     }
 
-    public Date getRevisedDiagnosisDate()
+    public String getRevisedDiagnosisDate()
     {
         return revisedDiagnosisDate;
     }
@@ -675,12 +670,12 @@ public class EmrAdmissionInfo extends BaseEntity
     {
         return tcmConfirmedSyndromeCode;
     }
-    public void setConfirmedDiagnosisDate(Date confirmedDiagnosisDate)
+    public void setConfirmedDiagnosisDate(String confirmedDiagnosisDate)
     {
         this.confirmedDiagnosisDate = confirmedDiagnosisDate;
     }
 
-    public Date getConfirmedDiagnosisDate()
+    public String getConfirmedDiagnosisDate()
     {
         return confirmedDiagnosisDate;
     }
@@ -702,12 +697,12 @@ public class EmrAdmissionInfo extends BaseEntity
     {
         return complementaryDiagnosisCode;
     }
-    public void setComplementaryDiagnosisDate(Date complementaryDiagnosisDate)
+    public void setComplementaryDiagnosisDate(String complementaryDiagnosisDate)
     {
         this.complementaryDiagnosisDate = complementaryDiagnosisDate;
     }
 
-    public Date getComplementaryDiagnosisDate()
+    public String getComplementaryDiagnosisDate()
     {
         return complementaryDiagnosisDate;
     }
@@ -819,12 +814,12 @@ public class EmrAdmissionInfo extends BaseEntity
     {
         return dataStatus;
     }
-    public void setCreateDate(Date createDate)
+    public void setCreateDate(String createDate)
     {
         this.createDate = createDate;
     }
 
-    public Date getCreateDate()
+    public String getCreateDate()
     {
         return createDate;
     }

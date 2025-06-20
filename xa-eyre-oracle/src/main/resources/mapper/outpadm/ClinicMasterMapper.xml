@@ -64,9 +64,6 @@
     <result column="DIAGNOSE_ROOM_ID" jdbcType="VARCHAR" property="diagnoseRoomId" />
     <result column="DOCTOR_ID" jdbcType="VARCHAR" property="doctorId" />
     <result column="VISIT_TIME" jdbcType="TIMESTAMP" property="visitTime" />
-    <result column="ORG_ID" jdbcType="VARCHAR" property="orgId" />
-    <result column="ORG_AREA_ID" jdbcType="VARCHAR" property="orgAreaId" />
-    <result column="REG_WAY" jdbcType="VARCHAR" property="regWay" />
     <result column="REGISTRATION_TYPE_ID" jdbcType="VARCHAR" property="registrationTypeId" />
     <result column="REG_DOCTOR_ID" jdbcType="VARCHAR" property="regDoctorId" />
     <result column="REG_DEPT_ID" jdbcType="VARCHAR" property="regDeptId" />
@@ -96,7 +93,7 @@
     TALLY_DATE, TALLY_USER, CLINIC_NO, REAL_SORT, ID_NO, GHLSH, OUTP_ID, DIAGCODE, RCPT_NO, 
     RETURNED_ACCT_NO, SERVICE_CLASS, ARMED_SERVICES, SERVICE_SYSTEM_INDICATOR, YGFUND_PAY_SUMAMT, 
     SECURITY_TYPE_CODE, CAL_WAY, POSTRADENO, ECI_REG_ID, DIAGNOSE_ROOM_ID, DOCTOR_ID, 
-    VISIT_TIME, ORG_ID, ORG_AREA_ID, REG_WAY, REGISTRATION_TYPE_ID, REG_DOCTOR_ID, REG_DEPT_ID, 
+    VISIT_TIME, REGISTRATION_TYPE_ID, REG_DOCTOR_ID, REG_DEPT_ID,
     REG_CLINIC_DEPT_ID, WAITING_AREA_ID, DUTY_SETTING_ID, DUTY_TIME_RANGE_ID, DIAGNOSIS_DESC, 
     YGFUND_PAY_WAY, PATIENT_LABEL, LAST_LABEL_STAFF_ID, LAST_LABEL_TIME, ARRANGE_DETAIL_ID, 
     R_VISIT_NO, R_VISIT_DATE, VERIFY_CODE, PATIENT_CLASS, TRANSFER_MARK
@@ -151,8 +148,7 @@
       SERVICE_SYSTEM_INDICATOR, YGFUND_PAY_SUMAMT, 
       SECURITY_TYPE_CODE, CAL_WAY, POSTRADENO, 
       ECI_REG_ID, DIAGNOSE_ROOM_ID, DOCTOR_ID, 
-      VISIT_TIME, ORG_ID, ORG_AREA_ID, 
-      REG_WAY, REGISTRATION_TYPE_ID, REG_DOCTOR_ID, 
+      VISIT_TIME, REGISTRATION_TYPE_ID, REG_DOCTOR_ID,
       REG_DEPT_ID, REG_CLINIC_DEPT_ID, WAITING_AREA_ID, 
       DUTY_SETTING_ID, DUTY_TIME_RANGE_ID, DIAGNOSIS_DESC, 
       YGFUND_PAY_WAY, PATIENT_LABEL, LAST_LABEL_STAFF_ID, 
@@ -180,8 +176,7 @@
       #{serviceSystemIndicator,jdbcType=NUMERIC}, #{ygfundPaySumamt,jdbcType=NUMERIC}, 
       #{securityTypeCode,jdbcType=VARCHAR}, #{calWay,jdbcType=VARCHAR}, #{postradeno,jdbcType=VARCHAR}, 
       #{eciRegId,jdbcType=VARCHAR}, #{diagnoseRoomId,jdbcType=VARCHAR}, #{doctorId,jdbcType=VARCHAR}, 
-      #{visitTime,jdbcType=TIMESTAMP}, #{orgId,jdbcType=VARCHAR}, #{orgAreaId,jdbcType=VARCHAR}, 
-      #{regWay,jdbcType=VARCHAR}, #{registrationTypeId,jdbcType=VARCHAR}, #{regDoctorId,jdbcType=VARCHAR}, 
+      #{visitTime,jdbcType=TIMESTAMP}, #{registrationTypeId,jdbcType=VARCHAR}, #{regDoctorId,jdbcType=VARCHAR},
       #{regDeptId,jdbcType=VARCHAR}, #{regClinicDeptId,jdbcType=VARCHAR}, #{waitingAreaId,jdbcType=VARCHAR}, 
       #{dutySettingId,jdbcType=VARCHAR}, #{dutyTimeRangeId,jdbcType=VARCHAR}, #{diagnosisDesc,jdbcType=VARCHAR}, 
       #{ygfundPayWay,jdbcType=VARCHAR}, #{patientLabel,jdbcType=CHAR}, #{lastLabelStaffId,jdbcType=VARCHAR}, 
@@ -377,15 +372,6 @@
       </if>
       <if test="visitTime != null">
         VISIT_TIME,
-      </if>
-      <if test="orgId != null">
-        ORG_ID,
-      </if>
-      <if test="orgAreaId != null">
-        ORG_AREA_ID,
-      </if>
-      <if test="regWay != null">
-        REG_WAY,
       </if>
       <if test="registrationTypeId != null">
         REGISTRATION_TYPE_ID,
@@ -629,15 +615,6 @@
       <if test="visitTime != null">
         #{visitTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="orgId != null">
-        #{orgId,jdbcType=VARCHAR},
-      </if>
-      <if test="orgAreaId != null">
-        #{orgAreaId,jdbcType=VARCHAR},
-      </if>
-      <if test="regWay != null">
-        #{regWay,jdbcType=VARCHAR},
-      </if>
       <if test="registrationTypeId != null">
         #{registrationTypeId,jdbcType=VARCHAR},
       </if>
@@ -877,15 +854,6 @@
       <if test="visitTime != null">
         VISIT_TIME = #{visitTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="orgId != null">
-        ORG_ID = #{orgId,jdbcType=VARCHAR},
-      </if>
-      <if test="orgAreaId != null">
-        ORG_AREA_ID = #{orgAreaId,jdbcType=VARCHAR},
-      </if>
-      <if test="regWay != null">
-        REG_WAY = #{regWay,jdbcType=VARCHAR},
-      </if>
       <if test="registrationTypeId != null">
         REGISTRATION_TYPE_ID = #{registrationTypeId,jdbcType=VARCHAR},
       </if>
@@ -1006,9 +974,6 @@
       DIAGNOSE_ROOM_ID = #{diagnoseRoomId,jdbcType=VARCHAR},
       DOCTOR_ID = #{doctorId,jdbcType=VARCHAR},
       VISIT_TIME = #{visitTime,jdbcType=TIMESTAMP},
-      ORG_ID = #{orgId,jdbcType=VARCHAR},
-      ORG_AREA_ID = #{orgAreaId,jdbcType=VARCHAR},
-      REG_WAY = #{regWay,jdbcType=VARCHAR},
       REGISTRATION_TYPE_ID = #{registrationTypeId,jdbcType=VARCHAR},
       REG_DOCTOR_ID = #{regDoctorId,jdbcType=VARCHAR},
       REG_DEPT_ID = #{regDeptId,jdbcType=VARCHAR},

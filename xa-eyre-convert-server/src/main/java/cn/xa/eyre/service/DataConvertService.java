@@ -99,4 +99,8 @@ public class DataConvertService {
         logger.debug("医院信息系统用户信息接口");
 
     }
+
+    public boolean convertDiseaseIcd() {
+        return false;
+    }
 }
