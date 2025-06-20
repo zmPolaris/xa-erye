@@ -141,7 +141,6 @@ public class CommConvertService {
         baseUser.setDeptCode(deptCode);
         baseUser.setUserName(users.getUserName());
         baseUser.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE.getCode());
-//        baseUser.setLoginName(users.getDbUser());
         baseUser.setUserTypeCode("2");
         baseUser.setCreateTime(new Date());
         synchroBaseService.syncBaseUser(baseUser, httpMethod);
