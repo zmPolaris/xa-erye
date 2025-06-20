@@ -67,7 +67,16 @@
     from MEDREC.PAT_MASTER_INDEX
     where PATIENT_ID = #{patientId,jdbcType=VARCHAR}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    <select id="selectPatMasterIndexList" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+      select
+      <include refid="Base_Column_List" />
+      from (select
+          <include refid="Base_Column_List" />
+          from MEDREC.PAT_MASTER_INDEX
+          ORDER BY CREATE_DATE DESC)
+      WHERE ROWNUM <![CDATA[ <= ]]> #{num,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
     delete from MEDREC.PAT_MASTER_INDEX
     where PATIENT_ID = #{patientId,jdbcType=VARCHAR}
   </delete>

@@ -23,7 +23,7 @@
     <result column="version" jdbcType="INTEGER" property="version" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, type_id, type_code, code, name, describe, spell, start_date, end_date, parent_id, 
+    id, type_id, type_code, code, `name`, `describe`, `spell`, start_date, end_date, parent_id,
     pre_code, status, sort, dict_version, create_date, create_user, update_date, update_user, 
     version
   </sql>
@@ -37,7 +37,7 @@
     select
     <include refid="Base_Column_List" />
     from dd_nation
-    where name = #{name,jdbcType=VARCHAR}
+    where `name` = #{name,jdbcType=VARCHAR}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from dd_nation

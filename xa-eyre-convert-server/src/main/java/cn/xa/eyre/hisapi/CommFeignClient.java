@@ -15,5 +15,5 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface CommFeignClient {
 
     @GetMapping("/comm/getUserByName")
-    public R<Users> getUserByName(@RequestParam String userName);
+    public R<Users> getUserByName(@RequestParam("userName") String userName);
 }

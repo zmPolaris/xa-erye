@@ -35,7 +35,7 @@ public class Constants
     /**
      * 成功标记
      */
-    public static final Integer SUCCESS = 200;
+    public static final Integer SUCCESS = 0;
 
     /**
      * 失败标记

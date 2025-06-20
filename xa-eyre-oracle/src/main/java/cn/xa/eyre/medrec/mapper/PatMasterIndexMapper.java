@@ -1,6 +1,9 @@
 package cn.xa.eyre.medrec.mapper;
 
 import cn.xa.eyre.medrec.domain.PatMasterIndex;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface PatMasterIndexMapper {
     int deleteByPrimaryKey(String patientId);
@@ -14,4 +17,6 @@ public interface PatMasterIndexMapper {
     int updateByPrimaryKeySelective(PatMasterIndex record);
 
     int updateByPrimaryKey(PatMasterIndex record);
+
+    List<PatMasterIndex> selectPatMasterIndexList(@Param("num") Integer num);
 }

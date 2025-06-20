@@ -22,6 +22,11 @@ public class MedrecController {
         return AjaxResult.success("接口调用成功", medrecService.selectPatMasterIndex(patientId));
     }
 
+    @GetMapping("/getPatMasterIndexList")
+    public AjaxResult getPatMasterIndexList(@RequestParam("num") Integer num){
+        return AjaxResult.success("接口调用成功", medrecService.selectPatMasterIndexList(num));
+    }
+
     @PostMapping("/getCofig")
     public AjaxResult getCofig(){
         return convertFeignClient.getCofig();
