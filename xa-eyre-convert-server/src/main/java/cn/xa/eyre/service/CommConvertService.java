@@ -126,7 +126,7 @@ public class CommConvertService {
             users = BeanUtil.toBean(dbMessage.getAfterData(), Users.class);
         }
         // 院内用户ID
-        baseUser.setId(users.getDbUser());
+        baseUser.setId(users.getUserId());
         baseUser.setOrgCode(HubCodeEnum.ORG_CODE.getCode());
         String deptCode = users.getUserDept();
         if(deptCode != null && !deptCode.equals("")){
@@ -141,7 +141,6 @@ public class CommConvertService {
         baseUser.setDeptCode(deptCode);
         baseUser.setUserName(users.getUserName());
         baseUser.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE.getCode());
-        baseUser.setLoginName(users.getUserName());
         baseUser.setUserTypeCode("2");
         baseUser.setCreateTime(new Date());
         synchroBaseService.syncBaseUser(baseUser, httpMethod);
