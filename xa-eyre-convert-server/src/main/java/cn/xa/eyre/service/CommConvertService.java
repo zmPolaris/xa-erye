@@ -3,6 +3,7 @@ package cn.xa.eyre.service;
 import cn.hutool.core.bean.BeanUtil;
 import cn.xa.eyre.comm.domain.DeptDict;
 import cn.xa.eyre.comm.domain.StaffDict;
+import cn.xa.eyre.comm.domain.Users;
 import cn.xa.eyre.common.constant.Constants;
 import cn.xa.eyre.common.core.kafka.DBMessage;
 import cn.xa.eyre.common.utils.DateUtils;
@@ -111,23 +112,23 @@ public class CommConvertService {
 
     public void baseUser(DBMessage dbMessage) {
         logger.debug("系统用户信息base_user变更接口");
-        logger.debug("STAFF_DICT表变更需要调用baseUser同步接口");
+        logger.debug("USERS表变更需要调用baseUser同步接口");
         BaseUser baseUser = new BaseUser();
         String httpMethod = null;
-        StaffDict staffDict = null;
+        Users users = null;
         if(dbMessage.getOperation().equalsIgnoreCase("DELETE")) {
             // 删除
             httpMethod = Constants.HTTP_METHOD_DELETE;
-            staffDict = BeanUtil.toBean(dbMessage.getBeforeData(), StaffDict.class);
+            users = BeanUtil.toBean(dbMessage.getBeforeData(), Users.class);
         }else {
             // 插入 修改
             httpMethod = Constants.HTTP_METHOD_POST;
-            staffDict = BeanUtil.toBean(dbMessage.getAfterData(), StaffDict.class);
+            users = BeanUtil.toBean(dbMessage.getAfterData(), Users.class);
         }
         // 院内用户ID
-        baseUser.setId(staffDict.getEmpNo());
+        baseUser.setId(users.getDbUser());
         baseUser.setOrgCode(HubCodeEnum.ORG_CODE.getCode());
-        String deptCode = staffDict.getDeptCode();
+        String deptCode = users.getUserDept();
         if(deptCode != null && !deptCode.equals("")){
             DictDisDept deptParam = new DictDisDept();
             deptParam.setStatus(Constants.STATUS_NORMAL);
@@ -138,9 +139,9 @@ public class CommConvertService {
             }
         }
         baseUser.setDeptCode(deptCode);
-        baseUser.setUserName(staffDict.getName());
+        baseUser.setUserName(users.getUserName());
         baseUser.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE.getCode());
-        baseUser.setLoginName(staffDict.getUserName());
+        baseUser.setLoginName(users.getUserName());
         baseUser.setUserTypeCode("2");
         baseUser.setCreateTime(new Date());
         synchroBaseService.syncBaseUser(baseUser, httpMethod);
