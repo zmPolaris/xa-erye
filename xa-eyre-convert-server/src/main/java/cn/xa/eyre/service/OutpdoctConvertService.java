@@ -3,10 +3,12 @@ package cn.xa.eyre.service;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
+import cn.xa.eyre.comm.domain.Users;
 import cn.xa.eyre.common.constant.Constants;
 import cn.xa.eyre.common.core.domain.R;
 import cn.xa.eyre.common.core.kafka.DBMessage;
 import cn.xa.eyre.common.utils.DateUtils;
+import cn.xa.eyre.hisapi.CommFeignClient;
 import cn.xa.eyre.hisapi.MedrecFeignClient;
 import cn.xa.eyre.hisapi.OutpadmFeignClient;
 import cn.xa.eyre.hub.domain.emrmonitor.EmrOutpatientRecord;
@@ -33,6 +35,8 @@ public class OutpdoctConvertService {
     private DictDisDeptMapper dictDisDeptMapper;// 转码表
     @Autowired
     private SynchroEmrMonitorService synchroEmrMonitorService;
+    @Autowired
+    private CommFeignClient commFeignClient;
 
     public void outpMr(DBMessage dbMessage) {
         logger.debug("OUTP_MR表变更接口");
@@ -52,7 +56,8 @@ public class OutpdoctConvertService {
         if (StrUtil.isNotBlank(outpMr.getPatientId())){
             R<PatMasterIndex> medrecResult = medrecFeignClient.getMedrec(outpMr.getPatientId());
             R<ClinicMaster> outpadmResult = outpadmFeignClient.getClinicMaster(outpMr.getPatientId(), outpMr.getVisitNo(), DateUtils.dateTime(outpMr.getVisitDate()));
-            if (R.SUCCESS == medrecResult.getCode() && R.SUCCESS == outpadmResult.getCode()){
+            if (R.SUCCESS == medrecResult.getCode() && R.SUCCESS == outpadmResult.getCode()
+            && medrecResult.getData() != null && outpadmResult.getData() != null){
                 EmrOutpatientRecord emrOutpatientRecord = new EmrOutpatientRecord();
                 // ID使用OUTP_MR表联合主键拼接计算MD5
                 String id = DigestUtil.md5Hex(DateUtils.dateTime(outpMr.getVisitDate()) + outpMr.getVisitNo() + outpMr.getOrdinal());
@@ -95,6 +100,13 @@ public class OutpdoctConvertService {
                     deptParam.setIsDefault(Constants.IS_DEFAULT);
                     dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
                 }
+
+                // 查询操作员ID
+                R<Users> user = commFeignClient.getUserByName(patMasterIndex.getOperator());
+                if (R.SUCCESS == user.getCode() && user.getData() != null){
+                    emrOutpatientRecord.setOperatorId(user.getData().getUserId());
+                }
+
                 emrOutpatientRecord.setDeptCode(dictDisDept.getHubCode());
                 emrOutpatientRecord.setDeptName(dictDisDept.getHubName());
 

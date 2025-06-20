@@ -1,9 +1,12 @@
 package cn.xa.eyre.service;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.xa.eyre.comm.domain.Users;
 import cn.xa.eyre.common.constant.Constants;
+import cn.xa.eyre.common.core.domain.R;
 import cn.xa.eyre.common.core.kafka.DBMessage;
 import cn.xa.eyre.common.utils.DateUtils;
+import cn.xa.eyre.hisapi.CommFeignClient;
 import cn.xa.eyre.hub.domain.emrreal.EmrPatientInfo;
 import cn.xa.eyre.hub.service.SynchroEmrRealService;
 import cn.xa.eyre.hub.staticvalue.HubCodeEnum;
@@ -22,6 +25,8 @@ public class MedrecConvertService {
     private SynchroEmrRealService synchroEmrRealService;
     @Autowired
     private DdNationMapper ddNationMapper;
+    @Autowired
+    private CommFeignClient commFeignClient;
 
     public void patMasterIndex(DBMessage dbMessage) {
         logger.debug("病人主索引表PAT_MASTER_INDEX变更接口");
@@ -70,7 +75,11 @@ public class MedrecConvertService {
         }
         emrPatientInfo.setOrgCode(HubCodeEnum.ORG_CODE.getCode());
         emrPatientInfo.setOrgName(HubCodeEnum.ORG_CODE.getName());
-        // 查询操作ID
+        // 查询操作员ID
+        R<Users> user = commFeignClient.getUserByName(patMasterIndex.getOperator());
+        if (R.SUCCESS == user.getCode() && user.getData() != null){
+            emrPatientInfo.setOperatorId(user.getData().getUserId());
+        }
         emrPatientInfo.setOperationTime(DateUtils.getTime());
         synchroEmrRealService.syncEmrPatientInfo(emrPatientInfo, httpMethod);
     }

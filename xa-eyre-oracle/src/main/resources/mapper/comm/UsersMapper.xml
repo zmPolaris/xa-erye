@@ -20,7 +20,13 @@
     from USERS
     where DB_USER = #{dbUser,jdbcType=VARCHAR}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    <select id="selectUserByName" resultMap="BaseResultMap">
+      select
+      <include refid="Base_Column_List" />
+      from USERS u
+      where u.USER_NAME = #{userName,jdbcType=VARCHAR} and u.WORKING_STATUS != '离职' order by u.CREATE_DATE desc;
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
     delete from USERS
     where DB_USER = #{dbUser,jdbcType=VARCHAR}
   </delete>

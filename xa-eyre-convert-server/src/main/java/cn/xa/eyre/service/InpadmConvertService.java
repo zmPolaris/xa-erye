@@ -2,10 +2,12 @@ package cn.xa.eyre.service;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.crypto.digest.DigestUtil;
+import cn.xa.eyre.comm.domain.Users;
 import cn.xa.eyre.common.constant.Constants;
 import cn.xa.eyre.common.core.domain.R;
 import cn.xa.eyre.common.core.kafka.DBMessage;
 import cn.xa.eyre.common.utils.DateUtils;
+import cn.xa.eyre.hisapi.CommFeignClient;
 import cn.xa.eyre.hisapi.MedrecFeignClient;
 import cn.xa.eyre.hub.domain.emrmonitor.EmrAdmissionInfo;
 import cn.xa.eyre.hub.service.SynchroEmrMonitorService;
@@ -30,6 +32,8 @@ public class InpadmConvertService {
     private SynchroEmrMonitorService synchroEmrMonitorService;
     @Autowired
     private DictDisDeptMapper dictDisDeptMapper;// 转码表
+    @Autowired
+    private CommFeignClient commFeignClient;
 
     public void patsInHospital(DBMessage dbMessage) {
         logger.debug("PATS_IN_HOSPITAL表变更接口");
@@ -74,6 +78,13 @@ public class InpadmConvertService {
                 deptParam.setIsDefault(Constants.IS_DEFAULT);
                 dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
             }
+
+            // 查询操作员ID
+            R<Users> user = commFeignClient.getUserByName(patMasterIndex.getOperator());
+            if (R.SUCCESS == user.getCode() && user.getData() != null){
+                emrAdmissionInfo.setOperatorId(user.getData().getUserId());
+            }
+
             emrAdmissionInfo.setDeptCode(dictDisDept.getHubCode());
             emrAdmissionInfo.setDeptName(dictDisDept.getHubName());
 
