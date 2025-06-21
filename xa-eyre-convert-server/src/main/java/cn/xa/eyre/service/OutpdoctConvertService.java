@@ -99,7 +99,7 @@ public class OutpdoctConvertService {
                         emrOutpatientRecord.setWmDiagnosisName(dictDiseaseIcd10.getHubName());
                     }
                     if (StrUtil.isNotBlank(outpMr.getDiagnosisCodeMz2())){
-                        DictDiseaseIcd10 dictDiseaseIcd102 = dictDiseaseIcd10Mapper.selectByEmrCode(outpMr.getDiagnosisCodeMz1());
+                        DictDiseaseIcd10 dictDiseaseIcd102 = dictDiseaseIcd10Mapper.selectByEmrCode(outpMr.getDiagnosisCodeMz2());
                         if(dictDiseaseIcd10 == null){
                             emrOutpatientRecord.setWmDiagnosisCode(HubCodeEnum.DISEASE_ICD10_CODE.getCode());
                             emrOutpatientRecord.setWmDiagnosisName(HubCodeEnum.DISEASE_ICD10_CODE.getName());
@@ -183,15 +183,28 @@ public class OutpdoctConvertService {
                 emrActivityInfo.setPhysicalExamination(outpMr.getBodyExam());
                 emrActivityInfo.setStudiesSummaryResult(outpMr.getAssistExam());
                 emrActivityInfo.setDiagnoseTime(outpMr.getVisitDate());
-                // TODO: 更换为ICD10疾病编码
-                String mz1 = outpMr.getDiagnosisCodeMz1();
-                String diagnosisMz1 = outpMr.getDiagnosisMz1();
-                String mz2 = outpMr.getDiagnosisCodeMz2();
-                String diagnosisMz2 = outpMr.getDiagnosisMz2();
-                String diagnosis = (mz1 +"||" + mz2).replaceAll("^\\|\\|*|\\|\\|*$", "");
-                String diagnosisName = (diagnosisMz1 +"||" + diagnosisMz2).replaceAll("^\\|\\|*|\\|\\|*$", "");
-                emrActivityInfo.setWmDiseaseCode(diagnosis);
-                emrActivityInfo.setWmDiseaseName(diagnosisName);
+
+                // 诊断代码
+                if (StrUtil.isNotBlank(outpMr.getDiagnosisCodeMz1())){
+                    DictDiseaseIcd10 dictDiseaseIcd10 = dictDiseaseIcd10Mapper.selectByEmrCode(outpMr.getDiagnosisCodeMz1());
+                    if(dictDiseaseIcd10 == null){
+                        emrActivityInfo.setWmDiseaseCode(HubCodeEnum.DISEASE_ICD10_CODE.getCode());
+                        emrActivityInfo.setWmDiseaseName(HubCodeEnum.DISEASE_ICD10_CODE.getName());
+                    }else {
+                        emrActivityInfo.setWmDiseaseCode(dictDiseaseIcd10.getHubCode());
+                        emrActivityInfo.setWmDiseaseName(dictDiseaseIcd10.getHubName());
+                    }
+                    if (StrUtil.isNotBlank(outpMr.getDiagnosisCodeMz2())){
+                        DictDiseaseIcd10 dictDiseaseIcd102 = dictDiseaseIcd10Mapper.selectByEmrCode(outpMr.getDiagnosisCodeMz2());
+                        if(dictDiseaseIcd10 == null){
+                            emrActivityInfo.setWmDiseaseCode(HubCodeEnum.DISEASE_ICD10_CODE.getCode());
+                            emrActivityInfo.setWmDiseaseName(HubCodeEnum.DISEASE_ICD10_CODE.getName());
+                        }else {
+                            emrActivityInfo.setWmDiseaseCode(emrOutpatientRecord.getWmDiagnosisCode() + "||" + dictDiseaseIcd102.getHubCode());
+                            emrActivityInfo.setWmDiseaseName(emrOutpatientRecord.getWmDiagnosisName() + "||" + dictDiseaseIcd102.getHubName());
+                        }
+                    }
+                }
 
                 emrActivityInfo.setFillDoctor(patMasterIndex.getOperator());
 
