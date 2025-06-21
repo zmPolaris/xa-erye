@@ -49,7 +49,7 @@ public class SynchroBaseService {
         log.setInputParams(JSONUtil.toJsonStr(baseUser));
         logger.info("->{},url:{},request:{},method:{}", "医院信息系统用户信息表数据操作 API 接口", apiUrl, JSONUtil.toJsonStr(baseUser), method);
         try {
-            String result = HttpClientUtils.sendHttpRequest(serviceUrl, JSONUtil.toJsonStr(baseUser), method);
+            String result = HttpClientUtils.sendHttpRequest(apiUrl, JSONUtil.toJsonStr(baseUser), method);
             logger.info("->{},response:{}", "医院信息系统用户信息表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo = JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
@@ -79,7 +79,7 @@ public class SynchroBaseService {
         log.setInputParams(JSONUtil.toJsonStr(baseDept));
         logger.info("->{},url:{},request:{},method:{}", "医院信息系统科室信息数据操作 API 接口", apiUrl, JSONUtil.toJsonStr(baseDept), method);
         try {
-            String result = HttpClientUtils.sendHttpRequest(serviceUrl, JSONUtil.toJsonStr(baseDept), method);
+            String result = HttpClientUtils.sendHttpRequest(apiUrl, JSONUtil.toJsonStr(baseDept), method);
             logger.info("->{},response:{}", "医院信息系统科室信息数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo =  JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));

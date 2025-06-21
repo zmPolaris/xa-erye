@@ -49,7 +49,7 @@ public class SynchroEmrRealService {
         log.setInputParams(JSONUtil.toJsonStr(emrPatientInfo));
         logger.info("->{},url:{},request:{},method:{}", "患者基本信息表数据操作 API 接口", apiUrl, JSONUtil.toJsonStr(emrPatientInfo), method);
         try {
-            String result = HttpClientUtils.sendHttpRequest(serviceUrl, JSONUtil.toJsonStr(emrPatientInfo), method);
+            String result = HttpClientUtils.sendHttpRequest(apiUrl, JSONUtil.toJsonStr(emrPatientInfo), method);
             logger.info("->{},response:{}", "患者基本信息表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo = JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
@@ -79,7 +79,7 @@ public class SynchroEmrRealService {
         log.setInputParams(JSONUtil.toJsonStr(emrActivityInfo));
         logger.info("->{},url:{},request:{},method:{}", "诊疗活动信息表数据操作 API 接口", apiUrl, JSONUtil.toJsonStr(emrActivityInfo), method);
         try {
-            String result = HttpClientUtils.sendHttpRequest(serviceUrl, JSONUtil.toJsonStr(emrActivityInfo), method);
+            String result = HttpClientUtils.sendHttpRequest(apiUrl, JSONUtil.toJsonStr(emrActivityInfo), method);
             logger.info("->{},response:{}", "诊疗活动信息表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo =  JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
@@ -109,7 +109,7 @@ public class SynchroEmrRealService {
         log.setInputParams(JSONUtil.toJsonStr(emrInfReport));
         logger.info("->{},url:{},request:{},method:{}", "传染病报告卡数据操作 API 接口", apiUrl, JSONUtil.toJsonStr(emrInfReport), method);
         try {
-            String result = HttpClientUtils.sendHttpRequest(serviceUrl, JSONUtil.toJsonStr(emrInfReport), method);
+            String result = HttpClientUtils.sendHttpRequest(apiUrl, JSONUtil.toJsonStr(emrInfReport), method);
             logger.info("->{},response:{}", "传染病报告卡数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo =  JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));

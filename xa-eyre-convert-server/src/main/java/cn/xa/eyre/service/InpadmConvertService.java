@@ -1,6 +1,7 @@
 package cn.xa.eyre.service;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import cn.xa.eyre.comm.domain.Users;
 import cn.xa.eyre.common.constant.Constants;
@@ -65,9 +66,15 @@ public class InpadmConvertService {
 
             PatMasterIndex patMasterIndex = medrecResult.getData();
             emrAdmissionInfo.setPatientName(patMasterIndex.getName());
-            emrAdmissionInfo.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE.getCode());
-            emrAdmissionInfo.setIdCardTypeName(HubCodeEnum.ID_CARD_TYPE.getName());
-            emrAdmissionInfo.setIdCard(patMasterIndex.getIdNo());
+            if (StrUtil.isBlank(patMasterIndex.getIdNo())){
+                emrAdmissionInfo.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE_OTHER.getCode());
+                emrAdmissionInfo.setIdCardTypeName(HubCodeEnum.ID_CARD_TYPE_OTHER.getName());
+                emrAdmissionInfo.setIdCard("-");
+            }else {
+                emrAdmissionInfo.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE.getCode());
+                emrAdmissionInfo.setIdCardTypeName(HubCodeEnum.ID_CARD_TYPE.getName());
+                emrAdmissionInfo.setIdCard(patMasterIndex.getIdNo());
+            }
 
             DictDisDept deptParam = new DictDisDept();
             deptParam.setStatus(Constants.STATUS_NORMAL);
@@ -80,9 +87,11 @@ public class InpadmConvertService {
             }
 
             // 查询操作员ID
-            R<Users> user = commFeignClient.getUserByName(patMasterIndex.getOperator());
-            if (R.SUCCESS == user.getCode() && user.getData() != null){
-                emrAdmissionInfo.setOperatorId(user.getData().getUserId());
+            if (StrUtil.isNotBlank(patMasterIndex.getOperator())){
+                R<Users> user = commFeignClient.getUserByName(patMasterIndex.getOperator());
+                if (R.SUCCESS == user.getCode() && user.getData() != null){
+                    emrAdmissionInfo.setOperatorId(user.getData().getUserId());
+                }
             }
 
             emrAdmissionInfo.setDeptCode(dictDisDept.getHubCode());

@@ -1,10 +1,18 @@
 package cn.xa.eyre.service;
 
+import cn.xa.eyre.common.core.domain.R;
 import cn.xa.eyre.common.core.kafka.DBMessage;
 import cn.xa.eyre.common.utils.DateUtils;
+import cn.xa.eyre.common.utils.FuzzyMatcher;
+import cn.xa.eyre.hisapi.InsuranceFeignClient;
 import cn.xa.eyre.hub.service.SynchroBaseService;
+import cn.xa.eyre.insurance.domain.GysybIcd10;
+import cn.xa.eyre.system.dict.domain.DdDiseaseIcd;
 import cn.xa.eyre.system.dict.domain.DictDisDept;
+import cn.xa.eyre.system.dict.domain.DictDiseaseIcd10;
+import cn.xa.eyre.system.dict.mapper.DdDiseaseIcdMapper;
 import cn.xa.eyre.system.dict.mapper.DictDisDeptMapper;
+import cn.xa.eyre.system.dict.mapper.DictDiseaseIcd10Mapper;
 import cn.xa.eyre.system.temp.domain.DictTemp;
 import cn.xa.eyre.system.temp.domain.HisDeptDict;
 import cn.xa.eyre.system.temp.mapper.DictTempMapper;
@@ -27,6 +35,12 @@ public class DataConvertService {
     private DictTempMapper dictTempMapper;// 前置软件数据
     @Autowired
     private DictDisDeptMapper dictDisDeptMapper;// 转码表
+    @Autowired
+    private DictDiseaseIcd10Mapper dictDiseaseIcd10Mapper;// 转码表
+    @Autowired
+    private DdDiseaseIcdMapper ddDiseaseIcdMapper;// 前置软件诊断代码表
+    @Autowired
+    private InsuranceFeignClient insuranceFeignClient;// HIS
 
     @Resource
     SynchroBaseService synchroBaseService;
@@ -101,6 +115,46 @@ public class DataConvertService {
     }
 
     public boolean convertDiseaseIcd() {
-        return false;
+        List<DdDiseaseIcd> hubIcds = ddDiseaseIcdMapper.selectAll();
+        R<List<GysybIcd10>> icd10ListResult = insuranceFeignClient.getGysybIcd10List();
+        if (R.SUCCESS == icd10ListResult.getCode() && !icd10ListResult.getData().isEmpty()){
+            for (GysybIcd10 emricd : icd10ListResult.getData()) {
+                DictDiseaseIcd10 dictDiseaseIcd10 = new DictDiseaseIcd10();
+                dictDiseaseIcd10.setEmrCode(emricd.getIcdCode());
+                dictDiseaseIcd10.setEmrName(emricd.getIcdName());
+                boolean match = false;
+                // 精准怕匹配
+                for (DdDiseaseIcd hubicd : hubIcds) {
+                    if (hubicd.getName().equals(emricd.getIcdName())){
+                        dictDiseaseIcd10.setRemark("精准匹配");
+                        dictDiseaseIcd10.setHubCode(hubicd.getCode());
+                        dictDiseaseIcd10.setHubName(hubicd.getName());
+                        match = true;
+                        break;
+                    }
+                }
+                 if (!match){
+                     // 模糊匹配
+                     for (DdDiseaseIcd hubicd : hubIcds) {
+                         if (FuzzyMatcher.fuzzyMatch(hubicd.getName(), emricd.getIcdName())){
+                             dictDiseaseIcd10.setRemark("模糊匹配");
+                             dictDiseaseIcd10.setHubCode(hubicd.getCode());
+                             dictDiseaseIcd10.setHubName(hubicd.getName());
+                             match = true;
+                             break;
+                         }
+                     }
+                 }
+
+                if (!match){
+                    // 查询默认
+                    dictDiseaseIcd10.setRemark("未匹配到，其他类");
+                    dictDiseaseIcd10.setHubCode("143");
+                    dictDiseaseIcd10.setHubName("其他");
+                }
+                dictDiseaseIcd10Mapper.insertSelective(dictDiseaseIcd10);
+            }
+        }
+        return true;
     }
 }

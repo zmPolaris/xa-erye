@@ -47,7 +47,7 @@ public class SynchroEmrMonitorService {
         log.setInputParams(JSONUtil.toJsonStr(emrOutpatientRecord));
         logger.info("->{},url:{},request:{},method:{}", "门（急）诊病历表数据操作 API 接口", apiUrl, JSONUtil.toJsonStr(emrOutpatientRecord), method);
         try {
-            String result = HttpClientUtils.sendHttpRequest(serviceUrl, JSONUtil.toJsonStr(emrOutpatientRecord), method);
+            String result = HttpClientUtils.sendHttpRequest(apiUrl, JSONUtil.toJsonStr(emrOutpatientRecord), method);
             logger.info("->{},response:{}", "门（急）诊病历表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo = JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
@@ -77,7 +77,7 @@ public class SynchroEmrMonitorService {
         log.setInputParams(JSONUtil.toJsonStr(emrOutpatientObs));
         logger.info("->{},url:{},request:{},method:{}", "门（急）诊留观记录表数据操作 API 接口", apiUrl, JSONUtil.toJsonStr(emrOutpatientObs), method);
         try {
-            String result = HttpClientUtils.sendHttpRequest(serviceUrl, JSONUtil.toJsonStr(emrOutpatientObs), method);
+            String result = HttpClientUtils.sendHttpRequest(apiUrl, JSONUtil.toJsonStr(emrOutpatientObs), method);
             logger.info("->{},response:{}", "门（急）诊留观记录表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo =  JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
@@ -107,7 +107,7 @@ public class SynchroEmrMonitorService {
         log.setInputParams(JSONUtil.toJsonStr(emrAdmissionInfo));
         logger.info("->{},url:{},request:{},method:{}", "入院记录表数据操作 API 接口", apiUrl, JSONUtil.toJsonStr(emrAdmissionInfo), method);
         try {
-            String result = HttpClientUtils.sendHttpRequest(serviceUrl, JSONUtil.toJsonStr(emrAdmissionInfo), method);
+            String result = HttpClientUtils.sendHttpRequest(apiUrl, JSONUtil.toJsonStr(emrAdmissionInfo), method);
             logger.info("->{},response:{}", "入院记录表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo =  JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
@@ -137,7 +137,7 @@ public class SynchroEmrMonitorService {
         log.setInputParams(JSONUtil.toJsonStr(emrFirstCourse));
         logger.info("->{},url:{},request:{},method:{}", "住院首次病程记录表数据操作 API 接口", apiUrl, JSONUtil.toJsonStr(emrFirstCourse), method);
         try {
-            String result = HttpClientUtils.sendHttpRequest(serviceUrl, JSONUtil.toJsonStr(emrFirstCourse), method);
+            String result = HttpClientUtils.sendHttpRequest(apiUrl, JSONUtil.toJsonStr(emrFirstCourse), method);
             logger.info("->{},response:{}", "住院首次病程记录表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo = JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
@@ -167,7 +167,7 @@ public class SynchroEmrMonitorService {
         log.setInputParams(JSONUtil.toJsonStr(emrDailyCourse));
         logger.info("->{},url:{},request:{},method:{}", "住院日常病程记录表数据操作 API 接口", apiUrl, JSONUtil.toJsonStr(emrDailyCourse), method);
         try {
-            String result = HttpClientUtils.sendHttpRequest(serviceUrl, JSONUtil.toJsonStr(emrDailyCourse), method);
+            String result = HttpClientUtils.sendHttpRequest(apiUrl, JSONUtil.toJsonStr(emrDailyCourse), method);
             logger.info("->{},response:{}", "住院日常病程记录表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo =  JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
@@ -197,7 +197,7 @@ public class SynchroEmrMonitorService {
         log.setInputParams(JSONUtil.toJsonStr(emrAdmissionRecord));
         logger.info("->{},url:{},request:{},method:{}", "住院病案首页表数据操作 API 接口", apiUrl, JSONUtil.toJsonStr(emrAdmissionRecord), method);
         try {
-            String result = HttpClientUtils.sendHttpRequest(serviceUrl, JSONUtil.toJsonStr(emrAdmissionRecord), method);
+            String result = HttpClientUtils.sendHttpRequest(apiUrl, JSONUtil.toJsonStr(emrAdmissionRecord), method);
             logger.info("->{},response:{}", "住院病案首页表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo =  JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
@@ -227,7 +227,7 @@ public class SynchroEmrMonitorService {
         log.setInputParams(JSONUtil.toJsonStr(emrDischargeInfo));
         logger.info("->{},url:{},request:{},method:{}", "出院记录表数据操作 API 接口", apiUrl, JSONUtil.toJsonStr(emrDischargeInfo), method);
         try {
-            String result = HttpClientUtils.sendHttpRequest(serviceUrl, JSONUtil.toJsonStr(emrDischargeInfo), method);
+            String result = HttpClientUtils.sendHttpRequest(apiUrl, JSONUtil.toJsonStr(emrDischargeInfo), method);
             logger.info("->{},response:{}", "出院记录表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo = JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
@@ -257,7 +257,7 @@ public class SynchroEmrMonitorService {
         log.setInputParams(JSONUtil.toJsonStr(emrExClinical));
         logger.info("->{},url:{},request:{},method:{}", "检查报告表数据操作 API 接口", apiUrl, JSONUtil.toJsonStr(emrExClinical), method);
         try {
-            String result = HttpClientUtils.sendHttpRequest(serviceUrl, JSONUtil.toJsonStr(emrExClinical), method);
+            String result = HttpClientUtils.sendHttpRequest(apiUrl, JSONUtil.toJsonStr(emrExClinical), method);
             logger.info("->{},response:{}", "检查报告表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo =  JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
@@ -287,7 +287,7 @@ public class SynchroEmrMonitorService {
         log.setInputParams(JSONUtil.toJsonStr(emrExClinicalItem));
         logger.info("->{},url:{},request:{},method:{}", "检查报告项目表数据操作 API 接口", apiUrl, JSONUtil.toJsonStr(emrExClinicalItem), method);
         try {
-            String result = HttpClientUtils.sendHttpRequest(serviceUrl, JSONUtil.toJsonStr(emrExClinicalItem), method);
+            String result = HttpClientUtils.sendHttpRequest(apiUrl, JSONUtil.toJsonStr(emrExClinicalItem), method);
             logger.info("->{},response:{}", "检查报告项目表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo =  JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
@@ -317,7 +317,7 @@ public class SynchroEmrMonitorService {
         log.setInputParams(JSONUtil.toJsonStr(emrExLab));
         logger.info("->{},url:{},request:{},method:{}", "检验报告表数据操作 API 接口", apiUrl, JSONUtil.toJsonStr(emrExLab), method);
         try {
-            String result = HttpClientUtils.sendHttpRequest(serviceUrl, JSONUtil.toJsonStr(emrExLab), method);
+            String result = HttpClientUtils.sendHttpRequest(apiUrl, JSONUtil.toJsonStr(emrExLab), method);
             logger.info("->{},response:{}", "检验报告表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo = JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
@@ -347,7 +347,7 @@ public class SynchroEmrMonitorService {
         log.setInputParams(JSONUtil.toJsonStr(emrExLabItem));
         logger.info("->{},url:{},request:{},method:{}", "检验报告项目表数据操作 API 接口", apiUrl, JSONUtil.toJsonStr(emrExLabItem), method);
         try {
-            String result = HttpClientUtils.sendHttpRequest(serviceUrl, JSONUtil.toJsonStr(emrExLabItem), method);
+            String result = HttpClientUtils.sendHttpRequest(apiUrl, JSONUtil.toJsonStr(emrExLabItem), method);
             logger.info("->{},response:{}", "检验报告项目表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo =  JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
@@ -377,7 +377,7 @@ public class SynchroEmrMonitorService {
         log.setInputParams(JSONUtil.toJsonStr(emrOrder));
         logger.info("->{},url:{},request:{},method:{}", "医嘱处方信息表数据操作 API 接口", apiUrl, JSONUtil.toJsonStr(emrOrder), method);
         try {
-            String result = HttpClientUtils.sendHttpRequest(serviceUrl, JSONUtil.toJsonStr(emrOrder), method);
+            String result = HttpClientUtils.sendHttpRequest(apiUrl, JSONUtil.toJsonStr(emrOrder), method);
             logger.info("->{},response:{}", "医嘱处方信息表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo =  JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
@@ -407,7 +407,7 @@ public class SynchroEmrMonitorService {
         log.setInputParams(JSONUtil.toJsonStr(emrOrderItem));
         logger.info("->{},url:{},request:{},method:{}", "医嘱处方条目表数据操作 API 接口", apiUrl, JSONUtil.toJsonStr(emrOrderItem), method);
         try {
-            String result = HttpClientUtils.sendHttpRequest(serviceUrl, JSONUtil.toJsonStr(emrOrderItem), method);
+            String result = HttpClientUtils.sendHttpRequest(apiUrl, JSONUtil.toJsonStr(emrOrderItem), method);
             logger.info("->{},response:{}", "医嘱处方条目表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo = JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
@@ -437,7 +437,7 @@ public class SynchroEmrMonitorService {
         log.setInputParams(JSONUtil.toJsonStr(emrDeathInfo));
         logger.info("->{},url:{},request:{},method:{}", "死亡信息表数据操作 API 接口", apiUrl, JSONUtil.toJsonStr(emrDeathInfo), method);
         try {
-            String result = HttpClientUtils.sendHttpRequest(serviceUrl, JSONUtil.toJsonStr(emrDeathInfo), method);
+            String result = HttpClientUtils.sendHttpRequest(apiUrl, JSONUtil.toJsonStr(emrDeathInfo), method);
             logger.info("->{},response:{}", "死亡信息表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo =  JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
@@ -467,7 +467,7 @@ public class SynchroEmrMonitorService {
         log.setInputParams(JSONUtil.toJsonStr(emrVitalSignsRecord));
         logger.info("->{},url:{},request:{},method:{}", "生命体征护理记录单数据操作 API 接口", apiUrl, JSONUtil.toJsonStr(emrVitalSignsRecord), method);
         try {
-            String result = HttpClientUtils.sendHttpRequest(serviceUrl, JSONUtil.toJsonStr(emrVitalSignsRecord), method);
+            String result = HttpClientUtils.sendHttpRequest(apiUrl, JSONUtil.toJsonStr(emrVitalSignsRecord), method);
             logger.info("->{},response:{}", "生命体征护理记录单数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo =  JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));

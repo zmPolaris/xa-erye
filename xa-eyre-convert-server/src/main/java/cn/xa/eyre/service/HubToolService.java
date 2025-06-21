@@ -1,5 +1,6 @@
 package cn.xa.eyre.service;
 
+import cn.hutool.core.util.StrUtil;
 import cn.xa.eyre.comm.domain.Users;
 import cn.xa.eyre.common.constant.Constants;
 import cn.xa.eyre.common.core.domain.R;
@@ -38,9 +39,15 @@ public class HubToolService {
                 // 构造请求参数
                 emrPatientInfo.setId(patMasterIndex.getPatientId());
                 emrPatientInfo.setPatientName(patMasterIndex.getName());
-                emrPatientInfo.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE.getCode());
-                emrPatientInfo.setIdCardTypeName(HubCodeEnum.ID_CARD_TYPE.getName());
-                emrPatientInfo.setIdCard(patMasterIndex.getIdNo());
+                if (StrUtil.isBlank(patMasterIndex.getIdNo())){
+                    emrPatientInfo.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE_OTHER.getCode());
+                    emrPatientInfo.setIdCardTypeName(HubCodeEnum.ID_CARD_TYPE_OTHER.getName());
+                    emrPatientInfo.setIdCard("-");
+                }else {
+                    emrPatientInfo.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE.getCode());
+                    emrPatientInfo.setIdCardTypeName(HubCodeEnum.ID_CARD_TYPE.getName());
+                    emrPatientInfo.setIdCard(patMasterIndex.getIdNo());
+                }
                 emrPatientInfo.setGenderCode(patMasterIndex.getSexCode());
                 emrPatientInfo.setGenderName(patMasterIndex.getSex());
                 emrPatientInfo.setBirthDate(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD, patMasterIndex.getDateOfBirth()));
@@ -70,9 +77,11 @@ public class HubToolService {
                 emrPatientInfo.setOrgCode(HubCodeEnum.ORG_CODE.getCode());
                 emrPatientInfo.setOrgName(HubCodeEnum.ORG_CODE.getName());
                 // 查询操作员ID
-                R<Users> user = commFeignClient.getUserByName(patMasterIndex.getOperator());
-                if (R.SUCCESS == user.getCode() && user.getData() != null){
-                    emrPatientInfo.setOperatorId(user.getData().getUserId());
+                if (StrUtil.isNotBlank(patMasterIndex.getOperator())){
+                    R<Users> user = commFeignClient.getUserByName(patMasterIndex.getOperator());
+                    if (R.SUCCESS == user.getCode() && user.getData() != null){
+                        emrPatientInfo.setOperatorId(user.getData().getUserId());
+                    }
                 }
                 emrPatientInfo.setOperationTime(DateUtils.getTime());
                 synchroEmrRealService.syncEmrPatientInfo(emrPatientInfo, Constants.HTTP_METHOD_POST);

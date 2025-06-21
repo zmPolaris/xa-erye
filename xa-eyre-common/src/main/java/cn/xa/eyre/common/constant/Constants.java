@@ -55,7 +55,7 @@ public class Constants
 
     public static final String HIS_URL = "http://127.0.0.1:8081";
 
-    public static final String CONVERT_URL = "http://127.0.0.1:8080";
+    public static final String CONVERT_URL = "http://127.0.0.1:8090";
 
 
     public static final String CONFIG_XA_ERYE_HUB_SERVICE_URL = "xa.erye.hub.service.url";

@@ -74,6 +74,9 @@ public class DataConvertCoiontroller {
             case "inpadm.pats_in_hospital":
                 inpadmConvertService.patsInHospital(dbMessage);
                 break;
+            case "medrec.diagnosis":
+                medrecConvertService.Diagnosis(dbMessage);
+                break;
             default:
 
         }

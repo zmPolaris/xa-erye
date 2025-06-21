@@ -4,10 +4,12 @@ package cn.xa.eyre.hub.staticvalue;
  * 前置软件接口中，在HIS找不到对应码获无需转码的，固定值
  */
 public enum HubCodeEnum {
-    ID_CARD_TYPE("01", "身份证号"),
-    ID_CARD_TYPE_99("99", "其他法定有效证件"),
+    ID_CARD_TYPE("01", "居民身份证"),
+    ID_CARD_TYPE_OTHER("99", "其他法定有效证件"),
     ORG_CODE("520111021", "中国人民解放军联勤保障部队第九二五医院"),
     NATIONALITY_CODE("156", "中国"),
+    NATION_CODE("97", "其他"),
+    DISEASE_ICD10_CODE("143", "其他"),
 
 
     DIAGNOSIS_ACTIVITIES_OUTPATIENT("1", "门诊"),
@@ -21,7 +23,7 @@ public enum HubCodeEnum {
     DIAGNOSIS_ACTIVITIES_DISCHARGE("9", "出院"),
 
 
-    NATION_CODE("97", "其他");
+    ;
 
     private final String code;
 
