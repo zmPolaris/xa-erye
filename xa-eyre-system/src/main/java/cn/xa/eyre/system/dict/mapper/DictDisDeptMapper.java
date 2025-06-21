@@ -1,6 +1,7 @@
 package cn.xa.eyre.system.dict.mapper;
 
 import cn.xa.eyre.system.dict.domain.DictDisDept;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -20,4 +21,6 @@ public interface DictDisDeptMapper {
     List<DictDisDept> selectAll();
 
     DictDisDept selectByCondition(DictDisDept deptParam);
+
+    List<DictDisDept> selectDeptList(@Param("num") Integer num);
 }

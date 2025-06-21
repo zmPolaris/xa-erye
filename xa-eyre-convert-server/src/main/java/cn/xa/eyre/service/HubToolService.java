@@ -1,23 +1,41 @@
 package cn.xa.eyre.service;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.crypto.digest.DigestUtil;
+import cn.xa.eyre.comm.domain.DeptDict;
 import cn.xa.eyre.comm.domain.Users;
 import cn.xa.eyre.common.constant.Constants;
 import cn.xa.eyre.common.core.domain.R;
 import cn.xa.eyre.common.utils.DateUtils;
 import cn.xa.eyre.hisapi.CommFeignClient;
 import cn.xa.eyre.hisapi.MedrecFeignClient;
+import cn.xa.eyre.hisapi.OutpadmFeignClient;
+import cn.xa.eyre.hisapi.OutpdoctFeignClient;
+import cn.xa.eyre.hub.domain.base.BaseDept;
+import cn.xa.eyre.hub.domain.base.BaseUser;
+import cn.xa.eyre.hub.domain.emrreal.EmrActivityInfo;
 import cn.xa.eyre.hub.domain.emrreal.EmrPatientInfo;
+import cn.xa.eyre.hub.service.SynchroBaseService;
 import cn.xa.eyre.hub.service.SynchroEmrRealService;
 import cn.xa.eyre.hub.staticvalue.HubCodeEnum;
 import cn.xa.eyre.medrec.domain.PatMasterIndex;
+import cn.xa.eyre.outpadm.domain.ClinicMaster;
+import cn.xa.eyre.outpdoct.domain.OutpMr;
 import cn.xa.eyre.system.dict.domain.DdNation;
+import cn.xa.eyre.system.dict.domain.DictDisDept;
+import cn.xa.eyre.system.dict.domain.DictDiseaseIcd10;
 import cn.xa.eyre.system.dict.mapper.DdNationMapper;
+import cn.xa.eyre.system.dict.mapper.DictDisDeptMapper;
+import cn.xa.eyre.system.dict.mapper.DictDiseaseIcd10Mapper;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -31,6 +49,16 @@ public class HubToolService {
     private CommFeignClient commFeignClient;
     @Autowired
     private MedrecFeignClient medrecFeignClient;
+    @Autowired
+    private DictDisDeptMapper dictDisDeptMapper;// 科室代码转码表
+    @Autowired
+    private OutpdoctFeignClient outpdoctFeignClient;
+    @Autowired
+    private SynchroBaseService synchroBaseService;
+    @Autowired
+    private OutpadmFeignClient outpadmFeignClient;
+    @Autowired
+    private DictDiseaseIcd10Mapper dictDiseaseIcd10Mapper;// ICD10转码表
     public boolean synchroPatient(Integer num) {
         R<List<PatMasterIndex>> patsResult = medrecFeignClient.getPatMasterIndexList(num);
         if (R.SUCCESS == patsResult.getCode() && !patsResult.getData().isEmpty()){
@@ -85,6 +113,213 @@ public class HubToolService {
                 }
                 emrPatientInfo.setOperationTime(DateUtils.getTime());
                 synchroEmrRealService.syncEmrPatientInfo(emrPatientInfo, Constants.HTTP_METHOD_POST);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public boolean synchroUser(Integer num) {
+        R<List<Users>> usersResult = commFeignClient.getUserList(num);
+        if (R.SUCCESS == usersResult.getCode() && !usersResult.getData().isEmpty()){
+            for (Users users : usersResult.getData()){
+                BaseUser baseUser = new BaseUser();
+                baseUser.setId(users.getUserId());
+                baseUser.setOrgCode(HubCodeEnum.ORG_CODE.getCode());
+                String deptCode = users.getUserDept();
+                if(deptCode != null && !deptCode.equals("")){
+                    DictDisDept deptParam = new DictDisDept();
+                    deptParam.setStatus(Constants.STATUS_NORMAL);
+                    deptParam.setEmrCode(deptCode);
+                    DictDisDept dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
+                    if(dictDisDept != null){
+                        baseUser.setDeptCode(dictDisDept.getHubCode());
+                    }
+                }
+                baseUser.setDeptCode(deptCode);
+                baseUser.setUserName(users.getUserName());
+                baseUser.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE.getCode());
+                baseUser.setUserTypeCode("2");
+                baseUser.setCreateTime(new Date());
+                synchroBaseService.syncBaseUser(baseUser, Constants.HTTP_METHOD_POST);
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean synchroDept(Integer num) {
+        if (num == null){
+            List<DictDisDept> list = dictDisDeptMapper.selectAll();
+            if(!list.isEmpty()){
+                for (DictDisDept dictDisDept : list){
+                    BaseDept baseDept = new BaseDept();
+                    baseDept.setDeptCode(dictDisDept.getEmrCode());
+                    baseDept.setDeptName(dictDisDept.getEmrName());
+                    baseDept.setTargetDeptCode(dictDisDept.getHubCode());
+                    baseDept.setTargetDeptName(dictDisDept.getHubName());
+                    baseDept.setCreateTime(DateUtils.getNowDate());
+
+                    synchroBaseService.syncBaseDept(baseDept, Constants.HTTP_METHOD_POST);
+                }
+                return true;
+            }
+        }else {
+//            list = dictDisDeptMapper.selectDeptList(num);
+            R<List<DeptDict>> deptsResult = commFeignClient.getDeptList(num);
+            if (R.SUCCESS == deptsResult.getCode() && !deptsResult.getData().isEmpty()){
+                for (DeptDict deptDict : deptsResult.getData()){
+                    BaseDept baseDept = new BaseDept();
+                    DictDisDept deptParam = new DictDisDept();
+                    deptParam.setStatus(Constants.STATUS_NORMAL);
+                    deptParam.setEmrCode(deptDict.getDeptCode());
+                    // 根据HIS编码查询转码表，存在使用转码表数据
+                    DictDisDept dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
+                    if(dictDisDept == null){
+                        List<DictDisDept> list = dictDisDeptMapper.selectAll();
+                        boolean isExist = false;
+                        for (DictDisDept dict : list) {
+                            // 获取转码表中不存在的院内编码并包含科室名称的
+                            if(dict.getHubName().contains(deptDict.getDeptName()) && !dict.getEmrCode().equals(deptDict.getDeptCode())) {
+                                dictDisDept.setHubCode(dict.getHubCode());
+                                dictDisDept.setHubName(dict.getHubName());
+                                dictDisDept.setUpdateTime(DateUtils.getNowDate());
+                                dictDisDeptMapper.updateByPrimaryKey(dictDisDept);
+                                isExist = true;
+                            }
+                        }
+                        // 不存在则获取默认前置软件代码
+                        if (!isExist){
+                            deptParam.setEmrCode(null);
+                            deptParam.setIsDefault(Constants.IS_DEFAULT);
+                            dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
+//                            dictDisDept.setEmrCode(deptDict.getDeptCode());
+//                            dictDisDept.setEmrName(deptDict.getDeptName());
+//                            dictDisDept.setCreateTime(DateUtils.getNowDate());
+//                            dictDisDept.setId(null);
+//                            dictDisDeptMapper.insertSelective(dictDisDept);
+                        }
+                    }else {
+                        // 更新转码表
+                        dictDisDept.setEmrCode(deptDict.getDeptCode());
+                        dictDisDept.setEmrName(deptDict.getDeptName());
+                        dictDisDept.setUpdateTime(DateUtils.getNowDate());
+                        dictDisDeptMapper.updateByPrimaryKey(dictDisDept);
+                    }
+                    baseDept.setDeptCode(deptDict.getDeptCode());
+                    baseDept.setDeptName(deptDict.getDeptName());
+                    baseDept.setTargetDeptCode(dictDisDept.getHubCode());
+                    baseDept.setTargetDeptName(dictDisDept.getHubName());
+                    baseDept.setCreateTime(DateUtils.getNowDate());
+                    synchroBaseService.syncBaseDept(baseDept, Constants.HTTP_METHOD_POST);
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean synchroActivity(Integer num) {
+        R<List<OutpMr>> outpMrsResult = outpdoctFeignClient.getOutpMrList(num);
+        if (R.SUCCESS == outpMrsResult.getCode() && !outpMrsResult.getData().isEmpty()){
+            for (OutpMr outpMr : outpMrsResult.getData()){
+                R<PatMasterIndex> medrecResult = medrecFeignClient.getMedrec(outpMr.getPatientId());
+                R<ClinicMaster> outpadmResult = outpadmFeignClient.getClinicMaster(outpMr.getPatientId(), outpMr.getVisitNo(), DateUtils.dateTime(outpMr.getVisitDate()));
+                if (R.SUCCESS == medrecResult.getCode() && R.SUCCESS == outpadmResult.getCode()
+                        && medrecResult.getData() != null && outpadmResult.getData() != null){
+                    PatMasterIndex patMasterIndex = medrecResult.getData();
+                    ClinicMaster clinicMaster = outpadmResult.getData();
+
+                    EmrActivityInfo emrActivityInfo = new EmrActivityInfo();
+                    // ID使用OUTP_MR表联合主键拼接计算MD5
+                    String id = DigestUtil.md5Hex(DateUtils.dateTime(outpMr.getVisitDate()) + outpMr.getVisitNo() + outpMr.getOrdinal());
+                    emrActivityInfo.setId(id);
+                    emrActivityInfo.setPatientId(outpMr.getPatientId());
+                    String clinicType = clinicMaster.getClinicType();
+                    if (StrUtil.isNotBlank(clinicType)){
+                        if (clinicType.contains("急诊号")){
+                            emrActivityInfo.setActivityTypeCode(HubCodeEnum.DIAGNOSIS_ACTIVITIES_EMERGENCY.getCode());
+                            emrActivityInfo.setActivityTypeName(HubCodeEnum.DIAGNOSIS_ACTIVITIES_EMERGENCY.getName());
+                        } else {
+                            emrActivityInfo.setActivityTypeCode(HubCodeEnum.DIAGNOSIS_ACTIVITIES_OUTPATIENT.getCode());
+                            emrActivityInfo.setActivityTypeName(HubCodeEnum.DIAGNOSIS_ACTIVITIES_OUTPATIENT.getName());
+
+                        }
+                    }
+                    emrActivityInfo.setSerialNumber(String.valueOf(outpMr.getVisitNo()));
+                    emrActivityInfo.setActivityTime(outpMr.getVisitDate());
+                    String idNo = patMasterIndex.getIdNo();
+                    if (StringUtils.isNotBlank(idNo)) {
+                        emrActivityInfo.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE.getCode());
+                        emrActivityInfo.setIdCardTypeName(HubCodeEnum.ID_CARD_TYPE.getName());
+                        emrActivityInfo.setIdCard(idNo);
+                    } else {
+                        emrActivityInfo.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE_OTHER.getCode());
+                        emrActivityInfo.setIdCardTypeName(HubCodeEnum.ID_CARD_TYPE_OTHER.getName());
+                        emrActivityInfo.setIdCard("-");
+                    }
+                    emrActivityInfo.setChiefComplaint(outpMr.getIllnessDesc());
+                    emrActivityInfo.setPresentIllnessHis(outpMr.getMedHistory());
+                    emrActivityInfo.setPhysicalExamination(outpMr.getBodyExam());
+                    emrActivityInfo.setStudiesSummaryResult(outpMr.getAssistExam());
+                    emrActivityInfo.setDiagnoseTime(outpMr.getVisitDate());
+
+                    // 诊断代码
+                    if (StrUtil.isNotBlank(outpMr.getDiagnosisCodeMz1())){
+                        DictDiseaseIcd10 dictDiseaseIcd10 = dictDiseaseIcd10Mapper.selectByEmrCode(outpMr.getDiagnosisCodeMz1());
+                        if(dictDiseaseIcd10 == null){
+                            emrActivityInfo.setWmDiseaseCode(HubCodeEnum.DISEASE_ICD10_CODE.getCode());
+                            emrActivityInfo.setWmDiseaseName(HubCodeEnum.DISEASE_ICD10_CODE.getName());
+                        }else {
+                            emrActivityInfo.setWmDiseaseCode(dictDiseaseIcd10.getHubCode());
+                            emrActivityInfo.setWmDiseaseName(dictDiseaseIcd10.getHubName());
+                        }
+                        if (StrUtil.isNotBlank(outpMr.getDiagnosisCodeMz2())){
+                            DictDiseaseIcd10 dictDiseaseIcd102 = dictDiseaseIcd10Mapper.selectByEmrCode(outpMr.getDiagnosisCodeMz2());
+                            if(dictDiseaseIcd10 == null){
+                                emrActivityInfo.setWmDiseaseCode(HubCodeEnum.DISEASE_ICD10_CODE.getCode());
+                                emrActivityInfo.setWmDiseaseName(HubCodeEnum.DISEASE_ICD10_CODE.getName());
+                            }else {
+                                emrActivityInfo.setWmDiseaseCode(emrActivityInfo.getWmDiseaseCode() + "||" + dictDiseaseIcd102.getHubCode());
+                                emrActivityInfo.setWmDiseaseName(emrActivityInfo.getWmDiseaseName() + "||" + dictDiseaseIcd102.getHubName());
+                            }
+                        }
+                    }else {
+                        emrActivityInfo.setWmDiseaseCode(HubCodeEnum.DISEASE_ICD10_CODE.getCode());
+                        emrActivityInfo.setWmDiseaseName(HubCodeEnum.DISEASE_ICD10_CODE.getName());
+                    }
+
+                    emrActivityInfo.setFillDoctor(patMasterIndex.getOperator());
+
+                    // 查询操作员ID
+                    if (StrUtil.isNotBlank(patMasterIndex.getOperator())){
+                        R<Users> user = commFeignClient.getUserByName(patMasterIndex.getOperator());
+                        if (R.SUCCESS == user.getCode() && user.getData() != null){
+                            emrActivityInfo.setOperatorId(user.getData().getUserId());
+                        }
+                    }
+
+                    DictDisDept deptParam = new DictDisDept();
+                    deptParam.setStatus(Constants.STATUS_NORMAL);
+                    deptParam.setEmrCode(clinicMaster.getVisitDept());
+                    DictDisDept dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
+                    if (dictDisDept == null){
+                        deptParam.setEmrName(null);
+                        deptParam.setIsDefault(Constants.IS_DEFAULT);
+                        dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
+                    }
+                    emrActivityInfo.setDeptCode(dictDisDept.getHubCode());
+                    emrActivityInfo.setDeptName(dictDisDept.getHubName());
+
+                    emrActivityInfo.setOrgCode(HubCodeEnum.ORG_CODE.getCode());
+                    emrActivityInfo.setOrgName(HubCodeEnum.ORG_CODE.getName());
+                    emrActivityInfo.setOperationTime(DateUtils.getNowDate());
+                    synchroEmrRealService.syncEmrActivityInfo(emrActivityInfo, Constants.HTTP_METHOD_POST);
+                }else {
+                    logger.error("对应PatMasterIndex信息或ClinicMaster信息为空，无法同步");
+                }
             }
             return true;
         }

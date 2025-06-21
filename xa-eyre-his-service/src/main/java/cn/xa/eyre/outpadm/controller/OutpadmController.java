@@ -16,7 +16,7 @@ public class OutpadmController {
     private ClinicMasterMapper clinicMasterMapper;
 
     @GetMapping("/getClinicMaster")
-    public AjaxResult getClinicMaster(String patientId, @RequestParam("serialNo") Short serialNo, @RequestParam("visitDate") String visitDate){
+    public AjaxResult getClinicMaster(@RequestParam("patientId") String patientId, @RequestParam("serialNo") Short serialNo, @RequestParam("visitDate") String visitDate){
         Map<String, Object> params = new HashMap<>();
         params.put("patientId", patientId);
         params.put("serialNo", serialNo);

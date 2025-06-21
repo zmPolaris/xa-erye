@@ -84,14 +84,14 @@ public class CommConvertService {
                 }
                 // 不存在则获取默认前置软件代码
                 if (!isExist){
-                    deptParam.setEmrName(null);
+                    deptParam.setEmrCode(null);
                     deptParam.setIsDefault(Constants.IS_DEFAULT);
                     dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
-                    dictDisDept.setEmrCode(deptDict.getDeptCode());
-                    dictDisDept.setEmrName(deptDict.getDeptName());
-                    dictDisDept.setCreateTime(DateUtils.getNowDate());
-                    dictDisDept.setId(null);
-                    dictDisDeptMapper.insertSelective(dictDisDept);
+//                            dictDisDept.setEmrCode(deptDict.getDeptCode());
+//                            dictDisDept.setEmrName(deptDict.getDeptName());
+//                            dictDisDept.setCreateTime(DateUtils.getNowDate());
+//                            dictDisDept.setId(null);
+//                            dictDisDeptMapper.insertSelective(dictDisDept);
                 }
             }else {
                 // 更新转码表

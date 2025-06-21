@@ -40,7 +40,16 @@
       and VISIT_NO = #{visitNo,jdbcType=NUMERIC}
       and ORDINAL = #{ordinal,jdbcType=NUMERIC}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="cn.xa.eyre.outpdoct.domain.OutpMrKey">
+    <select id="selectOutpMrList" resultMap="BaseResultMap">
+      select
+      <include refid="Base_Column_List" />
+      from (select
+      <include refid="Base_Column_List" />
+      from OUTPDOCT.OUTP_MR
+      ORDER BY VISIT_DATE DESC)
+      WHERE ROWNUM <![CDATA[ <= ]]> #{num,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="cn.xa.eyre.outpdoct.domain.OutpMrKey">
     delete from OUTP_MR
     where VISIT_DATE = #{visitDate,jdbcType=TIMESTAMP}
       and VISIT_NO = #{visitNo,jdbcType=NUMERIC}

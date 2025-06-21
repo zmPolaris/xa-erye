@@ -19,4 +19,6 @@ public interface UsersMapper {
     int updateByPrimaryKey(Users record);
 
     List<Users> selectUserByName(@Param("userName") String userName);
+
+    List<Users> selectUserList(@Param("num") Integer num);
 }

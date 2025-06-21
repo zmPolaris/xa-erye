@@ -14,7 +14,7 @@
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, emr_code, emr_name, hub_code, hub_name, remark, status, is_default, create_time, 
+    id, emr_code, emr_name, hub_code, hub_name, remark, `status`, is_default, create_time,
     update_time
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
@@ -27,6 +27,7 @@
     select
     <include refid="Base_Column_List" />
     from dict_dis_dept
+    WHERE emr_code IS NOT NULL
   </select>
     <select id="selectByCondition" parameterType="cn.xa.eyre.system.dict.domain.DictDisDept" resultMap="BaseResultMap">
       select
@@ -34,30 +35,40 @@
       from dict_dis_dept
       <where>
         <if test="emrCode != null">
-          emr_code = #{emrCode,jdbcType=VARCHAR},
+          and emr_code = #{emrCode,jdbcType=VARCHAR}
         </if>
         <if test="emrName != null">
-          emr_name = #{emrName,jdbcType=VARCHAR},
+          and emr_name = #{emrName,jdbcType=VARCHAR}
         </if>
         <if test="hubCode != null">
-          hub_code = #{hubCode,jdbcType=VARCHAR},
+          and hub_code = #{hubCode,jdbcType=VARCHAR}
         </if>
         <if test="hubName != null">
-          hub_name = #{hubName,jdbcType=VARCHAR},
+          and hub_name = #{hubName,jdbcType=VARCHAR}
         </if>
         <if test="status != null">
-          #{status,jdbcType=INTEGER},
+          and `status` = #{status,jdbcType=INTEGER}
+        </if>
+        <if test="isDefault != null">
+          and is_default = #{isDefault,jdbcType=INTEGER}
         </if>
       </where>
     </select>
-    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+  <select id="selectDeptList" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from dict_dis_dept
+    WHERE emr_code IS NOT NULL
+    LIMIT #{num,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from dict_dis_dept
     where id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="cn.xa.eyre.system.dict.domain.DictDisDept">
     insert into dict_dis_dept (id, emr_code, emr_name, 
-      hub_code, hub_name, remark, 
-      status, is_default, create_time, 
+      hub_code, hub_name, remark,
+      `status`, is_default, create_time,
       update_time)
     values (#{id,jdbcType=INTEGER}, #{emrCode,jdbcType=VARCHAR}, #{emrName,jdbcType=VARCHAR}, 
       #{hubCode,jdbcType=VARCHAR}, #{hubName,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, 
@@ -86,7 +97,7 @@
         remark,
       </if>
       <if test="status != null">
-        status,
+        `status`,
       </if>
       <if test="isDefault != null">
         is_default,
@@ -150,7 +161,7 @@
         remark = #{remark,jdbcType=VARCHAR},
       </if>
       <if test="status != null">
-        status = #{status,jdbcType=INTEGER},
+        `status` = #{status,jdbcType=INTEGER},
       </if>
       <if test="isDefault != null">
         is_default = #{isDefault,jdbcType=INTEGER},
@@ -171,7 +182,7 @@
       hub_code = #{hubCode,jdbcType=VARCHAR},
       hub_name = #{hubName,jdbcType=VARCHAR},
       remark = #{remark,jdbcType=VARCHAR},
-      status = #{status,jdbcType=INTEGER},
+      `status` = #{status,jdbcType=INTEGER},
       is_default = #{isDefault,jdbcType=INTEGER},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       update_time = #{updateTime,jdbcType=TIMESTAMP}

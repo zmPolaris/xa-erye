@@ -61,8 +61,8 @@ public class OutpdoctConvertService {
             outpMr = BeanUtil.toBean(dbMessage.getAfterData(), OutpMr.class);
         }
 
-        logger.debug("构造emrOutpatientRecord接口数据...");
         if (StrUtil.isNotBlank(outpMr.getPatientId())){
+            logger.debug("构造emrOutpatientRecord接口数据...");
             R<PatMasterIndex> medrecResult = medrecFeignClient.getMedrec(outpMr.getPatientId());
             R<ClinicMaster> outpadmResult = outpadmFeignClient.getClinicMaster(outpMr.getPatientId(), outpMr.getVisitNo(), DateUtils.dateTime(outpMr.getVisitDate()));
             if (R.SUCCESS == medrecResult.getCode() && R.SUCCESS == outpadmResult.getCode()
@@ -203,8 +203,8 @@ public class OutpdoctConvertService {
                             emrActivityInfo.setWmDiseaseCode(HubCodeEnum.DISEASE_ICD10_CODE.getCode());
                             emrActivityInfo.setWmDiseaseName(HubCodeEnum.DISEASE_ICD10_CODE.getName());
                         }else {
-                            emrActivityInfo.setWmDiseaseCode(emrOutpatientRecord.getWmDiagnosisCode() + "||" + dictDiseaseIcd102.getHubCode());
-                            emrActivityInfo.setWmDiseaseName(emrOutpatientRecord.getWmDiagnosisName() + "||" + dictDiseaseIcd102.getHubName());
+                            emrActivityInfo.setWmDiseaseCode(emrActivityInfo.getWmDiseaseCode() + "||" + dictDiseaseIcd102.getHubCode());
+                            emrActivityInfo.setWmDiseaseName(emrActivityInfo.getWmDiseaseName() + "||" + dictDiseaseIcd102.getHubName());
                         }
                     }
                 }else {
@@ -218,7 +218,7 @@ public class OutpdoctConvertService {
                 if (StrUtil.isNotBlank(patMasterIndex.getOperator())){
                     R<Users> user = commFeignClient.getUserByName(patMasterIndex.getOperator());
                     if (R.SUCCESS == user.getCode() && user.getData() != null){
-                        emrOutpatientRecord.setOperatorId(user.getData().getUserId());
+                        emrActivityInfo.setOperatorId(user.getData().getUserId());
                     }
                 }
 

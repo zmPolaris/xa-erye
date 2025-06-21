@@ -16,5 +16,5 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface OutpadmFeignClient {
 
     @GetMapping("/outpadm/getClinicMaster")
-    public R<ClinicMaster> getClinicMaster(String patientId, @RequestParam("serialNo") Short serialNo, @RequestParam("visitDate") String visitDate);
+    public R<ClinicMaster> getClinicMaster(@RequestParam("patientId") String patientId, @RequestParam("serialNo") Short serialNo, @RequestParam("visitDate") String visitDate);
 }

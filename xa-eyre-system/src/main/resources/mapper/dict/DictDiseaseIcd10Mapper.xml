@@ -14,7 +14,7 @@
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, emr_code, emr_name, hub_code, hub_name, remark, is_default, status, create_time, 
+    id, emr_code, emr_name, hub_code, hub_name, remark, is_default, `status`, create_time,
     update_time
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
@@ -36,7 +36,7 @@
   <insert id="insert" parameterType="cn.xa.eyre.system.dict.domain.DictDiseaseIcd10">
     insert into dict_disease_icd10 (id, emr_code, emr_name, 
       hub_code, hub_name, remark, 
-      is_default, status, create_time, 
+      is_default, `status`, create_time,
       update_time)
     values (#{id,jdbcType=INTEGER}, #{emrCode,jdbcType=VARCHAR}, #{emrName,jdbcType=VARCHAR}, 
       #{hubCode,jdbcType=VARCHAR}, #{hubName,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, 
@@ -68,7 +68,7 @@
         is_default,
       </if>
       <if test="status != null">
-        status,
+        `status`,
       </if>
       <if test="createTime != null">
         create_time,
@@ -132,7 +132,7 @@
         is_default = #{isDefault,jdbcType=INTEGER},
       </if>
       <if test="status != null">
-        status = #{status,jdbcType=INTEGER},
+        `status` = #{status,jdbcType=INTEGER},
       </if>
       <if test="createTime != null">
         create_time = #{createTime,jdbcType=TIMESTAMP},
@@ -151,7 +151,7 @@
       hub_name = #{hubName,jdbcType=VARCHAR},
       remark = #{remark,jdbcType=VARCHAR},
       is_default = #{isDefault,jdbcType=INTEGER},
-      status = #{status,jdbcType=INTEGER},
+      `status` = #{status,jdbcType=INTEGER},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       update_time = #{updateTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
