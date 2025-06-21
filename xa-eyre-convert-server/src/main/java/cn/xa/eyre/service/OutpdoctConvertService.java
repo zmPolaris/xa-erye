@@ -108,6 +108,9 @@ public class OutpdoctConvertService {
                             emrOutpatientRecord.setWmDiagnosisName(emrOutpatientRecord.getWmDiagnosisName() + "||" + dictDiseaseIcd102.getHubName());
                         }
                     }
+                }else {
+                    emrOutpatientRecord.setWmDiagnosisCode(HubCodeEnum.DISEASE_ICD10_CODE.getCode());
+                    emrOutpatientRecord.setWmDiagnosisName(HubCodeEnum.DISEASE_ICD10_CODE.getName());
                 }
                 emrOutpatientRecord.setWmDiagnosisName(outpMr.getDiagDesc());
                 emrOutpatientRecord.setTreatment(outpMr.getAdvice());
@@ -204,6 +207,9 @@ public class OutpdoctConvertService {
                             emrActivityInfo.setWmDiseaseName(emrOutpatientRecord.getWmDiagnosisName() + "||" + dictDiseaseIcd102.getHubName());
                         }
                     }
+                }else {
+                    emrActivityInfo.setWmDiseaseCode(HubCodeEnum.DISEASE_ICD10_CODE.getCode());
+                    emrActivityInfo.setWmDiseaseName(HubCodeEnum.DISEASE_ICD10_CODE.getName());
                 }
 
                 emrActivityInfo.setFillDoctor(patMasterIndex.getOperator());
