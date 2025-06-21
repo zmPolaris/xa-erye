@@ -12,13 +12,16 @@ import cn.xa.eyre.hisapi.CommFeignClient;
 import cn.xa.eyre.hisapi.MedrecFeignClient;
 import cn.xa.eyre.hisapi.OutpadmFeignClient;
 import cn.xa.eyre.hub.domain.emrmonitor.EmrOutpatientRecord;
+import cn.xa.eyre.hub.domain.emrreal.EmrActivityInfo;
 import cn.xa.eyre.hub.service.SynchroEmrMonitorService;
+import cn.xa.eyre.hub.service.SynchroEmrRealService;
 import cn.xa.eyre.hub.staticvalue.HubCodeEnum;
 import cn.xa.eyre.medrec.domain.PatMasterIndex;
 import cn.xa.eyre.outpadm.domain.ClinicMaster;
 import cn.xa.eyre.outpdoct.domain.OutpMr;
 import cn.xa.eyre.system.dict.domain.DictDisDept;
 import cn.xa.eyre.system.dict.mapper.DictDisDeptMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +38,8 @@ public class OutpdoctConvertService {
     private DictDisDeptMapper dictDisDeptMapper;// 转码表
     @Autowired
     private SynchroEmrMonitorService synchroEmrMonitorService;
+    @Autowired
+    SynchroEmrRealService synchroEmrRealService;
     @Autowired
     private CommFeignClient commFeignClient;
 
@@ -114,12 +119,73 @@ public class OutpdoctConvertService {
                 emrOutpatientRecord.setOrgName(HubCodeEnum.ORG_CODE.getName());
 
                 synchroEmrMonitorService.syncEmrOutpatientRecord(emrOutpatientRecord, httpMethod);
+
+                logger.debug("构造emrActivityInfo接口数据...");
+                EmrActivityInfo emrActivityInfo = new EmrActivityInfo();
+                emrActivityInfo.setId(id);
+                emrActivityInfo.setPatientId(outpMr.getPatientId());
+                String clinicType = clinicMaster.getClinicType();
+                if (StrUtil.isNotBlank(clinicType)){
+                    if (clinicType.contains("急诊号")){
+                        emrActivityInfo.setActivityTypeCode(HubCodeEnum.DIAGNOSIS_ACTIVITIES_EMERGENCY.getCode());
+                        emrActivityInfo.setActivityTypeName(HubCodeEnum.DIAGNOSIS_ACTIVITIES_EMERGENCY.getName());
+                    } else {
+                        emrActivityInfo.setActivityTypeCode(HubCodeEnum.DIAGNOSIS_ACTIVITIES_OUTPATIENT.getCode());
+                        emrActivityInfo.setActivityTypeName(HubCodeEnum.DIAGNOSIS_ACTIVITIES_OUTPATIENT.getName());
+
+                    }
+                }
+                emrActivityInfo.setSerialNumber(String.valueOf(outpMr.getVisitNo()));
+                emrActivityInfo.setActivityTime(outpMr.getVisitDate());
+                String idNo = patMasterIndex.getIdNo();
+                if (StringUtils.isNotBlank(idNo)) {
+                    emrActivityInfo.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE.getCode());
+                    emrActivityInfo.setIdCardTypeName(HubCodeEnum.ID_CARD_TYPE.getName());
+                    emrActivityInfo.setIdCard(idNo);
+                } else {
+                    emrActivityInfo.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE_99.getCode());
+                    emrActivityInfo.setIdCardTypeName(HubCodeEnum.ID_CARD_TYPE_99.getName());
+                    emrActivityInfo.setIdCard("-");
+                }
+                emrActivityInfo.setChiefComplaint(outpMr.getIllnessDesc());
+                emrActivityInfo.setPresentIllnessHis(outpMr.getMedHistory());
+                emrActivityInfo.setPhysicalExamination(outpMr.getBodyExam());
+                emrActivityInfo.setStudiesSummaryResult(outpMr.getAssistExam());
+                emrActivityInfo.setDiagnoseTime(outpMr.getVisitDate());
+                // TODO: 更换为ICD10疾病编码
+                String mz1 = outpMr.getDiagnosisCodeMz1();
+                String diagnosisMz1 = outpMr.getDiagnosisMz1();
+                String mz2 = outpMr.getDiagnosisCodeMz2();
+                String diagnosisMz2 = outpMr.getDiagnosisMz2();
+                String diagnosis = (mz1 +"||" + mz2).replaceAll("^\\|\\|*|\\|\\|*$", "");
+                String diagnosisName = (diagnosisMz1 +"||" + diagnosisMz2).replaceAll("^\\|\\|*|\\|\\|*$", "");
+                emrActivityInfo.setWmDiseaseCode(diagnosis);
+                emrActivityInfo.setWmDiseaseName(diagnosisName);
+
+                emrActivityInfo.setFillDoctor(patMasterIndex.getOperator());
+
+                // 查询操作员ID
+                if (R.SUCCESS == user.getCode() && user.getData() != null){
+                    emrActivityInfo.setOperatorId(user.getData().getUserId());
+                }
+
+                emrActivityInfo.setDeptCode(dictDisDept.getHubCode());
+                emrActivityInfo.setDeptName(dictDisDept.getHubName());
+
+                emrActivityInfo.setOrgCode(HubCodeEnum.ORG_CODE.getCode());
+                emrActivityInfo.setOrgName(HubCodeEnum.ORG_CODE.getName());
+                emrActivityInfo.setOperationTime(DateUtils.getNowDate());
+                synchroEmrRealService.syncEmrActivityInfo(emrActivityInfo, httpMethod);
             }else {
                 logger.error("对应PatMasterIndex信息或ClinicMaster信息为空，无法同步");
             }
         }else {
             logger.error("patientId为空，无法同步");
         }
+
+
+
+
 
     }
 }
