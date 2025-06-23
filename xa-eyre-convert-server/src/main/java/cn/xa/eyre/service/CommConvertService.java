@@ -125,24 +125,29 @@ public class CommConvertService {
             httpMethod = Constants.HTTP_METHOD_POST;
             users = BeanUtil.toBean(dbMessage.getAfterData(), Users.class);
         }
-        // 院内用户ID
-        baseUser.setId(users.getUserId());
-        baseUser.setOrgCode(HubCodeEnum.ORG_CODE.getCode());
         String deptCode = users.getUserDept();
         if(deptCode != null && !deptCode.equals("")){
             DictDisDept deptParam = new DictDisDept();
             deptParam.setStatus(Constants.STATUS_NORMAL);
             deptParam.setEmrCode(deptCode);
             DictDisDept dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
-            if(dictDisDept != null){
-                baseUser.setDeptCode(dictDisDept.getHubCode());
+            if (dictDisDept == null){
+                deptParam.setEmrName(null);
+                deptParam.setIsDefault(Constants.IS_DEFAULT);
+                dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
             }
+            baseUser.setDeptCode(dictDisDept.getHubCode());
+            baseUser.setId(users.getUserId());
+            baseUser.setOrgCode(HubCodeEnum.ORG_CODE.getCode());
+            baseUser.setUserName(users.getUserName());
+            baseUser.setLoginName(users.getDbUser());
+            baseUser.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE_OTHER.getCode());
+            baseUser.setIdCard("-");
+            baseUser.setUserTypeCode("2");
+            baseUser.setCreateTime(new Date());
+            synchroBaseService.syncBaseUser(baseUser, httpMethod);
+        }else {
+            logger.info("用户【{}】部门编码为空，无法同步...", users.getUserId() + baseUser.getUserName());
         }
-        baseUser.setDeptCode(deptCode);
-        baseUser.setUserName(users.getUserName());
-        baseUser.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE.getCode());
-        baseUser.setUserTypeCode("2");
-        baseUser.setCreateTime(new Date());
-        synchroBaseService.syncBaseUser(baseUser, httpMethod);
     }
 }

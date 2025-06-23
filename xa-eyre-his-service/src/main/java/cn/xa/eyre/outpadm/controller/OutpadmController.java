@@ -19,7 +19,7 @@ public class OutpadmController {
     public AjaxResult getClinicMaster(@RequestParam("patientId") String patientId, @RequestParam("serialNo") Short serialNo, @RequestParam("visitDate") String visitDate){
         Map<String, Object> params = new HashMap<>();
         params.put("patientId", patientId);
-        params.put("serialNo", serialNo);
+        params.put("visitNo", serialNo);
         params.put("visitDate", visitDate);
         return AjaxResult.success("接口调用成功", clinicMasterMapper.selectClinicMaster(params));
     }

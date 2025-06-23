@@ -33,8 +33,7 @@ public class EmrActivityInfo extends BaseEntity
     private String serialNumber;
 
     /** 诊断活动发生日期时间 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date activityTime;
+    private String activityTime;
 
     /** 就诊者姓名 */
     private String patientName;
@@ -61,8 +60,7 @@ public class EmrActivityInfo extends BaseEntity
     private String studiesSummaryResult;
 
     /** 疾病诊断日期 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date diagnoseTime;
+    private String diagnoseTime;
 
     /** 传染病疾病诊断 */
     private String diseaseCode;
@@ -104,8 +102,7 @@ public class EmrActivityInfo extends BaseEntity
     private String operatorId;
 
     /** 操作时间 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date operationTime;
+    private String operationTime;
 
     /** 作废标志 */
     private String invalidFlag;
@@ -114,8 +111,7 @@ public class EmrActivityInfo extends BaseEntity
     private String dataStatus;
 
     /** 入库日期 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date createDate;
+    private String createDate;
 
     /** 诊断医生姓名 */
     private String fillDoctor;
@@ -174,12 +170,12 @@ public class EmrActivityInfo extends BaseEntity
     {
         return serialNumber;
     }
-    public void setActivityTime(Date activityTime)
+    public void setActivityTime(String activityTime)
     {
         this.activityTime = activityTime;
     }
 
-    public Date getActivityTime()
+    public String getActivityTime()
     {
         return activityTime;
     }
@@ -255,12 +251,12 @@ public class EmrActivityInfo extends BaseEntity
     {
         return studiesSummaryResult;
     }
-    public void setDiagnoseTime(Date diagnoseTime)
+    public void setDiagnoseTime(String diagnoseTime)
     {
         this.diagnoseTime = diagnoseTime;
     }
 
-    public Date getDiagnoseTime()
+    public String getDiagnoseTime()
     {
         return diagnoseTime;
     }
@@ -381,12 +377,12 @@ public class EmrActivityInfo extends BaseEntity
     {
         return operatorId;
     }
-    public void setOperationTime(Date operationTime)
+    public void setOperationTime(String operationTime)
     {
         this.operationTime = operationTime;
     }
 
-    public Date getOperationTime()
+    public String getOperationTime()
     {
         return operationTime;
     }
@@ -408,12 +404,12 @@ public class EmrActivityInfo extends BaseEntity
     {
         return dataStatus;
     }
-    public void setCreateDate(Date createDate)
+    public void setCreateDate(String createDate)
     {
         this.createDate = createDate;
     }
 
-    public Date getCreateDate()
+    public String getCreateDate()
     {
         return createDate;
     }

@@ -124,24 +124,30 @@ public class HubToolService {
         if (R.SUCCESS == usersResult.getCode() && !usersResult.getData().isEmpty()){
             for (Users users : usersResult.getData()){
                 BaseUser baseUser = new BaseUser();
-                baseUser.setId(users.getUserId());
-                baseUser.setOrgCode(HubCodeEnum.ORG_CODE.getCode());
                 String deptCode = users.getUserDept();
                 if(deptCode != null && !deptCode.equals("")){
                     DictDisDept deptParam = new DictDisDept();
                     deptParam.setStatus(Constants.STATUS_NORMAL);
                     deptParam.setEmrCode(deptCode);
                     DictDisDept dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
-                    if(dictDisDept != null){
-                        baseUser.setDeptCode(dictDisDept.getHubCode());
+                    if (dictDisDept == null){
+                        deptParam.setEmrName(null);
+                        deptParam.setIsDefault(Constants.IS_DEFAULT);
+                        dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
                     }
+                    baseUser.setDeptCode(dictDisDept.getHubCode());
+                    baseUser.setId(users.getUserId());
+                    baseUser.setOrgCode(HubCodeEnum.ORG_CODE.getCode());
+                    baseUser.setUserName(users.getUserName());
+                    baseUser.setLoginName(users.getDbUser());
+                    baseUser.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE_OTHER.getCode());
+                    baseUser.setIdCard("-");
+                    baseUser.setUserTypeCode("2");
+                    baseUser.setCreateTime(new Date());
+                    synchroBaseService.syncBaseUser(baseUser, Constants.HTTP_METHOD_POST);
+                }else {
+                    logger.info("用户【{}】部门编码为空，无法同步...", users.getUserId() + baseUser.getUserName());
                 }
-                baseUser.setDeptCode(deptCode);
-                baseUser.setUserName(users.getUserName());
-                baseUser.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE.getCode());
-                baseUser.setUserTypeCode("2");
-                baseUser.setCreateTime(new Date());
-                synchroBaseService.syncBaseUser(baseUser, Constants.HTTP_METHOD_POST);
             }
 
             return true;
@@ -249,7 +255,7 @@ public class HubToolService {
                         }
                     }
                     emrActivityInfo.setSerialNumber(String.valueOf(outpMr.getVisitNo()));
-                    emrActivityInfo.setActivityTime(outpMr.getVisitDate());
+                    emrActivityInfo.setActivityTime(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, outpMr.getVisitDate()));
                     String idNo = patMasterIndex.getIdNo();
                     if (StringUtils.isNotBlank(idNo)) {
                         emrActivityInfo.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE.getCode());
@@ -260,11 +266,13 @@ public class HubToolService {
                         emrActivityInfo.setIdCardTypeName(HubCodeEnum.ID_CARD_TYPE_OTHER.getName());
                         emrActivityInfo.setIdCard("-");
                     }
+                    emrActivityInfo.setPatientName(patMasterIndex.getName());
+
                     emrActivityInfo.setChiefComplaint(outpMr.getIllnessDesc());
                     emrActivityInfo.setPresentIllnessHis(outpMr.getMedHistory());
                     emrActivityInfo.setPhysicalExamination(outpMr.getBodyExam());
                     emrActivityInfo.setStudiesSummaryResult(outpMr.getAssistExam());
-                    emrActivityInfo.setDiagnoseTime(outpMr.getVisitDate());
+                    emrActivityInfo.setDiagnoseTime(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, outpMr.getVisitDate()));
 
                     // 诊断代码
                     if (StrUtil.isNotBlank(outpMr.getDiagnosisCodeMz1())){
@@ -315,7 +323,7 @@ public class HubToolService {
 
                     emrActivityInfo.setOrgCode(HubCodeEnum.ORG_CODE.getCode());
                     emrActivityInfo.setOrgName(HubCodeEnum.ORG_CODE.getName());
-                    emrActivityInfo.setOperationTime(DateUtils.getNowDate());
+                    emrActivityInfo.setOperationTime(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, DateUtils.getNowDate()));
                     synchroEmrRealService.syncEmrActivityInfo(emrActivityInfo, Constants.HTTP_METHOD_POST);
                 }else {
                     logger.error("对应PatMasterIndex信息或ClinicMaster信息为空，无法同步");

@@ -111,13 +111,13 @@
       from CLINIC_MASTER c
       <where>
         <if test="visitDate != null">
-          c.VISIT_DATE = TO_DATE(#{visitDate,jdbcType=TIMESTAMP}, 'YYYY-MM-DD'),
+          and c.VISIT_DATE = TO_DATE(#{visitDate,jdbcType=TIMESTAMP}, 'YYYY-MM-DD')
         </if>
         <if test="visitNo != null">
-          c.VISIT_NO = #{visitNo,jdbcType=NUMERIC},
+          and c.VISIT_NO = #{visitNo,jdbcType=NUMERIC}
         </if>
         <if test="patientId != null">
-          c.PATIENT_ID = #{patientId,jdbcType=VARCHAR},
+          and c.PATIENT_ID = #{patientId,jdbcType=VARCHAR}
         </if>
       </where>
     </select>
