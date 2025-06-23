@@ -10,7 +10,7 @@
     <result column="available_count" jdbcType="VARCHAR" property="availableCount" />
   </resultMap>
   <insert id="insert" parameterType="cn.xa.eyre.system.dict.domain.DatasetDiseaseData">
-    insert into dataset_disease_data (id, disease_name, disease_type, 
+    insert into dataset_disease_data (id, disease_name, disease_type,
       icd10, simple_disease_name, available_count
       )
     values (#{id,jdbcType=INTEGER}, #{diseaseName,jdbcType=VARCHAR}, #{diseaseType,jdbcType=VARCHAR}, 
@@ -60,4 +60,11 @@
       </if>
     </trim>
   </insert>
+    <select id="selectByCodes" resultMap = "BaseResultMap">
+      select id, disease_name, disease_type, icd10, simple_disease_name, available_count
+      from dataset_disease_data where icd10 in
+      <foreach item="code" collection="array" open="(" separator="," close=")">
+        #{code}
+      </foreach>
+    </select>
 </mapper>

@@ -20,4 +20,6 @@ public interface OutpMrMapper {
     int updateByPrimaryKey(OutpMr record);
 
     List<OutpMr> selectOutpMrList(@Param("num") Integer num);
+
+    List<OutpMr> selectOutpMrByCondition(OutpMr outpMr);
 }

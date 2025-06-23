@@ -132,7 +132,7 @@ public class EmrOutpatientRecord extends BaseEntity
     private String operatorId;
 
     /** 操作时间 */
-    private Date operationTime;
+    private String operationTime;
 
     /** 作废标志(0有效1作废) */
     private String invalidFlag;
@@ -485,12 +485,12 @@ public class EmrOutpatientRecord extends BaseEntity
     {
         return operatorId;
     }
-    public void setOperationTime(Date operationTime)
+    public void setOperationTime(String operationTime)
     {
         this.operationTime = operationTime;
     }
 
-    public Date getOperationTime()
+    public String getOperationTime()
     {
         return operationTime;
     }

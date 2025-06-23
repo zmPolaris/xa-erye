@@ -1,5 +1,7 @@
 package cn.xa.eyre.outpdoct.domain;
 
+import java.util.Date;
+
 public class OutpMr extends OutpMrKey {
     private String patientId;
 
@@ -40,6 +42,10 @@ public class OutpMr extends OutpMrKey {
     private String diagnosisMz2;
 
     private String diagnosisCodeMz2;
+
+    private Date beginVisitDate; // 补充参数
+
+    private Date endVisitDate;
 
     public String getPatientId() {
         return patientId;
@@ -199,5 +205,21 @@ public class OutpMr extends OutpMrKey {
 
     public void setDiagnosisCodeMz2(String diagnosisCodeMz2) {
         this.diagnosisCodeMz2 = diagnosisCodeMz2 == null ? null : diagnosisCodeMz2.trim();
+    }
+
+    public Date getBeginVisitDate() {
+        return beginVisitDate;
+    }
+
+    public void setBeginVisitDate(Date beginVisitDate) {
+        this.beginVisitDate = beginVisitDate;
+    }
+
+    public Date getEndVisitDate() {
+        return endVisitDate;
+    }
+
+    public void setEndVisitDate(Date endVisitDate) {
+        this.endVisitDate = endVisitDate;
     }
 }

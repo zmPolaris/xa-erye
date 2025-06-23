@@ -112,7 +112,6 @@ public class OutpdoctConvertService {
                     emrOutpatientRecord.setWmDiagnosisCode(HubCodeEnum.DISEASE_ICD10_CODE.getCode());
                     emrOutpatientRecord.setWmDiagnosisName(HubCodeEnum.DISEASE_ICD10_CODE.getName());
                 }
-                emrOutpatientRecord.setWmDiagnosisName(outpMr.getDiagDesc());
                 emrOutpatientRecord.setTreatment(outpMr.getAdvice());
 
                 PatMasterIndex patMasterIndex = medrecResult.getData();
@@ -139,7 +138,7 @@ public class OutpdoctConvertService {
                 }
 
                 // 查询操作员ID
-                if (StrUtil.isNotBlank(patMasterIndex.getOperator())){
+                if (StrUtil.isNotBlank(clinicMaster.getOperator())){
                     R<Users> user = commFeignClient.getUserByName(patMasterIndex.getOperator());
                     if (R.SUCCESS == user.getCode() && user.getData() != null){
                         emrOutpatientRecord.setOperatorId(user.getData().getUserId());
@@ -151,7 +150,7 @@ public class OutpdoctConvertService {
 
                 emrOutpatientRecord.setOrgCode(HubCodeEnum.ORG_CODE.getCode());
                 emrOutpatientRecord.setOrgName(HubCodeEnum.ORG_CODE.getName());
-
+                emrOutpatientRecord.setOperationTime(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, DateUtils.getNowDate()));
                 synchroEmrMonitorService.syncEmrOutpatientRecord(emrOutpatientRecord, httpMethod);
 
                 logger.debug("构造emrActivityInfo接口数据...");
@@ -217,7 +216,7 @@ public class OutpdoctConvertService {
                 emrActivityInfo.setFillDoctor(patMasterIndex.getOperator());
 
                 // 查询操作员ID
-                if (StrUtil.isNotBlank(patMasterIndex.getOperator())){
+                if (StrUtil.isNotBlank(clinicMaster.getOperator())){
                     R<Users> user = commFeignClient.getUserByName(patMasterIndex.getOperator());
                     if (R.SUCCESS == user.getCode() && user.getData() != null){
                         emrActivityInfo.setOperatorId(user.getData().getUserId());
