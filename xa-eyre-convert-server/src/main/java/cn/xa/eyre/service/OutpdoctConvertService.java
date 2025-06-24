@@ -231,15 +231,10 @@ public class OutpdoctConvertService {
                 emrActivityInfo.setOperationTime(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, DateUtils.getNowDate()));
                 synchroEmrRealService.syncEmrActivityInfo(emrActivityInfo, httpMethod);
             }else {
-                logger.error("对应PatMasterIndex信息或ClinicMaster信息为空，无法同步");
+                logger.error("{}对应PatMasterIndex信息或ClinicMaster信息为空，无法同步", outpMr.getPatientId());
             }
         }else {
             logger.error("patientId为空，无法同步");
         }
-
-
-
-
-
     }
 }

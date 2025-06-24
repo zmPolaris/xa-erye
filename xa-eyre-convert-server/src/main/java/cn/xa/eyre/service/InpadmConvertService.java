@@ -175,9 +175,10 @@ public class InpadmConvertService {
             emrAdmissionInfo.setOrgCode(HubCodeEnum.ORG_CODE.getCode());
             emrAdmissionInfo.setOrgName(HubCodeEnum.ORG_CODE.getName());
 
+            emrAdmissionInfo.setOperationTime(DateUtils.getTime());
             synchroEmrMonitorService.syncEmrAdmissionInfo(emrAdmissionInfo, httpMethod);
         }else {
-            logger.error("对应PatMasterIndex信息为空，无法同步");
+            logger.error("{}对应PatMasterIndex信息为空，无法同步", patsInHospital.getPatientId());
         }
     }
 }

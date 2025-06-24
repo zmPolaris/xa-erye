@@ -91,4 +91,11 @@ public class Constants
     public static final Integer STATUS_STOP = 1;
     public static final Integer STATUS_NORMAL = 0;
 
+    /**
+     * 诊断类别 1:门诊诊断，2:入院初诊，3：主要诊断
+     */
+    public static final String DIAGNOSIS_TYPE_CODE_MZZD = "1";
+    public static final String DIAGNOSIS_TYPE_CODE_RYCZ = "2";
+    public static final String DIAGNOSIS_TYPE_CODE_ZYZD = "3";
+
 }
