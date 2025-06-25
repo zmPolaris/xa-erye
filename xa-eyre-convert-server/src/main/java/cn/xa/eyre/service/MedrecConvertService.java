@@ -1,6 +1,8 @@
 package cn.xa.eyre.service;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.date.DateUnit;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import cn.xa.eyre.comm.domain.Users;
@@ -11,6 +13,7 @@ import cn.xa.eyre.common.utils.DateUtils;
 import cn.xa.eyre.hisapi.CommFeignClient;
 import cn.xa.eyre.hisapi.InpadmFeignClient;
 import cn.xa.eyre.hisapi.MedrecFeignClient;
+import cn.xa.eyre.hub.domain.emrmonitor.EmrAdmissionRecord;
 import cn.xa.eyre.hub.domain.emrmonitor.EmrDailyCourse;
 import cn.xa.eyre.hub.domain.emrmonitor.EmrDischargeInfo;
 import cn.xa.eyre.hub.domain.emrmonitor.EmrFirstCourse;
@@ -21,9 +24,12 @@ import cn.xa.eyre.hub.staticvalue.HubCodeEnum;
 import cn.xa.eyre.inpadm.domain.PatsInHospital;
 import cn.xa.eyre.medrec.domain.Diagnosis;
 import cn.xa.eyre.medrec.domain.PatMasterIndex;
+import cn.xa.eyre.medrec.domain.PatVisit;
 import cn.xa.eyre.system.dict.domain.DdNation;
+import cn.xa.eyre.system.dict.domain.DictChargeType;
 import cn.xa.eyre.system.dict.domain.DictDisDept;
 import cn.xa.eyre.system.dict.mapper.DdNationMapper;
+import cn.xa.eyre.system.dict.mapper.DictChargeTypeMapper;
 import cn.xa.eyre.system.dict.mapper.DictDisDeptMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +52,9 @@ public class MedrecConvertService {
     @Autowired
     private SynchroEmrMonitorService synchroEmrMonitorService;
     @Autowired
-    private DictDisDeptMapper dictDisDeptMapper;// 转码表
+    private DictDisDeptMapper dictDisDeptMapper;// 科室转码表
+    @Autowired
+    private DictChargeTypeMapper dictChargeTypeMapper;// 付费方式转码
 
     public void patMasterIndex(DBMessage dbMessage) {
         logger.debug("病人主索引表PAT_MASTER_INDEX变更接口");
@@ -225,6 +233,166 @@ public class MedrecConvertService {
 
         }else {
             logger.error("{}对应PatMasterIndex或PatsInHospital信息为空，无法同步", diagnosis.getPatientId());
+        }
+    }
+
+    public void patVisit(DBMessage dbMessage) {
+        logger.debug("住院表PAT_VISIT变更接口");
+        logger.debug("PAT_VISIT变更需调用emrAdmissionRecord、emrDischargeInfo同步接口");
+        String httpMethod = null;
+        PatVisit patVisit;
+        if(dbMessage.getOperation().equalsIgnoreCase("DELETE")){
+            httpMethod = Constants.HTTP_METHOD_DELETE;
+            patVisit = BeanUtil.toBean(dbMessage.getBeforeData(), PatVisit.class);
+        }else {
+            httpMethod = Constants.HTTP_METHOD_POST;
+            patVisit = BeanUtil.toBean(dbMessage.getAfterData(), PatVisit.class);
+        }
+
+        R<PatMasterIndex> medrecResult = medrecFeignClient.getMedrec(patVisit.getPatientId());
+        R<PatsInHospital> hospitalResult = inpadmFeignClient.getPatsInHospital(patVisit.getPatientId(), patVisit.getVisitId());
+        if (R.SUCCESS == hospitalResult.getCode() && R.SUCCESS == medrecResult.getCode()){
+            EmrAdmissionRecord emrAdmissionRecord = new EmrAdmissionRecord();
+            EmrDischargeInfo emrDischargeInfo = new EmrDischargeInfo();
+            // ID使用PAT_VISIT表patientId、visitId拼接计算MD5
+            String id = DigestUtil.md5Hex(patVisit.getPatientId() + patVisit.getVisitId());
+            logger.debug("构造emrAdmissionRecord接口数据...");
+            emrAdmissionRecord.setId(id);
+            emrAdmissionRecord.setPatientId(patVisit.getPatientId());
+            emrAdmissionRecord.setSerialNumber(String.valueOf(patVisit.getVisitId()));
+            if (StrUtil.isNotBlank(patVisit.getChargeType())){
+                DictChargeType dictChargeType = dictChargeTypeMapper.selectByEmrCode(patVisit.getChargeType());
+                if (dictChargeType == null){
+                    emrAdmissionRecord.setPayMethodCode(HubCodeEnum.PAY_TYPE_OTHER.getCode());
+                    emrAdmissionRecord.setPayMethodName(HubCodeEnum.PAY_TYPE_OTHER.getName());
+                }else {
+                    emrAdmissionRecord.setPayMethodCode(dictChargeType.getHubCode());
+                    emrAdmissionRecord.setPayMethodName(dictChargeType.getHubName());
+                }
+            }
+            emrAdmissionRecord.setAdmissionNum(String.valueOf(patVisit.getVisitId()));
+            emrAdmissionRecord.setRegNo(patVisit.getPatientId());
+            emrAdmissionRecord.setAdmissionDate(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, patVisit.getAdmissionDateTime()));
+            // 住院医师
+            if (StrUtil.isNotBlank(patVisit.getDoctorInCharge())){
+                R<Users> user = commFeignClient.getUserByName(patVisit.getDoctorInCharge());
+                if (R.SUCCESS == user.getCode() && user.getData() != null){
+                    emrAdmissionRecord.setResidentPhysicianId(user.getData().getUserId());
+                }
+            }
+            // 主治医师
+            if (StrUtil.isNotBlank(patVisit.getAttendingDoctor())){
+                R<Users> user = commFeignClient.getUserByName(patVisit.getAttendingDoctor());
+                if (R.SUCCESS == user.getCode() && user.getData() != null){
+                    emrAdmissionRecord.setChiefPhysicianId(user.getData().getUserId());
+                }
+            }
+            DictDisDept deptParam = new DictDisDept();
+            deptParam.setStatus(Constants.STATUS_NORMAL);
+            deptParam.setEmrCode(patVisit.getDeptAdmissionTo());
+            DictDisDept dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
+            if (dictDisDept == null){
+                deptParam.setEmrName(null);
+                deptParam.setIsDefault(Constants.IS_DEFAULT);
+                dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
+            }
+            emrAdmissionRecord.setDeptCode(dictDisDept.getHubCode());
+            emrAdmissionRecord.setDeptName(dictDisDept.getHubName());
+            emrAdmissionRecord.setAdmissionDeptCode(dictDisDept.getHubCode());
+            emrAdmissionRecord.setAdmissionDeptName(dictDisDept.getHubName());
+            if (StrUtil.isNotBlank(patVisit.getAlergyDrugs())){
+                emrAdmissionRecord.setAllergyCode("1");
+                emrAdmissionRecord.setAllergyDrug(patVisit.getAlergyDrugs());
+            }else {
+                emrAdmissionRecord.setAllergyCode("0");
+            }
+            if (patVisit.getAutopsyIndicator() != null){
+                emrAdmissionRecord.setAutopsyCode(String.valueOf(patVisit.getAutopsyIndicator()));
+            }
+
+            emrAdmissionRecord.setPatientName(medrecResult.getData().getName());
+            if (StrUtil.isBlank(medrecResult.getData().getIdNo())){
+                emrAdmissionRecord.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE_OTHER.getCode());
+                emrAdmissionRecord.setIdCardTypeName(HubCodeEnum.ID_CARD_TYPE_OTHER.getName());
+                emrAdmissionRecord.setIdCard("-");
+            }else {
+                emrAdmissionRecord.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE.getCode());
+                emrAdmissionRecord.setIdCardTypeName(HubCodeEnum.ID_CARD_TYPE.getName());
+                emrAdmissionRecord.setIdCard(medrecResult.getData().getIdNo());
+            }
+            emrAdmissionRecord.setWardNo(hospitalResult.getData().getWardCode());
+
+            if (patVisit.getDischargeDateTime() != null){
+                emrAdmissionRecord.setDischargeDate(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, patVisit.getDischargeDateTime()));
+                // 计算住院天数
+                long betweenDay = DateUtil.between(patVisit.getAdmissionDateTime(), patVisit.getDischargeDateTime(), DateUnit.DAY);
+                emrAdmissionRecord.setAdmissionDays(String.valueOf(betweenDay));
+                emrAdmissionRecord.setDischargeWard(hospitalResult.getData().getWardCode());
+                deptParam.setEmrCode(patVisit.getDeptDischargeFrom());
+                dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
+                if (dictDisDept == null){
+                    deptParam.setEmrName(null);
+                    deptParam.setIsDefault(Constants.IS_DEFAULT);
+                    dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
+                }
+                emrAdmissionRecord.setDischargeDeptCode(dictDisDept.getHubCode());
+                emrAdmissionRecord.setDischargeDeptName(dictDisDept.getHubName());
+            }
+
+            emrAdmissionRecord.setOrgCode(HubCodeEnum.ORG_CODE.getCode());
+            emrAdmissionRecord.setOrgName(HubCodeEnum.ORG_CODE.getName());
+            emrAdmissionRecord.setOperationTime(DateUtils.getTime());
+            synchroEmrMonitorService.syncEmrAdmissionRecord(emrAdmissionRecord, httpMethod);
+
+            if (patVisit.getDischargeDateTime() != null){
+                // 出院时间不为空，同步出院记录
+                logger.debug("构造emrDischargeInfo接口数据...");
+                emrDischargeInfo.setId(id);
+                emrDischargeInfo.setPatientId(patVisit.getPatientId());
+                emrDischargeInfo.setSerialNumber(String.valueOf(patVisit.getVisitId()));
+                emrDischargeInfo.setDischargeDate(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, patVisit.getDischargeDateTime()));
+                emrDischargeInfo.setAdmissionDate(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, patVisit.getAdmissionDateTime()));
+                // 住院医师
+                if (StrUtil.isNotBlank(patVisit.getDoctorInCharge())){
+                    R<Users> user = commFeignClient.getUserByName(patVisit.getDoctorInCharge());
+                    if (R.SUCCESS == user.getCode() && user.getData() != null){
+                        emrDischargeInfo.setResidentPhysicianId(user.getData().getUserId());
+                    }
+                }
+                // 主治医师
+                if (StrUtil.isNotBlank(patVisit.getAttendingDoctor())){
+                    R<Users> user = commFeignClient.getUserByName(patVisit.getAttendingDoctor());
+                    if (R.SUCCESS == user.getCode() && user.getData() != null){
+                        emrDischargeInfo.setChiefPhysicianId(user.getData().getUserId());
+                    }
+                }
+
+                emrDischargeInfo.setPatientName(medrecResult.getData().getName());
+                if (StrUtil.isBlank(medrecResult.getData().getIdNo())){
+                    emrDischargeInfo.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE_OTHER.getCode());
+                    emrDischargeInfo.setIdCardTypeName(HubCodeEnum.ID_CARD_TYPE_OTHER.getName());
+                    emrDischargeInfo.setIdCard("-");
+                }else {
+                    emrDischargeInfo.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE.getCode());
+                    emrDischargeInfo.setIdCardTypeName(HubCodeEnum.ID_CARD_TYPE.getName());
+                    emrDischargeInfo.setIdCard(medrecResult.getData().getIdNo());
+                }
+
+                emrDischargeInfo.setWardNo(hospitalResult.getData().getWardCode());
+                emrDischargeInfo.setBedNo(String.valueOf(hospitalResult.getData().getBedNo()));
+                emrDischargeInfo.setAdmissionDesc(hospitalResult.getData().getDiagnosis());
+
+                emrDischargeInfo.setDeptCode(dictDisDept.getHubCode());
+                emrDischargeInfo.setDeptName(dictDisDept.getHubName());
+
+                emrDischargeInfo.setOrgCode(HubCodeEnum.ORG_CODE.getCode());
+                emrDischargeInfo.setOrgName(HubCodeEnum.ORG_CODE.getName());
+                emrDischargeInfo.setOperationTime(DateUtils.getTime());
+                synchroEmrMonitorService.syncEmrDischargeInfo(emrDischargeInfo, httpMethod);
+            }
+
+        }else {
+            logger.error("{}对应PatMasterIndex或PatsInHospital信息为空，无法同步", patVisit.getPatientId());
         }
     }
 }

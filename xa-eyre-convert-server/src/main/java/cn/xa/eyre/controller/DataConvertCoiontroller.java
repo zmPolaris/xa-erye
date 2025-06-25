@@ -77,6 +77,9 @@ public class DataConvertCoiontroller {
             case "medrec.diagnosis":
                 medrecConvertService.Diagnosis(dbMessage);
                 break;
+            case "medrec.pat_visit":
+                medrecConvertService.patVisit(dbMessage);
+                break;
             default:
 
         }

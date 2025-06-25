@@ -6,12 +6,12 @@ spring:
         druid:
             # 主库数据源
             master:
-#                url: ${DATABASES_URL:jdbc:oracle:thin:@//192.168.1.5:1521/DBSERVER}
-#                username: ${DATABASES_USERNAME:GRJK}
-#                password: ${DATABASES_PASSWORD:GRJK}
-                url: ${DATABASES_URL:jdbc:oracle:thin:@//10.10.5.169:11521/LHR11G}
-                username: ${DATABASES_USERNAME:system}
-                password: ${DATABASES_PASSWORD:orcl}
+                url: ${DATABASES_URL:jdbc:oracle:thin:@//192.168.1.5:1521/DBSERVER}
+                username: ${DATABASES_USERNAME:GRJK}
+                password: ${DATABASES_PASSWORD:GRJK}
+#                url: ${DATABASES_URL:jdbc:oracle:thin:@//10.10.5.169:11521/LHR11G}
+#                username: ${DATABASES_USERNAME:system}
+#                password: ${DATABASES_PASSWORD:orcl}
             # 从库数据源
             slave:
                 # 从数据源开关/默认关闭

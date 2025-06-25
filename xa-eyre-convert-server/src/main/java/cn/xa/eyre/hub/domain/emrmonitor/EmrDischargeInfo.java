@@ -3,7 +3,6 @@ package cn.xa.eyre.hub.domain.emrmonitor;
 import java.util.Date;
 
 import cn.xa.eyre.common.core.domain.BaseEntity;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -48,8 +47,7 @@ public class EmrDischargeInfo extends BaseEntity
     private String bedNo;
 
     /** 入院日期时间 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date admissionDate;
+    private String admissionDate;
 
     /** 入院情况 */
     private String admissionDesc;
@@ -82,8 +80,7 @@ public class EmrDischargeInfo extends BaseEntity
     private String dischargeDesc;
 
     /** 出院日期时间 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date dischargeDate;
+    private String dischargeDate;
 
     /** 出院诊断-西医诊断 */
     private String dischargeDiagnosisName;
@@ -131,8 +128,7 @@ public class EmrDischargeInfo extends BaseEntity
     private String operatorId;
 
     /** 操作时间 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date operationTime;
+    private String operationTime;
 
     /** 作废标志 */
     private String invalidFlag;
@@ -141,8 +137,7 @@ public class EmrDischargeInfo extends BaseEntity
     private String dataStatus;
 
     /** 入库日期 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date createDate;
+    private String createDate;
 
     /** 病情转归代码 */
     private String diseaseProgressionCode;
@@ -240,12 +235,12 @@ public class EmrDischargeInfo extends BaseEntity
     {
         return bedNo;
     }
-    public void setAdmissionDate(Date admissionDate)
+    public void setAdmissionDate(String admissionDate)
     {
         this.admissionDate = admissionDate;
     }
 
-    public Date getAdmissionDate()
+    public String getAdmissionDate()
     {
         return admissionDate;
     }
@@ -339,12 +334,12 @@ public class EmrDischargeInfo extends BaseEntity
     {
         return dischargeDesc;
     }
-    public void setDischargeDate(Date dischargeDate)
+    public void setDischargeDate(String dischargeDate)
     {
         this.dischargeDate = dischargeDate;
     }
 
-    public Date getDischargeDate()
+    public String getDischargeDate()
     {
         return dischargeDate;
     }
@@ -483,12 +478,12 @@ public class EmrDischargeInfo extends BaseEntity
     {
         return operatorId;
     }
-    public void setOperationTime(Date operationTime)
+    public void setOperationTime(String operationTime)
     {
         this.operationTime = operationTime;
     }
 
-    public Date getOperationTime()
+    public String getOperationTime()
     {
         return operationTime;
     }
@@ -510,12 +505,12 @@ public class EmrDischargeInfo extends BaseEntity
     {
         return dataStatus;
     }
-    public void setCreateDate(Date createDate)
+    public void setCreateDate(String createDate)
     {
         this.createDate = createDate;
     }
 
-    public Date getCreateDate()
+    public String getCreateDate()
     {
         return createDate;
     }

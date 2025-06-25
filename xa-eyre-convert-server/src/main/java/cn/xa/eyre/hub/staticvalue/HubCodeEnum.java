@@ -10,6 +10,7 @@ public enum HubCodeEnum {
     NATIONALITY_CODE("156", "中国"),
     NATION_CODE("97", "其他"),
     DISEASE_ICD10_CODE("143", "其他"),
+    PAY_TYPE_OTHER("99", "其他"),
 
 
     DIAGNOSIS_ACTIVITIES_OUTPATIENT("1", "门诊"),
