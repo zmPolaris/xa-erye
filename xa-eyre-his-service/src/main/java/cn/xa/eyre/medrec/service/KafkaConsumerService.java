@@ -34,9 +34,13 @@ public class KafkaConsumerService {
     public void consume(ConsumerRecord<GenericRecord, GenericRecord> record, Acknowledgment ack) {
         try {
             DBMessage msg = processDebeziumRecord(record);
-            logger.info("处理消息: {}", JSON.toJSONString(msg));
-            String sent = HttpClientUtils.sendHttpClientPost(Constants.CONVERT_URL + "/convert/receiveKafkaData", JSON.toJSONString(msg));
-            logger.info("发送结果: {}", sent);
+            if ("INSERT".equalsIgnoreCase(msg.getOperation()) ||
+                    "UPDATE".equalsIgnoreCase(msg.getOperation()) ||
+                    "DELETE".equalsIgnoreCase(msg.getOperation())) {
+                logger.info("处理消息: {}", JSON.toJSONString(msg));
+                String sent = HttpClientUtils.sendHttpClientPost(Constants.CONVERT_URL + "/convert/receiveKafkaData", JSON.toJSONString(msg));
+                logger.info("发送结果: {}", sent);
+            }
             // 手动提交偏移量
             ack.acknowledge();
         } catch (Exception e) {
