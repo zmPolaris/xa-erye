@@ -36,6 +36,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @Service
 public class MedrecConvertService {
     protected Logger logger = LoggerFactory.getLogger(getClass());
@@ -62,13 +64,20 @@ public class MedrecConvertService {
         EmrPatientInfo emrPatientInfo = new EmrPatientInfo();
         String httpMethod = null;
         PatMasterIndex patMasterIndex;
+        Map<String, String> data;
         if(dbMessage.getOperation().equalsIgnoreCase("DELETE")){
             httpMethod = Constants.HTTP_METHOD_DELETE;
-            patMasterIndex = BeanUtil.toBean(dbMessage.getBeforeData(), PatMasterIndex.class);
+            data = dbMessage.getBeforeData();
         }else {
             httpMethod = Constants.HTTP_METHOD_POST;
-            patMasterIndex = BeanUtil.toBean(dbMessage.getAfterData(), PatMasterIndex.class);
+            data = dbMessage.getAfterData();
         }
+        patMasterIndex = BeanUtil.toBeanIgnoreError(data, PatMasterIndex.class);
+        patMasterIndex.setDateOfBirth(DateUtils.getLongDate(dbMessage.getAfterData().get("dateOfBirth")));
+        patMasterIndex.setLastVisitDate(DateUtils.getLongDate(dbMessage.getAfterData().get("lastVisitDate")));
+        patMasterIndex.setCreateDate(DateUtils.getLongDate(dbMessage.getAfterData().get("createDate")));
+        patMasterIndex.setModifyTime(DateUtils.getLongDate(dbMessage.getAfterData().get("modifyTime")));
+        patMasterIndex.setIdentityExpireDate(DateUtils.getLongDate(dbMessage.getAfterData().get("identityExpireDate")));
 
         logger.debug("构造emrPatientInfo接口数据...");
         // 构造请求参数
@@ -123,18 +132,21 @@ public class MedrecConvertService {
         synchroEmrRealService.syncEmrPatientInfo(emrPatientInfo, httpMethod);
     }
 
-    public void Diagnosis(DBMessage dbMessage) {
+    public void diagnosis(DBMessage dbMessage) {
         logger.debug("诊断表DIAGNOSIS变更接口");
         logger.debug("DIAGNOSIS变更需调用emrFirstCourse、emrDailyCourse同步接口");
         String httpMethod = null;
         Diagnosis diagnosis;
+        Map<String, String> data;
         if(dbMessage.getOperation().equalsIgnoreCase("DELETE")){
             httpMethod = Constants.HTTP_METHOD_DELETE;
-            diagnosis = BeanUtil.toBean(dbMessage.getBeforeData(), Diagnosis.class);
+            data = dbMessage.getBeforeData();
         }else {
             httpMethod = Constants.HTTP_METHOD_POST;
-            diagnosis = BeanUtil.toBean(dbMessage.getAfterData(), Diagnosis.class);
+            data = dbMessage.getAfterData();
         }
+        diagnosis = BeanUtil.toBeanIgnoreError(data, Diagnosis.class);
+        diagnosis.setDiagnosisDate(DateUtils.getLongDate(dbMessage.getAfterData().get("diagnosisDate")));
 
         R<PatMasterIndex> medrecResult = medrecFeignClient.getMedrec(diagnosis.getPatientId());
         R<PatsInHospital> hospitalResult = inpadmFeignClient.getPatsInHospital(diagnosis.getPatientId(), diagnosis.getVisitId());
@@ -241,13 +253,18 @@ public class MedrecConvertService {
         logger.debug("PAT_VISIT变更需调用emrAdmissionRecord、emrDischargeInfo同步接口");
         String httpMethod = null;
         PatVisit patVisit;
+        Map<String, String> data;
         if(dbMessage.getOperation().equalsIgnoreCase("DELETE")){
             httpMethod = Constants.HTTP_METHOD_DELETE;
-            patVisit = BeanUtil.toBean(dbMessage.getBeforeData(), PatVisit.class);
+            data = dbMessage.getBeforeData();
         }else {
             httpMethod = Constants.HTTP_METHOD_POST;
-            patVisit = BeanUtil.toBean(dbMessage.getAfterData(), PatVisit.class);
+            data = dbMessage.getAfterData();
         }
+        patVisit = BeanUtil.toBeanIgnoreError(data, PatVisit.class);
+        patVisit.setAdmissionDateTime(DateUtils.getLongDate(dbMessage.getAfterData().get("admissionDateTime")));
+        patVisit.setDischargeDateTime(DateUtils.getLongDate(dbMessage.getAfterData().get("dischargeDateTime")));
+        patVisit.setConsultingDate(DateUtils.getLongDate(dbMessage.getAfterData().get("consultingDate")));
 
         R<PatMasterIndex> medrecResult = medrecFeignClient.getMedrec(patVisit.getPatientId());
         R<PatsInHospital> hospitalResult = inpadmFeignClient.getPatsInHospital(patVisit.getPatientId(), patVisit.getVisitId());

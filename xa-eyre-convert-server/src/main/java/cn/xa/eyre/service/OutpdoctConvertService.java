@@ -3,6 +3,7 @@ package cn.xa.eyre.service;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
+import cn.hutool.json.JSONUtil;
 import cn.xa.eyre.comm.domain.Users;
 import cn.xa.eyre.common.constant.Constants;
 import cn.xa.eyre.common.core.domain.R;
@@ -29,6 +30,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @Service
 public class OutpdoctConvertService {
     protected Logger logger = LoggerFactory.getLogger(getClass());
@@ -53,13 +56,16 @@ public class OutpdoctConvertService {
 
         String httpMethod = null;
         OutpMr outpMr;
+        Map<String, String> data;
         if(dbMessage.getOperation().equalsIgnoreCase("DELETE")){
             httpMethod = Constants.HTTP_METHOD_DELETE;
-            outpMr = BeanUtil.toBean(dbMessage.getBeforeData(), OutpMr.class);
+            data = dbMessage.getBeforeData();
         }else {
             httpMethod = Constants.HTTP_METHOD_POST;
-            outpMr = BeanUtil.toBean(dbMessage.getAfterData(), OutpMr.class);
+            data = dbMessage.getAfterData();
         }
+        outpMr = BeanUtil.toBeanIgnoreError(data, OutpMr.class);
+        outpMr.setVisitDate(DateUtils.getLongDate(dbMessage.getAfterData().get("visitDate")));
 
         if (StrUtil.isNotBlank(outpMr.getPatientId())){
             logger.debug("构造emrOutpatientRecord接口数据...");
@@ -100,7 +106,7 @@ public class OutpdoctConvertService {
                     }
                     if (StrUtil.isNotBlank(outpMr.getDiagnosisCodeMz2())){
                         DictDiseaseIcd10 dictDiseaseIcd102 = dictDiseaseIcd10Mapper.selectByEmrCode(outpMr.getDiagnosisCodeMz2());
-                        if(dictDiseaseIcd10 == null){
+                        if(dictDiseaseIcd102 == null){
                             emrOutpatientRecord.setWmDiagnosisCode(HubCodeEnum.DISEASE_ICD10_CODE.getCode());
                             emrOutpatientRecord.setWmDiagnosisName(HubCodeEnum.DISEASE_ICD10_CODE.getName());
                         }else {
@@ -200,7 +206,7 @@ public class OutpdoctConvertService {
                     }
                     if (StrUtil.isNotBlank(outpMr.getDiagnosisCodeMz2())){
                         DictDiseaseIcd10 dictDiseaseIcd102 = dictDiseaseIcd10Mapper.selectByEmrCode(outpMr.getDiagnosisCodeMz2());
-                        if(dictDiseaseIcd10 == null){
+                        if(dictDiseaseIcd102 == null){
                             emrActivityInfo.setWmDiseaseCode(HubCodeEnum.DISEASE_ICD10_CODE.getCode());
                             emrActivityInfo.setWmDiseaseName(HubCodeEnum.DISEASE_ICD10_CODE.getName());
                         }else {

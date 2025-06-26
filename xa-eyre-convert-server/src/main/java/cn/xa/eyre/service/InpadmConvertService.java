@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class InpadmConvertService {
@@ -56,14 +57,21 @@ public class InpadmConvertService {
 
         String httpMethod = null;
         PatsInHospital patsInHospital;
+        Map<String, String> data;
         if(dbMessage.getOperation().equalsIgnoreCase("DELETE")){
             httpMethod = Constants.HTTP_METHOD_DELETE;
-            patsInHospital = BeanUtil.toBean(dbMessage.getBeforeData(), PatsInHospital.class);
+            data = dbMessage.getBeforeData();
         }else {
             httpMethod = Constants.HTTP_METHOD_POST;
-            patsInHospital = BeanUtil.toBean(dbMessage.getAfterData(), PatsInHospital.class);
+            data = dbMessage.getAfterData();
         }
-
+        patsInHospital = BeanUtil.toBeanIgnoreError(data, PatsInHospital.class);
+        patsInHospital.setAdmissionDateTime(DateUtils.getLongDate(dbMessage.getAfterData().get("admissionDateTime")));
+        patsInHospital.setAdmWardDateTime(DateUtils.getLongDate(dbMessage.getAfterData().get("admWardDateTime")));
+        patsInHospital.setOperatingDate(DateUtils.getLongDate(dbMessage.getAfterData().get("operatingDate")));
+        patsInHospital.setBillingDateTime(DateUtils.getLongDate(dbMessage.getAfterData().get("billingDateTime")));
+        patsInHospital.setBillCheckedDateTime(DateUtils.getLongDate(dbMessage.getAfterData().get("billCheckedDateTime")));
+        patsInHospital.setStartDateTime(DateUtils.getLongDate(dbMessage.getAfterData().get("startDateTime")));
 
         logger.debug("构造emrAdmissionInfo接口数据...");
         R<PatMasterIndex> medrecResult = medrecFeignClient.getMedrec(patsInHospital.getPatientId());
@@ -145,7 +153,7 @@ public class InpadmConvertService {
                     }
                     if (StrUtil.isNotBlank(outpMr.getDiagnosisCodeMz2())){
                         DictDiseaseIcd10 dictDiseaseIcd102 = dictDiseaseIcd10Mapper.selectByEmrCode(outpMr.getDiagnosisCodeMz2());
-                        if(dictDiseaseIcd10 == null){
+                        if(dictDiseaseIcd102 == null){
                             emrAdmissionInfo.setWmInitalDiagnosisCode(HubCodeEnum.DISEASE_ICD10_CODE.getCode());
                             emrAdmissionInfo.setWmInitalDiagnosisName(HubCodeEnum.DISEASE_ICD10_CODE.getName());
                         }else {

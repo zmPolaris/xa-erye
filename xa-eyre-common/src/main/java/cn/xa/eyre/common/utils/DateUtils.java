@@ -245,4 +245,10 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
             return false;
         }
     }
+
+    public static Date getLongDate(String datetime){
+        if (null != datetime){
+            return new Date(Long.valueOf(datetime));
+        }else return null;
+    }
 }

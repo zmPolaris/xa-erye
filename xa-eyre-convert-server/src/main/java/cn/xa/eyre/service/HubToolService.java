@@ -286,7 +286,7 @@ public class HubToolService {
                         }
                         if (StrUtil.isNotBlank(outpMr.getDiagnosisCodeMz2())){
                             DictDiseaseIcd10 dictDiseaseIcd102 = dictDiseaseIcd10Mapper.selectByEmrCode(outpMr.getDiagnosisCodeMz2());
-                            if(dictDiseaseIcd10 == null){
+                            if(dictDiseaseIcd102 == null){
                                 emrActivityInfo.setWmDiseaseCode(HubCodeEnum.DISEASE_ICD10_CODE.getCode());
                                 emrActivityInfo.setWmDiseaseName(HubCodeEnum.DISEASE_ICD10_CODE.getName());
                             }else {

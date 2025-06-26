@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class CommConvertService {
@@ -116,15 +117,17 @@ public class CommConvertService {
         BaseUser baseUser = new BaseUser();
         String httpMethod = null;
         Users users = null;
-        if(dbMessage.getOperation().equalsIgnoreCase("DELETE")) {
-            // 删除
+        Map<String, String> data;
+        if(dbMessage.getOperation().equalsIgnoreCase("DELETE")){
             httpMethod = Constants.HTTP_METHOD_DELETE;
-            users = BeanUtil.toBean(dbMessage.getBeforeData(), Users.class);
+            data = dbMessage.getBeforeData();
         }else {
-            // 插入 修改
             httpMethod = Constants.HTTP_METHOD_POST;
-            users = BeanUtil.toBean(dbMessage.getAfterData(), Users.class);
+            data = dbMessage.getAfterData();
         }
+        users = BeanUtil.toBeanIgnoreError(data, Users.class);
+        users.setCreateDate(DateUtils.getLongDate(dbMessage.getAfterData().get("createDate")));
+        users.setLeaveDate(DateUtils.getLongDate(dbMessage.getAfterData().get("leaveDate")));
         String deptCode = users.getUserDept();
         if(deptCode != null && !deptCode.equals("")){
             DictDisDept deptParam = new DictDisDept();

@@ -3,10 +3,8 @@ package cn.xa.eyre.controller;
 import cn.xa.eyre.common.core.domain.AjaxResult;
 import cn.xa.eyre.common.core.kafka.DBMessage;
 import cn.xa.eyre.service.*;
-import com.alibaba.fastjson.JSONObject;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -57,7 +55,7 @@ public class DataConvertCoiontroller {
         logger.debug("receiveKafkaData:{}", dbMessage);
         String schema = dbMessage.getSchema();
         String table = dbMessage.getTable();
-        String dbName = (schema + table).toLowerCase();
+        String dbName = (schema + "." + table).toLowerCase();
         switch (dbName) {
             case "comm.users":
                 commConvertService.baseUser(dbMessage);
@@ -75,7 +73,7 @@ public class DataConvertCoiontroller {
                 inpadmConvertService.patsInHospital(dbMessage);
                 break;
             case "medrec.diagnosis":
-                medrecConvertService.Diagnosis(dbMessage);
+                medrecConvertService.diagnosis(dbMessage);
                 break;
             case "medrec.pat_visit":
                 medrecConvertService.patVisit(dbMessage);
