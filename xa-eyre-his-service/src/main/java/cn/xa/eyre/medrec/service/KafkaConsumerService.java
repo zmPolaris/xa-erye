@@ -1,5 +1,6 @@
 package cn.xa.eyre.medrec.service;
 
+import cn.xa.eyre.common.constant.Constants;
 import cn.xa.eyre.common.utils.http.HttpClientUtils;
 import cn.xa.eyre.medrec.config.KafkaProperties;
 import cn.xa.eyre.common.core.kafka.DBMessage;
@@ -34,7 +35,7 @@ public class KafkaConsumerService {
         try {
             DBMessage msg = processDebeziumRecord(record);
             logger.info("处理消息: {}", JSON.toJSONString(msg));
-            String sent = HttpClientUtils.sendHttpClientPost("http://127.0.0.1:8080/convert/receiveKafkaData", JSON.toJSONString(msg));
+            String sent = HttpClientUtils.sendHttpClientPost(Constants.CONVERT_URL + "/convert/receiveKafkaData", JSON.toJSONString(msg));
             logger.info("发送结果: {}", sent);
             // 手动提交偏移量
             ack.acknowledge();
