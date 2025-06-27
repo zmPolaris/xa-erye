@@ -464,8 +464,8 @@ public class MedrecConvertService {
                 EmrActivityInfo emrActivityInfo = new EmrActivityInfo();
                 emrActivityInfo.setId(id);
                 emrActivityInfo.setPatientId(emrDischargeInfo.getPatientId());
-                emrActivityInfo.setActivityTypeCode(HubCodeEnum.DIAGNOSIS_ACTIVITIES_HOSPITALIZATION.getCode());
-                emrActivityInfo.setActivityTypeName(HubCodeEnum.DIAGNOSIS_ACTIVITIES_HOSPITALIZATION.getName());
+                emrActivityInfo.setActivityTypeCode(HubCodeEnum.DIAGNOSIS_ACTIVITIES_DISCHARGE.getCode());
+                emrActivityInfo.setActivityTypeName(HubCodeEnum.DIAGNOSIS_ACTIVITIES_DISCHARGE.getName());
                 emrActivityInfo.setSerialNumber(emrDischargeInfo.getSerialNumber());
                 emrActivityInfo.setActivityTime(emrDischargeInfo.getDischargeDate());
                 emrActivityInfo.setIdCardTypeCode(emrDischargeInfo.getIdCardTypeCode());
