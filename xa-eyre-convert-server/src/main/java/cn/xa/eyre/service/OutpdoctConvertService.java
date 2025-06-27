@@ -159,7 +159,7 @@ public class OutpdoctConvertService {
                 emrOutpatientRecord.setOperationTime(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, DateUtils.getNowDate()));
                 synchroEmrMonitorService.syncEmrOutpatientRecord(emrOutpatientRecord, httpMethod);
 
-                logger.debug("构造emrActivityInfo接口数据...");
+                logger.debug("构造emrActivityInfo(门诊/急诊)接口数据...");
                 EmrActivityInfo emrActivityInfo = new EmrActivityInfo();
                 emrActivityInfo.setId(id);
                 emrActivityInfo.setPatientId(outpMr.getPatientId());

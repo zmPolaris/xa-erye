@@ -17,6 +17,7 @@ import cn.xa.eyre.hub.domain.emrmonitor.EmrAdmissionRecord;
 import cn.xa.eyre.hub.domain.emrmonitor.EmrDailyCourse;
 import cn.xa.eyre.hub.domain.emrmonitor.EmrDischargeInfo;
 import cn.xa.eyre.hub.domain.emrmonitor.EmrFirstCourse;
+import cn.xa.eyre.hub.domain.emrreal.EmrActivityInfo;
 import cn.xa.eyre.hub.domain.emrreal.EmrPatientInfo;
 import cn.xa.eyre.hub.service.SynchroEmrMonitorService;
 import cn.xa.eyre.hub.service.SynchroEmrRealService;
@@ -202,6 +203,34 @@ public class MedrecConvertService {
                 emrFirstCourse.setOperationTime(DateUtils.getTime());
 
                 synchroEmrMonitorService.syncEmrFirstCourse(emrFirstCourse, httpMethod);
+
+                logger.debug("构造emrActivityInfo(首次病程)接口数据...");
+                EmrActivityInfo emrActivityInfo = new EmrActivityInfo();
+                emrActivityInfo.setId(id);
+                emrActivityInfo.setPatientId(emrFirstCourse.getPatientId());
+                emrActivityInfo.setActivityTypeCode(HubCodeEnum.DIAGNOSIS_ACTIVITIES_FIRST_COURSE.getCode());
+                emrActivityInfo.setActivityTypeName(HubCodeEnum.DIAGNOSIS_ACTIVITIES_FIRST_COURSE.getName());
+                emrActivityInfo.setSerialNumber(emrFirstCourse.getSerialNumber());
+                emrActivityInfo.setActivityTime(emrFirstCourse.getCreateDate());
+                emrActivityInfo.setIdCardTypeCode(emrFirstCourse.getIdCardTypeCode());
+                emrActivityInfo.setIdCardTypeName(emrFirstCourse.getIdCardTypeName());
+                emrActivityInfo.setIdCard(emrFirstCourse.getIdCard());
+                emrActivityInfo.setPatientName(emrFirstCourse.getPatientName());
+                emrActivityInfo.setChiefComplaint(emrFirstCourse.getChiefComplaint());
+                emrActivityInfo.setPresentIllnessHis(emrFirstCourse.getPresentIllnessHis());
+                emrActivityInfo.setDiagnoseTime(emrFirstCourse.getCreateDate());
+                emrActivityInfo.setWmDiseaseCode(emrFirstCourse.getWmInitalDiagnosisCode());
+                emrActivityInfo.setWmDiseaseName(emrFirstCourse.getWmInitalDiagnosisName());
+                emrActivityInfo.setFillDoctor(hospitalResult.getData().getDoctorInCharge());
+                emrActivityInfo.setOperatorId(emrFirstCourse.getOperatorId());
+                emrActivityInfo.setDeptCode(emrFirstCourse.getDeptCode());
+                emrActivityInfo.setDeptName(emrFirstCourse.getDeptName());
+                emrActivityInfo.setOrgCode(emrFirstCourse.getOrgCode());
+                emrActivityInfo.setOrgName(emrFirstCourse.getOrgName());
+                emrActivityInfo.setOperationTime(emrFirstCourse.getOperationTime());
+                synchroEmrRealService.syncEmrActivityInfo(emrActivityInfo, httpMethod);
+
+
             }else if (diagnosis.getDiagnosisCode().equals(Constants.DIAGNOSIS_TYPE_CODE_ZYZD)){
                 logger.debug("构造emrDailyCourse接口数据...");
                 emrDailyCourse.setId(id);
@@ -241,6 +270,30 @@ public class MedrecConvertService {
                 emrDailyCourse.setOperationTime(DateUtils.getTime());
 
                 synchroEmrMonitorService.syncEmrDailyCourse(emrDailyCourse, httpMethod);
+
+                logger.debug("构造emrActivityInfo(日常病程)接口数据...");
+                EmrActivityInfo emrActivityInfo = new EmrActivityInfo();
+                emrActivityInfo.setId(id);
+                emrActivityInfo.setPatientId(emrDailyCourse.getPatientId());
+                emrActivityInfo.setActivityTypeCode(HubCodeEnum.DIAGNOSIS_ACTIVITIES_DAILY_COURSE.getCode());
+                emrActivityInfo.setActivityTypeName(HubCodeEnum.DIAGNOSIS_ACTIVITIES_DAILY_COURSE.getName());
+                emrActivityInfo.setSerialNumber(emrDailyCourse.getSerialNumber());
+                emrActivityInfo.setActivityTime(emrDailyCourse.getCreateDate());
+                emrActivityInfo.setIdCardTypeCode(emrDailyCourse.getIdCardTypeCode());
+                emrActivityInfo.setIdCardTypeName(emrDailyCourse.getIdCardTypeName());
+                emrActivityInfo.setIdCard(emrDailyCourse.getIdCard());
+                emrActivityInfo.setPatientName(emrDailyCourse.getPatientName());
+                emrActivityInfo.setDiagnoseTime(emrDailyCourse.getCreateDate());
+                emrActivityInfo.setWmDiseaseCode(HubCodeEnum.DISEASE_ICD10_CODE.getCode());
+                emrActivityInfo.setWmDiseaseName(HubCodeEnum.DISEASE_ICD10_CODE.getName());
+                emrActivityInfo.setFillDoctor(hospitalResult.getData().getDoctorInCharge());
+                emrActivityInfo.setOperatorId(emrDailyCourse.getOperatorId());
+                emrActivityInfo.setDeptCode(emrDailyCourse.getDeptCode());
+                emrActivityInfo.setDeptName(emrDailyCourse.getDeptName());
+                emrActivityInfo.setOrgCode(emrDailyCourse.getOrgCode());
+                emrActivityInfo.setOrgName(emrDailyCourse.getOrgName());
+                emrActivityInfo.setOperationTime(emrDailyCourse.getOperationTime());
+                synchroEmrRealService.syncEmrActivityInfo(emrActivityInfo, httpMethod);
             }
 
         }else {
@@ -406,6 +459,32 @@ public class MedrecConvertService {
                 emrDischargeInfo.setOrgName(HubCodeEnum.ORG_CODE.getName());
                 emrDischargeInfo.setOperationTime(DateUtils.getTime());
                 synchroEmrMonitorService.syncEmrDischargeInfo(emrDischargeInfo, httpMethod);
+
+                logger.debug("构造emrActivityInfo(出院)接口数据...");
+                EmrActivityInfo emrActivityInfo = new EmrActivityInfo();
+                emrActivityInfo.setId(id);
+                emrActivityInfo.setPatientId(emrDischargeInfo.getPatientId());
+                emrActivityInfo.setActivityTypeCode(HubCodeEnum.DIAGNOSIS_ACTIVITIES_HOSPITALIZATION.getCode());
+                emrActivityInfo.setActivityTypeName(HubCodeEnum.DIAGNOSIS_ACTIVITIES_HOSPITALIZATION.getName());
+                emrActivityInfo.setSerialNumber(emrDischargeInfo.getSerialNumber());
+                emrActivityInfo.setActivityTime(emrDischargeInfo.getDischargeDate());
+                emrActivityInfo.setIdCardTypeCode(emrDischargeInfo.getIdCardTypeCode());
+                emrActivityInfo.setIdCardTypeName(emrDischargeInfo.getIdCardTypeName());
+                emrActivityInfo.setIdCard(emrDischargeInfo.getIdCard());
+                emrActivityInfo.setPatientName(emrDischargeInfo.getPatientName());
+                emrActivityInfo.setPresentIllnessHis(emrDischargeInfo.getDischargeSymptomsSigns());
+                emrActivityInfo.setStudiesSummaryResult(emrDischargeInfo.getStudiesSummaryResult());
+                emrActivityInfo.setDiagnoseTime(emrDischargeInfo.getAdmissionDate());
+                emrActivityInfo.setWmDiseaseCode(emrDischargeInfo.getDischargeDiagnosisCode());
+                emrActivityInfo.setWmDiseaseName(emrDischargeInfo.getDischargeDiagnosisName());
+                emrActivityInfo.setFillDoctor(patVisit.getAttendingDoctor());
+                emrActivityInfo.setOperatorId(emrDischargeInfo.getOperatorId());
+                emrActivityInfo.setDeptCode(emrDischargeInfo.getDeptCode());
+                emrActivityInfo.setDeptName(emrDischargeInfo.getDeptName());
+                emrActivityInfo.setOrgCode(emrDischargeInfo.getOrgCode());
+                emrActivityInfo.setOrgName(emrDischargeInfo.getOrgName());
+                emrActivityInfo.setOperationTime(emrDischargeInfo.getOperationTime());
+                synchroEmrRealService.syncEmrActivityInfo(emrActivityInfo, httpMethod);
             }
 
         }else {

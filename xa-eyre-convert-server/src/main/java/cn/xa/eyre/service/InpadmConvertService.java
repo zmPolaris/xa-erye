@@ -12,7 +12,9 @@ import cn.xa.eyre.hisapi.CommFeignClient;
 import cn.xa.eyre.hisapi.MedrecFeignClient;
 import cn.xa.eyre.hisapi.OutpdoctFeignClient;
 import cn.xa.eyre.hub.domain.emrmonitor.EmrAdmissionInfo;
+import cn.xa.eyre.hub.domain.emrreal.EmrActivityInfo;
 import cn.xa.eyre.hub.service.SynchroEmrMonitorService;
+import cn.xa.eyre.hub.service.SynchroEmrRealService;
 import cn.xa.eyre.hub.staticvalue.HubCodeEnum;
 import cn.xa.eyre.inpadm.domain.PatsInHospital;
 import cn.xa.eyre.medrec.domain.PatMasterIndex;
@@ -24,6 +26,7 @@ import cn.xa.eyre.system.dict.domain.DictDiseaseIcd10;
 import cn.xa.eyre.system.dict.mapper.DatasetDiseaseDataMapper;
 import cn.xa.eyre.system.dict.mapper.DictDisDeptMapper;
 import cn.xa.eyre.system.dict.mapper.DictDiseaseIcd10Mapper;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +53,8 @@ public class InpadmConvertService {
     private DictDiseaseIcd10Mapper dictDiseaseIcd10Mapper;// ICD10转码表
     @Autowired
     private DatasetDiseaseDataMapper datasetDiseaseDataMapper;// 传染病
+    @Autowired
+    SynchroEmrRealService synchroEmrRealService;
 
     public void patsInHospital(DBMessage dbMessage) {
         logger.debug("PATS_IN_HOSPITAL表变更接口");
@@ -185,6 +190,34 @@ public class InpadmConvertService {
 
             emrAdmissionInfo.setOperationTime(DateUtils.getTime());
             synchroEmrMonitorService.syncEmrAdmissionInfo(emrAdmissionInfo, httpMethod);
+
+            logger.debug("构造emrActivityInfo(入院)接口数据...");
+            EmrActivityInfo emrActivityInfo = new EmrActivityInfo();
+            emrActivityInfo.setId(id);
+            emrActivityInfo.setPatientId(outpMr.getPatientId());
+            emrActivityInfo.setActivityTypeCode(HubCodeEnum.DIAGNOSIS_ACTIVITIES_ADMISSION.getCode());
+            emrActivityInfo.setActivityTypeName(HubCodeEnum.DIAGNOSIS_ACTIVITIES_ADMISSION.getName());
+            emrActivityInfo.setSerialNumber(emrAdmissionInfo.getSerialNumber());
+            emrActivityInfo.setActivityTime(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, outpMr.getVisitDate()));
+            emrActivityInfo.setIdCardTypeCode(emrAdmissionInfo.getIdCardTypeCode());
+            emrActivityInfo.setIdCardTypeName(emrAdmissionInfo.getIdCardTypeName());
+            emrActivityInfo.setIdCard(emrAdmissionInfo.getIdCard());
+            emrActivityInfo.setPatientName(emrAdmissionInfo.getPatientName());
+            emrActivityInfo.setChiefComplaint(emrAdmissionInfo.getChiefComplaint());
+            emrActivityInfo.setPresentIllnessHis(emrAdmissionInfo.getPresentIllnessHis());
+            emrActivityInfo.setStudiesSummaryResult(emrAdmissionInfo.getStudiesSummaryResult());
+            emrActivityInfo.setDiagnoseTime(emrAdmissionInfo.getAdmissionDate());
+            emrActivityInfo.setWmDiseaseCode(emrAdmissionInfo.getWmInitalDiagnosisCode());
+            emrActivityInfo.setWmDiseaseName(emrAdmissionInfo.getWmInitalDiagnosisName());
+            emrActivityInfo.setFillDoctor(patsInHospital.getDoctorInCharge());
+            emrActivityInfo.setOperatorId(emrAdmissionInfo.getOperatorId());
+            emrActivityInfo.setDeptCode(emrAdmissionInfo.getDeptCode());
+            emrActivityInfo.setDeptName(emrAdmissionInfo.getDeptName());
+            emrActivityInfo.setOrgCode(emrAdmissionInfo.getOrgCode());
+            emrActivityInfo.setOrgName(emrAdmissionInfo.getOrgName());
+            emrActivityInfo.setOperationTime(emrAdmissionInfo.getOperationTime());
+            synchroEmrRealService.syncEmrActivityInfo(emrActivityInfo, httpMethod);
+
         }else {
             logger.error("{}对应PatMasterIndex信息为空，无法同步", patsInHospital.getPatientId());
         }
