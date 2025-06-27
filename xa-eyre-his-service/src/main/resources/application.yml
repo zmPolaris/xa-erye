@@ -77,6 +77,7 @@ kafka:
     - oracle_service.MEDREC.PATS_IN_HOSPITAL
     - oracle_service.MEDREC.DIAGNOSIS
     - oracle_service.MEDREC.PAT_VISIT
+    - oracle_service.EXAM.EXAM_MASTER
 
 # token配置
 token:

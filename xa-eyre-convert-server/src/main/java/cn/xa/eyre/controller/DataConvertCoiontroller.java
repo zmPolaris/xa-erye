@@ -29,6 +29,8 @@ public class DataConvertCoiontroller {
     private OutpdoctConvertService outpdoctConvertService;
     @Autowired
     private InpadmConvertService inpadmConvertService;
+    @Autowired
+    private ExamConvertService examConvertService;
 
     /**
      * 部门信息转码
@@ -77,6 +79,9 @@ public class DataConvertCoiontroller {
                 break;
             case "medrec.pat_visit":
                 medrecConvertService.patVisit(dbMessage);
+                break;
+            case "exam.exam_master":
+                examConvertService.examMaster(dbMessage);
                 break;
             default:
 

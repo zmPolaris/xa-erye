@@ -116,7 +116,7 @@ public class InpadmConvertService {
             deptParam.setEmrCode(patsInHospital.getDeptCode());
             DictDisDept dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
             if (dictDisDept == null){
-                deptParam.setEmrName(null);
+                deptParam.setEmrCode(null);
                 deptParam.setIsDefault(Constants.IS_DEFAULT);
                 dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
             }

@@ -31,22 +31,12 @@
             <property name="enableSubPackages" value="true"/>
         </javaClientGenerator>
 
-        <table tableName="dict_marry_state" domainObjectName="DictMarryState"
+        <table tableName="dict_exam_type" domainObjectName="DictExamType"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false"
                selectByExampleQueryId="false"></table>
 
-        <table tableName="dict_people_category" domainObjectName="DictPeopleCategory"
-               enableCountByExample="false" enableUpdateByExample="false"
-               enableDeleteByExample="false" enableSelectByExample="false"
-               selectByExampleQueryId="false"></table>
-
-        <table tableName="dict_dis_dept" domainObjectName="DictDisDept"
-               enableCountByExample="false" enableUpdateByExample="false"
-               enableDeleteByExample="false" enableSelectByExample="false"
-               selectByExampleQueryId="false"></table>
-
-        <table tableName="dict_dis_activity_type" domainObjectName="DictDisActivityType"
+        <table tableName="dict_exam_item" domainObjectName="DictExamItem"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false"
                selectByExampleQueryId="false"></table>

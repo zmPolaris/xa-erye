@@ -131,7 +131,7 @@ public class HubToolService {
                     deptParam.setEmrCode(deptCode);
                     DictDisDept dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
                     if (dictDisDept == null){
-                        deptParam.setEmrName(null);
+                        deptParam.setEmrCode(null);
                         deptParam.setIsDefault(Constants.IS_DEFAULT);
                         dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
                     }
@@ -314,7 +314,7 @@ public class HubToolService {
                     deptParam.setEmrCode(clinicMaster.getVisitDept());
                     DictDisDept dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
                     if (dictDisDept == null){
-                        deptParam.setEmrName(null);
+                        deptParam.setEmrCode(null);
                         deptParam.setIsDefault(Constants.IS_DEFAULT);
                         dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
                     }

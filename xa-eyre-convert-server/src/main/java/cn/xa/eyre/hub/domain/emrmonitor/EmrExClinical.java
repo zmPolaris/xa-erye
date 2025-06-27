@@ -1,9 +1,6 @@
 package cn.xa.eyre.hub.domain.emrmonitor;
 
-import java.util.Date;
-
 import cn.xa.eyre.common.core.domain.BaseEntity;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -72,12 +69,10 @@ public class EmrExClinical extends BaseEntity
     private String chiefComplaint;
 
     /** 症状开始时间 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date symptomStartDate;
+    private String symptomStartDate;
 
     /** 症状停止时间 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date symptomEndDate;
+    private String symptomEndDate;
 
     /** 症状描述 */
     private String symptomDesc;
@@ -101,8 +96,7 @@ public class EmrExClinical extends BaseEntity
     private String examinationReportNo;
 
     /** 检查报告日期 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date examinationReportDate;
+    private String examinationReportDate;
 
     /** 报告医师ID */
     private String examinationReportId;
@@ -123,8 +117,7 @@ public class EmrExClinical extends BaseEntity
     private String operatorId;
 
     /** 操作时间 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date operationTime;
+    private String operationTime;
 
     /** 作废标志 */
     private String invalidFlag;
@@ -136,8 +129,7 @@ public class EmrExClinical extends BaseEntity
     private String dataStatus;
 
     /** 入库日期 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date createDate;
+    private String createDate;
 
     /** 检查类别名称 */
     private String examinationTypeName;
@@ -304,21 +296,21 @@ public class EmrExClinical extends BaseEntity
     {
         return chiefComplaint;
     }
-    public void setSymptomStartDate(Date symptomStartDate)
+    public void setSymptomStartDate(String symptomStartDate)
     {
         this.symptomStartDate = symptomStartDate;
     }
 
-    public Date getSymptomStartDate()
+    public String getSymptomStartDate()
     {
         return symptomStartDate;
     }
-    public void setSymptomEndDate(Date symptomEndDate)
+    public void setSymptomEndDate(String symptomEndDate)
     {
         this.symptomEndDate = symptomEndDate;
     }
 
-    public Date getSymptomEndDate()
+    public String getSymptomEndDate()
     {
         return symptomEndDate;
     }
@@ -385,12 +377,12 @@ public class EmrExClinical extends BaseEntity
     {
         return examinationReportNo;
     }
-    public void setExaminationReportDate(Date examinationReportDate)
+    public void setExaminationReportDate(String examinationReportDate)
     {
         this.examinationReportDate = examinationReportDate;
     }
 
-    public Date getExaminationReportDate()
+    public String getExaminationReportDate()
     {
         return examinationReportDate;
     }
@@ -448,12 +440,12 @@ public class EmrExClinical extends BaseEntity
     {
         return operatorId;
     }
-    public void setOperationTime(Date operationTime)
+    public void setOperationTime(String operationTime)
     {
         this.operationTime = operationTime;
     }
 
-    public Date getOperationTime()
+    public String getOperationTime()
     {
         return operationTime;
     }
@@ -484,12 +476,12 @@ public class EmrExClinical extends BaseEntity
     {
         return dataStatus;
     }
-    public void setCreateDate(Date createDate)
+    public void setCreateDate(String createDate)
     {
         this.createDate = createDate;
     }
 
-    public Date getCreateDate()
+    public String getCreateDate()
     {
         return createDate;
     }

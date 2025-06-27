@@ -45,7 +45,7 @@ public class CommConvertService {
             // 根据HIS编码查询转码表，存在使用转码表数据，不存在则获取默认值
             DictDisDept dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
             if(dictDisDept == null){
-                deptParam.setEmrName(null);
+                deptParam.setEmrCode(null);
                 deptParam.setIsDefault(Constants.IS_DEFAULT);
                 dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
                 dictDisDept.setEmrCode(deptDict.getDeptCode());
@@ -135,7 +135,7 @@ public class CommConvertService {
             deptParam.setEmrCode(deptCode);
             DictDisDept dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
             if (dictDisDept == null){
-                deptParam.setEmrName(null);
+                deptParam.setEmrCode(null);
                 deptParam.setIsDefault(Constants.IS_DEFAULT);
                 dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
             }
