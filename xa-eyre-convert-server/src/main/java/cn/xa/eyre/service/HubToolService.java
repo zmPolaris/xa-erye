@@ -1,6 +1,5 @@
 package cn.xa.eyre.service;
 
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import cn.xa.eyre.comm.domain.DeptDict;
@@ -34,7 +33,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -67,7 +65,7 @@ public class HubToolService {
                 // 构造请求参数
                 emrPatientInfo.setId(patMasterIndex.getPatientId());
                 emrPatientInfo.setPatientName(patMasterIndex.getName());
-                if (StrUtil.isBlank(patMasterIndex.getIdNo())){
+                if (StringUtils.isBlank(patMasterIndex.getIdNo())){
                     emrPatientInfo.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE_OTHER.getCode());
                     emrPatientInfo.setIdCardTypeName(HubCodeEnum.ID_CARD_TYPE_OTHER.getName());
                     emrPatientInfo.setIdCard("-");
@@ -105,7 +103,7 @@ public class HubToolService {
                 emrPatientInfo.setOrgCode(HubCodeEnum.ORG_CODE.getCode());
                 emrPatientInfo.setOrgName(HubCodeEnum.ORG_CODE.getName());
                 // 查询操作员ID
-                if (StrUtil.isNotBlank(patMasterIndex.getOperator())){
+                if (StringUtils.isNotBlank(patMasterIndex.getOperator())){
                     R<Users> user = commFeignClient.getUserByName(patMasterIndex.getOperator());
                     if (R.SUCCESS == user.getCode() && user.getData() != null){
                         emrPatientInfo.setOperatorId(user.getData().getUserId());
@@ -231,7 +229,7 @@ public class HubToolService {
         R<List<OutpMr>> outpMrsResult = outpdoctFeignClient.getOutpMrList(num);
         if (R.SUCCESS == outpMrsResult.getCode() && !outpMrsResult.getData().isEmpty()){
             for (OutpMr outpMr : outpMrsResult.getData()){
-                R<PatMasterIndex> medrecResult = medrecFeignClient.getMedrec(outpMr.getPatientId());
+                R<PatMasterIndex> medrecResult = medrecFeignClient.getPatMasterIndex(outpMr.getPatientId());
                 R<ClinicMaster> outpadmResult = outpadmFeignClient.getClinicMaster(outpMr.getPatientId(), outpMr.getVisitNo(), DateUtils.dateTime(outpMr.getVisitDate()));
                 if (R.SUCCESS == medrecResult.getCode() && R.SUCCESS == outpadmResult.getCode()
                         && medrecResult.getData() != null && outpadmResult.getData() != null){
@@ -244,7 +242,7 @@ public class HubToolService {
                     emrActivityInfo.setId(id);
                     emrActivityInfo.setPatientId(outpMr.getPatientId());
                     String clinicType = clinicMaster.getClinicType();
-                    if (StrUtil.isNotBlank(clinicType)){
+                    if (StringUtils.isNotBlank(clinicType)){
                         if (clinicType.contains("急诊号")){
                             emrActivityInfo.setActivityTypeCode(HubCodeEnum.DIAGNOSIS_ACTIVITIES_EMERGENCY.getCode());
                             emrActivityInfo.setActivityTypeName(HubCodeEnum.DIAGNOSIS_ACTIVITIES_EMERGENCY.getName());
@@ -275,7 +273,7 @@ public class HubToolService {
                     emrActivityInfo.setDiagnoseTime(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, outpMr.getVisitDate()));
 
                     // 诊断代码
-                    if (StrUtil.isNotBlank(outpMr.getDiagnosisCodeMz1())){
+                    if (StringUtils.isNotBlank(outpMr.getDiagnosisCodeMz1())){
                         DictDiseaseIcd10 dictDiseaseIcd10 = dictDiseaseIcd10Mapper.selectByEmrCode(outpMr.getDiagnosisCodeMz1());
                         if(dictDiseaseIcd10 == null){
                             emrActivityInfo.setWmDiseaseCode(HubCodeEnum.DISEASE_ICD10_CODE.getCode());
@@ -284,7 +282,7 @@ public class HubToolService {
                             emrActivityInfo.setWmDiseaseCode(dictDiseaseIcd10.getHubCode());
                             emrActivityInfo.setWmDiseaseName(dictDiseaseIcd10.getHubName());
                         }
-                        if (StrUtil.isNotBlank(outpMr.getDiagnosisCodeMz2())){
+                        if (StringUtils.isNotBlank(outpMr.getDiagnosisCodeMz2())){
                             DictDiseaseIcd10 dictDiseaseIcd102 = dictDiseaseIcd10Mapper.selectByEmrCode(outpMr.getDiagnosisCodeMz2());
                             if(dictDiseaseIcd102 == null){
                                 emrActivityInfo.setWmDiseaseCode(HubCodeEnum.DISEASE_ICD10_CODE.getCode());
@@ -302,7 +300,7 @@ public class HubToolService {
                     emrActivityInfo.setFillDoctor(patMasterIndex.getOperator());
 
                     // 查询操作员ID
-                    if (StrUtil.isNotBlank(patMasterIndex.getOperator())){
+                    if (StringUtils.isNotBlank(patMasterIndex.getOperator())){
                         R<Users> user = commFeignClient.getUserByName(patMasterIndex.getOperator());
                         if (R.SUCCESS == user.getCode() && user.getData() != null){
                             emrActivityInfo.setOperatorId(user.getData().getUserId());

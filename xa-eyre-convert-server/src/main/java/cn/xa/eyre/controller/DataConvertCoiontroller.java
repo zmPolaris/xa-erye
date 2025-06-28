@@ -52,6 +52,16 @@ public class DataConvertCoiontroller {
         return AjaxResult.success("转码成功", dataConvertService.convertDiseaseIcd());
     }
 
+    /**
+     * 标本信息转码
+     * @param request
+     * @return
+     */
+    @PostMapping("/convertBb")
+    public AjaxResult convertBb(HttpServletRequest request){
+        return AjaxResult.success("转码成功", dataConvertService.convertBb());
+    }
+
     @PostMapping("/receiveKafkaData")
     public AjaxResult receiveKafkaData(@RequestBody DBMessage dbMessage, HttpServletRequest request, HttpServletResponse response){
         logger.debug("receiveKafkaData:{}", dbMessage);

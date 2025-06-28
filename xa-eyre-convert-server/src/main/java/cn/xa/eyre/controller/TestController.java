@@ -24,6 +24,6 @@ public class TestController {
 
     @GetMapping("/getPatMasterIndex/{patientId}")
     public R<PatMasterIndex> getPatMasterIndex(@PathVariable("patientId") String patientId){
-        return medrecFeignClient.getMedrec(patientId);
+        return medrecFeignClient.getPatMasterIndex(patientId);
     }
 }

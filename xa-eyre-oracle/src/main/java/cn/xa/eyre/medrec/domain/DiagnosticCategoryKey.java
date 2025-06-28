@@ -1,6 +1,6 @@
 package cn.xa.eyre.medrec.domain;
 
-public class DiagnosisKey {
+public class DiagnosticCategoryKey {
     private String patientId;
 
     private Short visitId;
@@ -9,14 +9,7 @@ public class DiagnosisKey {
 
     private Short diagnosisNo;
 
-    public DiagnosisKey() {
-    }
-
-    public DiagnosisKey(String patientId, Short visitId, String diagnosisType) {
-        this.patientId = patientId;
-        this.visitId = visitId;
-        this.diagnosisType = diagnosisType;
-    }
+    private String diagnosisCode;
 
     public String getPatientId() {
         return patientId;
@@ -48,5 +41,13 @@ public class DiagnosisKey {
 
     public void setDiagnosisNo(Short diagnosisNo) {
         this.diagnosisNo = diagnosisNo;
+    }
+
+    public String getDiagnosisCode() {
+        return diagnosisCode;
+    }
+
+    public void setDiagnosisCode(String diagnosisCode) {
+        this.diagnosisCode = diagnosisCode == null ? null : diagnosisCode.trim();
     }
 }

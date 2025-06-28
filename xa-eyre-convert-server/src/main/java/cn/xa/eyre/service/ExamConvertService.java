@@ -8,6 +8,7 @@ import cn.xa.eyre.common.constant.Constants;
 import cn.xa.eyre.common.core.domain.R;
 import cn.xa.eyre.common.core.kafka.DBMessage;
 import cn.xa.eyre.common.utils.DateUtils;
+import cn.xa.eyre.common.utils.StringUtils;
 import cn.xa.eyre.exam.domain.ExamMaster;
 import cn.xa.eyre.exam.domain.ExamReport;
 import cn.xa.eyre.hisapi.CommFeignClient;
@@ -77,7 +78,7 @@ public class ExamConvertService {
         examMaster.setAuditingDateTime(DateUtils.getLongDate(dbMessage.getAfterData().get("auditingDateTime")));
         examMaster.setVisitDate(DateUtils.getLongDate(dbMessage.getAfterData().get("visitDate")));
 
-        R<PatMasterIndex> medrecResult = medrecFeignClient.getMedrec(examMaster.getPatientId());
+        R<PatMasterIndex> medrecResult = medrecFeignClient.getPatMasterIndex(examMaster.getPatientId());
         R<ExamReport> examResult = examFeignClient.getExamReport(examMaster.getExamNo());
         if (R.SUCCESS == medrecResult.getCode() && R.SUCCESS == examResult.getCode()){
             DictDisDept dept = new DictDisDept();
@@ -103,7 +104,7 @@ public class ExamConvertService {
                 emrExClinical.setBedNo(String.valueOf(hospitalResult.getData().getBedNo()));
             }
             emrExClinical.setApplicationFormNo(examMaster.getPatientLocalId());
-            if(StrUtil.isNotBlank(examMaster.getFacility())){
+            if(StringUtils.isNotBlank(examMaster.getFacility())){
                 emrExClinical.setApplyOrgCode(HubCodeEnum.ORG_CODE.getCode());
                 emrExClinical.setApplyOrgName(HubCodeEnum.ORG_CODE.getName());
                 emrExClinical.setOrgCode(HubCodeEnum.ORG_CODE.getCode());
@@ -114,7 +115,7 @@ public class ExamConvertService {
                 emrExClinical.setOrgCode("-");
                 emrExClinical.setOrgName(examMaster.getFacility());
             }
-            if(StrUtil.isNotBlank(examMaster.getReqDept())){
+            if(StringUtils.isNotBlank(examMaster.getReqDept())){
                 DictDisDept deptParam = new DictDisDept();
                 deptParam.setStatus(Constants.STATUS_NORMAL);
                 deptParam.setEmrCode(examMaster.getReqDept());
@@ -138,7 +139,7 @@ public class ExamConvertService {
 
             PatMasterIndex patMasterIndex = medrecResult.getData();
             emrExClinical.setPatientName(patMasterIndex.getName());
-            if (StrUtil.isBlank(patMasterIndex.getIdNo())){
+            if (StringUtils.isBlank(patMasterIndex.getIdNo())){
                 emrExClinical.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE_OTHER.getCode());
                 emrExClinical.setIdCardTypeName(HubCodeEnum.ID_CARD_TYPE_OTHER.getName());
                 emrExClinical.setIdCard("-");
@@ -155,7 +156,7 @@ public class ExamConvertService {
             String no = DigestUtil.md5Hex(examReport.getExamNo() + examReport.getDescription());
             emrExClinical.setExaminationReportId(no);
             String reportname = examMaster.getReporter();
-            if (StrUtil.isBlank(reportname)){
+            if (StringUtils.isBlank(reportname)){
                 reportname = examMaster.getReqPhysician();
             }
             R<Users> user = commFeignClient.getUserByName(reportname);
@@ -168,7 +169,7 @@ public class ExamConvertService {
                 emrExClinical.setOperatorId("-");
                 emrExClinicalItem.setOperatorId("-");
             }
-            if (StrUtil.isNotBlank(examMaster.getPerformedBy())){
+            if (StringUtils.isNotBlank(examMaster.getPerformedBy())){
                 DictDisDept deptParam = new DictDisDept();
                 deptParam.setStatus(Constants.STATUS_NORMAL);
                 deptParam.setEmrCode(examMaster.getPerformedBy());

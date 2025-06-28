@@ -13,6 +13,7 @@ public enum HubCodeEnum {
     PAY_TYPE_OTHER("99", "其他"),
     EXAM_RESULT_ABNORMAL("01", "阳性"),
     EXAM_RESULT_OTHER("07", "未检出"),
+    SEX_OTHER("0", "未知的性别"),
 
 
     DIAGNOSIS_ACTIVITIES_OUTPATIENT("1", "门诊"),

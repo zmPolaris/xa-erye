@@ -27,7 +27,9 @@
     where PATIENT_ID = #{patientId,jdbcType=VARCHAR}
       and VISIT_ID = #{visitId,jdbcType=NUMERIC}
       and DIAGNOSIS_TYPE = #{diagnosisType,jdbcType=VARCHAR}
-      and DIAGNOSIS_NO = #{diagnosisNo,jdbcType=NUMERIC}
+      <if test="diagnosisNo != null">
+        and DIAGNOSIS_NO = #{diagnosisNo,jdbcType=NUMERIC}
+      </if>
   </select>
   <delete id="deleteByPrimaryKey" parameterType="cn.xa.eyre.medrec.domain.DiagnosisKey">
     delete from DIAGNOSIS

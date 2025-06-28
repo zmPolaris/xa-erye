@@ -1,6 +1,7 @@
 package cn.xa.eyre.common.utils;
 
 import cn.hutool.core.text.StrFormatter;
+import cn.hutool.core.util.StrUtil;
 import cn.xa.eyre.common.constant.Constants;
 import org.springframework.util.AntPathMatcher;
 
@@ -679,5 +680,17 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils
             hexString = new StringBuilder(String.valueOf(0)).append(hexString).toString();
         }
         return hexString.toUpperCase();
+    }
+    
+    public static boolean isBlank(String text){
+        if (StrUtil.isBlank(text) || text.equals("null")){
+            return true;
+        }else return false;
+    }
+
+    public static boolean isNotBlank(String text){
+        if (StringUtils.isNotBlank(text) && !text.equals("null")){
+            return true;
+        }else return false;
     }
 }

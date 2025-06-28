@@ -10,9 +10,11 @@ import cn.xa.eyre.insurance.domain.GysybIcd10;
 import cn.xa.eyre.system.dict.domain.DdDiseaseIcd;
 import cn.xa.eyre.system.dict.domain.DictDisDept;
 import cn.xa.eyre.system.dict.domain.DictDiseaseIcd10;
+import cn.xa.eyre.system.dict.domain.DictSpecimenCategory;
 import cn.xa.eyre.system.dict.mapper.DdDiseaseIcdMapper;
 import cn.xa.eyre.system.dict.mapper.DictDisDeptMapper;
 import cn.xa.eyre.system.dict.mapper.DictDiseaseIcd10Mapper;
+import cn.xa.eyre.system.dict.mapper.DictSpecimenCategoryMapper;
 import cn.xa.eyre.system.temp.domain.DictTemp;
 import cn.xa.eyre.system.temp.domain.HisDeptDict;
 import cn.xa.eyre.system.temp.mapper.DictTempMapper;
@@ -41,6 +43,8 @@ public class DataConvertService {
     private DdDiseaseIcdMapper ddDiseaseIcdMapper;// 前置软件诊断代码表
     @Autowired
     private InsuranceFeignClient insuranceFeignClient;// HIS
+    @Autowired
+    private DictSpecimenCategoryMapper dictSpecimenCategoryMapper;
 
     @Resource
     SynchroBaseService synchroBaseService;
@@ -154,6 +158,44 @@ public class DataConvertService {
                 }
                 dictDiseaseIcd10Mapper.insertSelective(dictDiseaseIcd10);
             }
+        }
+        return true;
+    }
+
+    public boolean convertBb() {
+        List<DictSpecimenCategory> dictSpecimenCategories = dictSpecimenCategoryMapper.selectAll();
+        List<DictTemp> hubList = dictTempMapper.selectAll();
+        for (DictSpecimenCategory sp : dictSpecimenCategories) {
+            boolean match = false;
+            for (DictTemp temp: hubList) {
+                if (temp.getName().equals(sp.getEmrName())){
+                    sp.setRemark("精准匹配");
+                    sp.setHubCode(temp.getCode());
+                    sp.setHubName(temp.getName());
+                    match = true;
+                    break;
+                }
+            }
+            if (!match){
+                // 模糊匹配
+                for (DictTemp temp2: hubList) {
+                    if (FuzzyMatcher.fuzzyMatch(temp2.getName(), sp.getEmrName())){
+                        sp.setRemark("模糊匹配");
+                        sp.setHubCode(temp2.getCode());
+                        sp.setHubName(temp2.getName());
+                        match = true;
+                        break;
+                    }
+                }
+            }
+            if (!match){
+                // 查询默认
+                sp.setRemark("未匹配到，其他类");
+                sp.setHubCode("99");
+                sp.setHubName("其他");
+            }
+            dictSpecimenCategoryMapper.updateByPrimaryKey(sp);
+
         }
         return true;
     }

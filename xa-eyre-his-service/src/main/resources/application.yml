@@ -72,9 +72,9 @@ kafka:
   topics:
     - oracle_service.COMM.USERS
     - oracle_service.COMM.DEPT_DICT
-    - oracle_service.INPADM.PAT_MASTER_INDEX
+    - oracle_service.MEDREC.PAT_MASTER_INDEX
     - oracle_service.OUTPDOCT.OUTP_MR
-    - oracle_service.MEDREC.PATS_IN_HOSPITAL
+    - oracle_service.INPADM.PATS_IN_HOSPITAL
     - oracle_service.MEDREC.DIAGNOSIS
     - oracle_service.MEDREC.PAT_VISIT
     - oracle_service.EXAM.EXAM_MASTER
