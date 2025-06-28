@@ -29,12 +29,12 @@ public class MedrecController {
         return AjaxResult.success("接口调用成功", medrecService.selectPatMasterIndexList(num));
     }
 
-    @GetMapping("/getDiagnosticCategory")
+    @PostMapping("/getDiagnosticCategory")
     public AjaxResult getDiagnosticCategory(@RequestBody DiagnosticCategoryKey diagnosticCategoryKey){
         return AjaxResult.success("接口调用成功", medrecService.selectDiagnosticCategory(diagnosticCategoryKey));
     }
 
-    @GetMapping("/getDiagnosis")
+    @PostMapping("/getDiagnosis")
     public AjaxResult getDiagnosis(@RequestBody DiagnosisKey diagnosisKey){
         return AjaxResult.success("接口调用成功", medrecService.selectDiagnosis(diagnosisKey));
     }
