@@ -683,13 +683,13 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils
     }
     
     public static boolean isBlank(String text){
-        if (StrUtil.isBlank(text) || text.equals("null")){
+        if (text == null || text.isEmpty() || text.equals("null")){
             return true;
         }else return false;
     }
 
     public static boolean isNotBlank(String text){
-        if (StringUtils.isNotBlank(text) && !text.equals("null")){
+        if (text != null && !text.isEmpty() && !text.equals("null")){
             return true;
         }else return false;
     }

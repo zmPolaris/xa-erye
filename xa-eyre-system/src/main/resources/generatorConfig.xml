@@ -31,14 +31,10 @@
             <property name="enableSubPackages" value="true"/>
         </javaClientGenerator>
 
-        <table tableName="dict_exam_type" domainObjectName="DictExamType"
+        <table tableName="dict_specimen_category" domainObjectName="DictSpecimenCategory"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false"
                selectByExampleQueryId="false"></table>
 
-        <table tableName="dict_exam_item" domainObjectName="DictExamItem"
-               enableCountByExample="false" enableUpdateByExample="false"
-               enableDeleteByExample="false" enableSelectByExample="false"
-               selectByExampleQueryId="false"></table>
     </context>
 </generatorConfiguration>

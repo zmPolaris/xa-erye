@@ -31,7 +31,7 @@
             <property name="enableSubPackages" value="true"/>
         </javaClientGenerator>
 
-        <table tableName="PAT_MASTER_INDEX" domainObjectName="PatMasterIndex"
+        <table tableName="DIAGNOSTIC_CATEGORY" domainObjectName="DiagnosticCategory"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false"
                selectByExampleQueryId="false"></table>
