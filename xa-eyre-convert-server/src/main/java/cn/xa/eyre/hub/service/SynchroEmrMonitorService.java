@@ -51,7 +51,11 @@ public class SynchroEmrMonitorService {
             logger.info("->{},response:{}", "门（急）诊病历表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo = JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
-            log.setResult(Constants.API_STATUS_SUCCESS);
+            if (synchroResponseVo.isResult()){
+                log.setResult(Constants.API_STATUS_SUCCESS);
+            }else {
+                log.setResult(Constants.API_STATUS_FAIL);
+            }
         } catch (IOException e) {
             e.printStackTrace();
             log.setResult(Constants.API_STATUS_FAIL);
@@ -81,7 +85,11 @@ public class SynchroEmrMonitorService {
             logger.info("->{},response:{}", "门（急）诊留观记录表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo =  JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
-            log.setResult(Constants.API_STATUS_SUCCESS);
+            if (synchroResponseVo.isResult()){
+                log.setResult(Constants.API_STATUS_SUCCESS);
+            }else {
+                log.setResult(Constants.API_STATUS_FAIL);
+            }
         } catch (IOException e) {
             e.printStackTrace();
             log.setResult(Constants.API_STATUS_FAIL);
@@ -111,7 +119,11 @@ public class SynchroEmrMonitorService {
             logger.info("->{},response:{}", "入院记录表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo =  JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
-            log.setResult(Constants.API_STATUS_SUCCESS);
+            if (synchroResponseVo.isResult()){
+                log.setResult(Constants.API_STATUS_SUCCESS);
+            }else {
+                log.setResult(Constants.API_STATUS_FAIL);
+            }
         } catch (IOException e) {
             e.printStackTrace();
             log.setResult(Constants.API_STATUS_FAIL);
@@ -141,7 +153,11 @@ public class SynchroEmrMonitorService {
             logger.info("->{},response:{}", "住院首次病程记录表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo = JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
-            log.setResult(Constants.API_STATUS_SUCCESS);
+            if (synchroResponseVo.isResult()){
+                log.setResult(Constants.API_STATUS_SUCCESS);
+            }else {
+                log.setResult(Constants.API_STATUS_FAIL);
+            }
         } catch (IOException e) {
             e.printStackTrace();
             log.setResult(Constants.API_STATUS_FAIL);
@@ -171,7 +187,11 @@ public class SynchroEmrMonitorService {
             logger.info("->{},response:{}", "住院日常病程记录表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo =  JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
-            log.setResult(Constants.API_STATUS_SUCCESS);
+            if (synchroResponseVo.isResult()){
+                log.setResult(Constants.API_STATUS_SUCCESS);
+            }else {
+                log.setResult(Constants.API_STATUS_FAIL);
+            }
         } catch (IOException e) {
             e.printStackTrace();
             log.setResult(Constants.API_STATUS_FAIL);
@@ -201,7 +221,11 @@ public class SynchroEmrMonitorService {
             logger.info("->{},response:{}", "住院病案首页表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo =  JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
-            log.setResult(Constants.API_STATUS_SUCCESS);
+            if (synchroResponseVo.isResult()){
+                log.setResult(Constants.API_STATUS_SUCCESS);
+            }else {
+                log.setResult(Constants.API_STATUS_FAIL);
+            }
         } catch (IOException e) {
             e.printStackTrace();
             log.setResult(Constants.API_STATUS_FAIL);
@@ -231,7 +255,11 @@ public class SynchroEmrMonitorService {
             logger.info("->{},response:{}", "出院记录表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo = JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
-            log.setResult(Constants.API_STATUS_SUCCESS);
+            if (synchroResponseVo.isResult()){
+                log.setResult(Constants.API_STATUS_SUCCESS);
+            }else {
+                log.setResult(Constants.API_STATUS_FAIL);
+            }
         } catch (IOException e) {
             e.printStackTrace();
             log.setResult(Constants.API_STATUS_FAIL);
@@ -261,7 +289,11 @@ public class SynchroEmrMonitorService {
             logger.info("->{},response:{}", "检查报告表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo =  JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
-            log.setResult(Constants.API_STATUS_SUCCESS);
+            if (synchroResponseVo.isResult()){
+                log.setResult(Constants.API_STATUS_SUCCESS);
+            }else {
+                log.setResult(Constants.API_STATUS_FAIL);
+            }
         } catch (IOException e) {
             e.printStackTrace();
             log.setResult(Constants.API_STATUS_FAIL);
@@ -291,7 +323,11 @@ public class SynchroEmrMonitorService {
             logger.info("->{},response:{}", "检查报告项目表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo =  JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
-            log.setResult(Constants.API_STATUS_SUCCESS);
+            if (synchroResponseVo.isResult()){
+                log.setResult(Constants.API_STATUS_SUCCESS);
+            }else {
+                log.setResult(Constants.API_STATUS_FAIL);
+            }
         } catch (IOException e) {
             e.printStackTrace();
             log.setResult(Constants.API_STATUS_FAIL);
@@ -321,7 +357,11 @@ public class SynchroEmrMonitorService {
             logger.info("->{},response:{}", "检验报告表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo = JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
-            log.setResult(Constants.API_STATUS_SUCCESS);
+            if (synchroResponseVo.isResult()){
+                log.setResult(Constants.API_STATUS_SUCCESS);
+            }else {
+                log.setResult(Constants.API_STATUS_FAIL);
+            }
         } catch (IOException e) {
             e.printStackTrace();
             log.setResult(Constants.API_STATUS_FAIL);
@@ -351,7 +391,11 @@ public class SynchroEmrMonitorService {
             logger.info("->{},response:{}", "检验报告项目表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo =  JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
-            log.setResult(Constants.API_STATUS_SUCCESS);
+            if (synchroResponseVo.isResult()){
+                log.setResult(Constants.API_STATUS_SUCCESS);
+            }else {
+                log.setResult(Constants.API_STATUS_FAIL);
+            }
         } catch (IOException e) {
             e.printStackTrace();
             log.setResult(Constants.API_STATUS_FAIL);
@@ -381,7 +425,11 @@ public class SynchroEmrMonitorService {
             logger.info("->{},response:{}", "医嘱处方信息表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo =  JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
-            log.setResult(Constants.API_STATUS_SUCCESS);
+            if (synchroResponseVo.isResult()){
+                log.setResult(Constants.API_STATUS_SUCCESS);
+            }else {
+                log.setResult(Constants.API_STATUS_FAIL);
+            }
         } catch (IOException e) {
             e.printStackTrace();
             log.setResult(Constants.API_STATUS_FAIL);
@@ -411,7 +459,11 @@ public class SynchroEmrMonitorService {
             logger.info("->{},response:{}", "医嘱处方条目表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo = JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
-            log.setResult(Constants.API_STATUS_SUCCESS);
+            if (synchroResponseVo.isResult()){
+                log.setResult(Constants.API_STATUS_SUCCESS);
+            }else {
+                log.setResult(Constants.API_STATUS_FAIL);
+            }
         } catch (IOException e) {
             e.printStackTrace();
             log.setResult(Constants.API_STATUS_FAIL);
@@ -441,7 +493,11 @@ public class SynchroEmrMonitorService {
             logger.info("->{},response:{}", "死亡信息表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo =  JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
-            log.setResult(Constants.API_STATUS_SUCCESS);
+            if (synchroResponseVo.isResult()){
+                log.setResult(Constants.API_STATUS_SUCCESS);
+            }else {
+                log.setResult(Constants.API_STATUS_FAIL);
+            }
         } catch (IOException e) {
             e.printStackTrace();
             log.setResult(Constants.API_STATUS_FAIL);
@@ -471,7 +527,11 @@ public class SynchroEmrMonitorService {
             logger.info("->{},response:{}", "生命体征护理记录单数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo =  JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
-            log.setResult(Constants.API_STATUS_SUCCESS);
+            if (synchroResponseVo.isResult()){
+                log.setResult(Constants.API_STATUS_SUCCESS);
+            }else {
+                log.setResult(Constants.API_STATUS_FAIL);
+            }
         } catch (IOException e) {
             e.printStackTrace();
             log.setResult(Constants.API_STATUS_FAIL);

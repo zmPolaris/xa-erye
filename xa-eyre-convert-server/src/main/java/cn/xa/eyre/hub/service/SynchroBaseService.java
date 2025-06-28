@@ -53,7 +53,11 @@ public class SynchroBaseService {
             logger.info("->{},response:{}", "医院信息系统用户信息表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo = JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
-            log.setResult(Constants.API_STATUS_SUCCESS);
+            if (synchroResponseVo.isResult()){
+                log.setResult(Constants.API_STATUS_SUCCESS);
+            }else {
+                log.setResult(Constants.API_STATUS_FAIL);
+            }
         } catch (IOException e) {
             e.printStackTrace();
             log.setResult(Constants.API_STATUS_FAIL);
@@ -83,7 +87,11 @@ public class SynchroBaseService {
             logger.info("->{},response:{}", "医院信息系统科室信息数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo =  JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
-            log.setResult(Constants.API_STATUS_SUCCESS);
+            if (synchroResponseVo.isResult()){
+                log.setResult(Constants.API_STATUS_SUCCESS);
+            }else {
+                log.setResult(Constants.API_STATUS_FAIL);
+            }
         } catch (IOException e) {
             e.printStackTrace();
             log.setResult(Constants.API_STATUS_FAIL);

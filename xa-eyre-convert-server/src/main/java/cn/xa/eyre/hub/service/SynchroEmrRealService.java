@@ -53,7 +53,11 @@ public class SynchroEmrRealService {
             logger.info("->{},response:{}", "患者基本信息表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo = JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
-            log.setResult(Constants.API_STATUS_SUCCESS);
+            if (synchroResponseVo.isResult()){
+                log.setResult(Constants.API_STATUS_SUCCESS);
+            }else {
+                log.setResult(Constants.API_STATUS_FAIL);
+            }
         } catch (IOException e) {
             e.printStackTrace();
             log.setResult(Constants.API_STATUS_FAIL);
@@ -83,7 +87,11 @@ public class SynchroEmrRealService {
             logger.info("->{},response:{}", "诊疗活动信息表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo =  JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
-            log.setResult(Constants.API_STATUS_SUCCESS);
+            if (synchroResponseVo.isResult()){
+                log.setResult(Constants.API_STATUS_SUCCESS);
+            }else {
+                log.setResult(Constants.API_STATUS_FAIL);
+            }
         } catch (IOException e) {
             e.printStackTrace();
             log.setResult(Constants.API_STATUS_FAIL);
@@ -113,7 +121,11 @@ public class SynchroEmrRealService {
             logger.info("->{},response:{}", "传染病报告卡数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo =  JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
-            log.setResult(Constants.API_STATUS_SUCCESS);
+            if (synchroResponseVo.isResult()){
+                log.setResult(Constants.API_STATUS_SUCCESS);
+            }else {
+                log.setResult(Constants.API_STATUS_FAIL);
+            }
         } catch (IOException e) {
             e.printStackTrace();
             log.setResult(Constants.API_STATUS_FAIL);
