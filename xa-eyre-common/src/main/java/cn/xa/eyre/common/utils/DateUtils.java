@@ -1,5 +1,6 @@
 package cn.xa.eyre.common.utils;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 
 import java.lang.management.ManagementFactory;
@@ -247,7 +248,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
     }
 
     public static Date getLongDate(String datetime){
-        if (null != datetime){
+        if (StringUtils.isNotBlank(datetime) || !"null".equalsIgnoreCase(datetime)){
             return new Date(Long.valueOf(datetime));
         }else return null;
     }
