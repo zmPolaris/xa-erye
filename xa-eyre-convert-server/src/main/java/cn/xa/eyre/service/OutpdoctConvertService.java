@@ -235,6 +235,7 @@ public class OutpdoctConvertService {
                 emrActivityInfo.setOrgCode(HubCodeEnum.ORG_CODE.getCode());
                 emrActivityInfo.setOrgName(HubCodeEnum.ORG_CODE.getName());
                 emrActivityInfo.setOperationTime(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, DateUtils.getNowDate()));
+                emrActivityInfo.setOperatorId(emrOutpatientRecord.getOperatorId());
                 synchroEmrRealService.syncEmrActivityInfo(emrActivityInfo, httpMethod);
             }else {
                 logger.error("{}对应PatMasterIndex信息或ClinicMaster信息为空，无法同步", outpMr.getPatientId());
