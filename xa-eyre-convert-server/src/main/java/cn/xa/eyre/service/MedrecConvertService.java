@@ -171,7 +171,8 @@ public class MedrecConvertService {
         BeanUtil.copyProperties(diagnosis, diagnosticCategoryKey);
         R<DiagnosticCategory> diagnosticCatResult = medrecFeignClient.getDiagnosticCategory(diagnosticCategoryKey);
         R<PatsInHospital> hospitalResult = inpadmFeignClient.getPatsInHospital(diagnosis.getPatientId(), diagnosis.getVisitId());
-        if (R.SUCCESS == hospitalResult.getCode() && R.SUCCESS == medrecResult.getCode()){
+        if (R.SUCCESS == hospitalResult.getCode() && hospitalResult.getData() != null
+                && R.SUCCESS == medrecResult.getCode() && medrecResult.getData() != null){
             EmrFirstCourse emrFirstCourse = new EmrFirstCourse();
             EmrDailyCourse emrDailyCourse = new EmrDailyCourse();
             // ID使用DIAGNOSIS表patientId、visitId、diagnosisDate拼接计算MD5
@@ -358,8 +359,10 @@ public class MedrecConvertService {
         DiagnosticCategoryKey diagnosticCategoryKey = new DiagnosticCategoryKey();
         BeanUtil.copyProperties(diagnosisInResult.getData(), diagnosticCategoryKey);
         R<DiagnosticCategory> diagnosticInCatResult = medrecFeignClient.getDiagnosticCategory(diagnosticCategoryKey);
-        if (R.SUCCESS == hospitalResult.getCode() && R.SUCCESS == medrecResult.getCode()
-                && R.SUCCESS == diagnosisInResult.getCode() && R.SUCCESS == diagnosticInCatResult.getCode()){
+        if (R.SUCCESS == hospitalResult.getCode() && hospitalResult.getData() != null
+                && R.SUCCESS == medrecResult.getCode() && medrecResult.getData() != null
+                && R.SUCCESS == diagnosisInResult.getCode() && diagnosisInResult.getData() != null
+                && R.SUCCESS == diagnosticInCatResult.getCode() && diagnosticInCatResult.getData() != null){
             EmrAdmissionRecord emrAdmissionRecord = new EmrAdmissionRecord();
             EmrDischargeInfo emrDischargeInfo = new EmrDischargeInfo();
             // ID使用PAT_VISIT表patientId、visitId拼接计算MD5

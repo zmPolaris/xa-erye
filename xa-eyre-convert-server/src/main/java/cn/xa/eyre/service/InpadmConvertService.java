@@ -83,7 +83,8 @@ public class InpadmConvertService {
         R<PatMasterIndex> medrecResult = medrecFeignClient.getPatMasterIndex(patsInHospital.getPatientId());
         DiagnosisKey diagnosisKey = new DiagnosisKey(patsInHospital.getPatientId(), patsInHospital.getVisitId(), "2");
         R<Diagnosis> diagnosisResult = medrecFeignClient.getDiagnosis(diagnosisKey);
-        if (R.SUCCESS == medrecResult.getCode() && R.SUCCESS == diagnosisResult.getCode() && diagnosisResult.getData() != null){
+        if (R.SUCCESS == medrecResult.getCode() && medrecResult.getData() != null
+                && R.SUCCESS == diagnosisResult.getCode() && diagnosisResult.getData() != null){
             DiagnosticCategoryKey diagnosticCategoryKey = new DiagnosticCategoryKey();
             BeanUtil.copyProperties(diagnosisResult.getData(), diagnosticCategoryKey);
             R<DiagnosticCategory> diagnosticCatResult = medrecFeignClient.getDiagnosticCategory(diagnosticCategoryKey);
@@ -141,7 +142,7 @@ public class InpadmConvertService {
             outpMr.setBeginVisitDate(DateUtils.addDays(patsInHospital.getAdmissionDateTime(), -7));
             outpMr.setEndVisitDate(patsInHospital.getAdmissionDateTime());
             R<List<OutpMr>> mrResult = outpdoctFeignClient.getOutpMrByCondition(outpMr);
-            if (R.SUCCESS == mrResult.getCode()){
+            if (R.SUCCESS == mrResult.getCode() &&mrResult.getData() != null){
                 outpMr = mrResult.getData().get(0);
                 emrAdmissionInfo.setChiefComplaint(outpMr.getIllnessDesc());
                 emrAdmissionInfo.setPresentIllnessHis(outpMr.getMedHistory());

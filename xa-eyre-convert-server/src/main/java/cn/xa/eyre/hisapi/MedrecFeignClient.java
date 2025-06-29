@@ -25,4 +25,7 @@ public interface MedrecFeignClient {
 
     @PostMapping("/medrec/getDiagnosis")
     public R<Diagnosis> getDiagnosis(@RequestBody DiagnosisKey diagnosisKey);
+
+    @PostMapping("/medrec/getOutpMrYb")
+    public R<OutpMrYb> getOutpMrYb(@RequestBody OutpMrYbKey outpMrYbKey);
 }

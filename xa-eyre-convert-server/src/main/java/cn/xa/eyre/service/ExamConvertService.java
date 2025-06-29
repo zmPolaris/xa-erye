@@ -80,7 +80,8 @@ public class ExamConvertService {
 
         R<PatMasterIndex> medrecResult = medrecFeignClient.getPatMasterIndex(examMaster.getPatientId());
         R<ExamReport> examResult = examFeignClient.getExamReport(examMaster.getExamNo());
-        if (R.SUCCESS == medrecResult.getCode() && R.SUCCESS == examResult.getCode()){
+        if (R.SUCCESS == medrecResult.getCode() && medrecResult.getData() != null
+                && R.SUCCESS == examResult.getCode() && examResult.getData() != null){
             DictDisDept dept = new DictDisDept();
             dept.setStatus(Constants.STATUS_NORMAL);
             dept.setIsDefault(Constants.IS_DEFAULT);

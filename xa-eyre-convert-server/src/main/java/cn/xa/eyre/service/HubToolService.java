@@ -7,6 +7,7 @@ import cn.xa.eyre.comm.domain.Users;
 import cn.xa.eyre.common.constant.Constants;
 import cn.xa.eyre.common.core.domain.R;
 import cn.xa.eyre.common.utils.DateUtils;
+import cn.xa.eyre.common.utils.StringUtils;
 import cn.xa.eyre.hisapi.CommFeignClient;
 import cn.xa.eyre.hisapi.MedrecFeignClient;
 import cn.xa.eyre.hisapi.OutpadmFeignClient;
@@ -27,7 +28,7 @@ import cn.xa.eyre.system.dict.domain.DictDiseaseIcd10;
 import cn.xa.eyre.system.dict.mapper.DdNationMapper;
 import cn.xa.eyre.system.dict.mapper.DictDisDeptMapper;
 import cn.xa.eyre.system.dict.mapper.DictDiseaseIcd10Mapper;
-import org.apache.commons.lang3.StringUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
