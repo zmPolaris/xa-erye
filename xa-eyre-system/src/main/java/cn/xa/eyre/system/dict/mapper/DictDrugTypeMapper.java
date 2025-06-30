@@ -14,4 +14,7 @@ public interface DictDrugTypeMapper {
     int updateByPrimaryKeySelective(DictDrugType record);
 
     int updateByPrimaryKey(DictDrugType record);
+
+    DictDrugType selectByEmrCode(String emrCode);
+
 }

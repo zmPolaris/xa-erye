@@ -26,4 +26,9 @@ public class InpadmController {
         return AjaxResult.success("接口调用成功", patsInHospitalMapper.selectPatsInHospital(params));
     }
 
+    @GetMapping("/selectPatsInHospitalByPatientId")
+    public AjaxResult getPatsInHospital(@RequestParam("patientId") String patientId){
+        return AjaxResult.success("接口调用成功", patsInHospitalMapper.selectPatsInHospitalByPatientId(patientId));
+    }
+
 }

@@ -18,4 +18,6 @@ public interface PatsInHospitalMapper {
     int updateByPrimaryKey(PatsInHospital record);
 
     PatsInHospital selectPatsInHospital(Map<String, Object> params);
+
+    PatsInHospital selectPatsInHospitalByPatientId(String patientId);
 }

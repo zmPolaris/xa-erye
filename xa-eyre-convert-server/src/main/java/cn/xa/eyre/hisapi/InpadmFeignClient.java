@@ -16,4 +16,7 @@ public interface InpadmFeignClient {
 
     @GetMapping("/inpadm/getPatsInHospital")
     public R<PatsInHospital> getPatsInHospital(@RequestParam("patientId") String patientId, @RequestParam("visitId") Short visitId);
+
+    @GetMapping("/inpadm/selectPatsInHospitalByPatientId")
+    public R<PatsInHospital> getPatsInHospitalByPatientId(@RequestParam("patientId") String patientId);
 }

@@ -265,14 +265,6 @@ public class OutpdoctConvertService {
 
                 emrActivityInfo.setFillDoctor(patMasterIndex.getOperator());
 
-                // 查询操作员ID
-                if (StringUtils.isNotBlank(clinicMaster.getOperator())){
-                    R<Users> user = commFeignClient.getUserByName(patMasterIndex.getOperator());
-                    if (R.SUCCESS == user.getCode() && user.getData() != null){
-                        emrActivityInfo.setOperatorId(user.getData().getUserId());
-                    }
-                }
-
                 emrActivityInfo.setDeptCode(dictDisDept.getHubCode());
                 emrActivityInfo.setDeptName(dictDisDept.getHubName());
 

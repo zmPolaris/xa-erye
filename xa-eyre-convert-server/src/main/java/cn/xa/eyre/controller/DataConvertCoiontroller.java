@@ -31,6 +31,10 @@ public class DataConvertCoiontroller {
     private InpadmConvertService inpadmConvertService;
     @Autowired
     private ExamConvertService examConvertService;
+    @Autowired
+    private OrdadmConvertService ordadmConvertService;
+    @Autowired
+    private PharmacyConvertService pharmacyConvertService;
 
     /**
      * 部门信息转码
@@ -92,6 +96,9 @@ public class DataConvertCoiontroller {
                 break;
             case "exam.exam_master":
                 examConvertService.examMaster(dbMessage);
+                break;
+            case "pharmacy.drug_presc_master":
+                pharmacyConvertService.drugPrescMaster(dbMessage);
                 break;
             default:
 
