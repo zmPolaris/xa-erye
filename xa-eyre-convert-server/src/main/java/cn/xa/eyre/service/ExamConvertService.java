@@ -121,13 +121,7 @@ public class ExamConvertService {
                 emrExClinical.setOrgName(examMaster.getFacility());
             }
             if(StringUtils.isNotBlank(examMaster.getReqDept())){
-                DictDisDept deptParam = new DictDisDept();
-                deptParam.setStatus(Constants.STATUS_NORMAL);
-                deptParam.setEmrCode(examMaster.getReqDept());
-                DictDisDept dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
-                if (dictDisDept == null){
-                    dictDisDept = dictDisDeptDefault;
-                }
+                DictDisDept dictDisDept = hubToolService.getDept(examMaster.getReqDept());
                 emrExClinical.setApplyDeptCode(dictDisDept.getHubCode());
                 emrExClinical.setApplyDeptName(dictDisDept.getHubName());
             }
@@ -175,13 +169,7 @@ public class ExamConvertService {
                 emrExClinicalItem.setOperatorId("-");
             }
             if (StringUtils.isNotBlank(examMaster.getPerformedBy())){
-                DictDisDept deptParam = new DictDisDept();
-                deptParam.setStatus(Constants.STATUS_NORMAL);
-                deptParam.setEmrCode(examMaster.getPerformedBy());
-                DictDisDept dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
-                if (dictDisDept == null){
-                    dictDisDept = dictDisDeptDefault;
-                }
+                DictDisDept dictDisDept = hubToolService.getDept(examMaster.getPerformedBy());
                 emrExClinical.setDeptCode(dictDisDept.getHubCode());
                 emrExClinical.setDeptName(dictDisDept.getHubName());
             }else {

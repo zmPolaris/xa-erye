@@ -228,15 +228,7 @@ public class MedrecConvertService {
                     }
                 }
 
-                DictDisDept deptParam = new DictDisDept();
-                deptParam.setStatus(Constants.STATUS_NORMAL);
-                deptParam.setEmrCode(hospitalResult.getData().getDeptCode());
-                DictDisDept dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
-                if (dictDisDept == null){
-                    deptParam.setEmrCode(null);
-                    deptParam.setIsDefault(Constants.IS_DEFAULT);
-                    dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
-                }
+                DictDisDept dictDisDept = hubToolService.getDept(hospitalResult.getData().getDeptCode());
 
                 emrFirstCourse.setDeptCode(dictDisDept.getHubCode());
                 emrFirstCourse.setDeptName(dictDisDept.getHubName());
@@ -295,15 +287,7 @@ public class MedrecConvertService {
 
                 emrDailyCourse.setWardNo(hospitalResult.getData().getWardCode());
                 emrDailyCourse.setBedNo(String.valueOf(hospitalResult.getData().getBedNo()));
-                DictDisDept deptParam = new DictDisDept();
-                deptParam.setStatus(Constants.STATUS_NORMAL);
-                deptParam.setEmrCode(hospitalResult.getData().getDeptCode());
-                DictDisDept dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
-                if (dictDisDept == null){
-                    deptParam.setEmrCode(null);
-                    deptParam.setIsDefault(Constants.IS_DEFAULT);
-                    dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
-                }
+                DictDisDept dictDisDept = hubToolService.getDept(hospitalResult.getData().getDeptCode());
 
                 emrDailyCourse.setDeptCode(dictDisDept.getHubCode());
                 emrDailyCourse.setDeptName(dictDisDept.getHubName());
@@ -409,15 +393,7 @@ public class MedrecConvertService {
                     emrAdmissionRecord.setChiefPhysicianId(user.getData().getUserId());
                 }
             }
-            DictDisDept deptParam = new DictDisDept();
-            deptParam.setStatus(Constants.STATUS_NORMAL);
-            deptParam.setEmrCode(patVisit.getDeptAdmissionTo());
-            DictDisDept dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
-            if (dictDisDept == null){
-                deptParam.setEmrCode(null);
-                deptParam.setIsDefault(Constants.IS_DEFAULT);
-                dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
-            }
+            DictDisDept dictDisDept = hubToolService.getDept(patVisit.getDeptAdmissionTo());
             emrAdmissionRecord.setDeptCode(dictDisDept.getHubCode());
             emrAdmissionRecord.setDeptName(dictDisDept.getHubName());
             emrAdmissionRecord.setAdmissionDeptCode(dictDisDept.getHubCode());
@@ -482,13 +458,7 @@ public class MedrecConvertService {
                 long betweenDay = DateUtil.between(patVisit.getAdmissionDateTime(), patVisit.getDischargeDateTime(), DateUnit.DAY);
                 emrAdmissionRecord.setAdmissionDays(String.valueOf(betweenDay));
                 emrAdmissionRecord.setDischargeWard(hospitalResult.getData().getWardCode());
-                deptParam.setEmrCode(patVisit.getDeptDischargeFrom());
-                dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
-                if (dictDisDept == null){
-                    deptParam.setEmrCode(null);
-                    deptParam.setIsDefault(Constants.IS_DEFAULT);
-                    dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
-                }
+                dictDisDept = hubToolService.getDept(patVisit.getDeptDischargeFrom());
                 emrAdmissionRecord.setDischargeDeptCode(dictDisDept.getHubCode());
                 emrAdmissionRecord.setDischargeDeptName(dictDisDept.getHubName());
             }

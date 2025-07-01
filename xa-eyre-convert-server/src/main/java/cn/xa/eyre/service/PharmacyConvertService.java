@@ -133,15 +133,7 @@ public class PharmacyConvertService {
             if (R.SUCCESS == user.getCode() && user.getData() != null) {
                 emrOrder.setPrescriptionDispensingId(user.getData().getUserId());
             }
-            DictDisDept deptParam = new DictDisDept();
-            deptParam.setStatus(Constants.STATUS_NORMAL);
-            deptParam.setEmrCode(drugPrescMaster.getOrderedBy());
-            DictDisDept dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
-            if (dictDisDept == null) {
-                deptParam.setEmrCode(null);
-                deptParam.setIsDefault(Constants.IS_DEFAULT);
-                dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
-            }
+            DictDisDept dictDisDept = hubToolService.getDept(drugPrescMaster.getOrderedBy());
 
             emrOrder.setDeptCode(dictDisDept.getHubCode());
             emrOrder.setDeptName(dictDisDept.getHubName());

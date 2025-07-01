@@ -169,15 +169,7 @@ public class OutpdoctConvertService {
                 }
 
                 ClinicMaster clinicMaster = outpadmResult.getData();
-                DictDisDept deptParam = new DictDisDept();
-                deptParam.setStatus(Constants.STATUS_NORMAL);
-                deptParam.setEmrCode(clinicMaster.getVisitDept());
-                DictDisDept dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
-                if (dictDisDept == null){
-                    deptParam.setEmrCode(null);
-                    deptParam.setIsDefault(Constants.IS_DEFAULT);
-                    dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
-                }
+                DictDisDept dictDisDept = hubToolService.getDept(clinicMaster.getVisitDept());
 
                 // 查询操作员ID
                 if (StringUtils.isNotBlank(outpMr.getDoctor())){

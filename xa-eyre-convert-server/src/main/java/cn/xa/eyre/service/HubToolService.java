@@ -3,6 +3,7 @@ package cn.xa.eyre.service;
 import cn.hutool.core.util.IdcardUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
+import cn.hutool.json.JSONUtil;
 import cn.xa.eyre.comm.domain.DeptDict;
 import cn.xa.eyre.comm.domain.Users;
 import cn.xa.eyre.common.constant.Constants;
@@ -173,7 +174,6 @@ public class HubToolService {
                 return true;
             }
         }else {
-//            list = dictDisDeptMapper.selectDeptList(num);
             R<List<DeptDict>> deptsResult = commFeignClient.getDeptList(num);
             if (R.SUCCESS == deptsResult.getCode() && !deptsResult.getData().isEmpty()){
                 for (DeptDict deptDict : deptsResult.getData()){
@@ -184,29 +184,25 @@ public class HubToolService {
                     // 根据HIS编码查询转码表，存在使用转码表数据
                     DictDisDept dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
                     if(dictDisDept == null){
+                        dictDisDept = new DictDisDept();
                         List<DictDisDept> list = dictDisDeptMapper.selectAll();
                         boolean isExist = false;
                         for (DictDisDept dict : list) {
-                            // 获取转码表中不存在的院内编码并包含科室名称的
-                            if(dict.getHubName().contains(deptDict.getDeptName()) && !dict.getEmrCode().equals(deptDict.getDeptCode())) {
+                            if(deptDict.getDeptName().contains(dict.getHubName())) {
                                 dictDisDept.setHubCode(dict.getHubCode());
                                 dictDisDept.setHubName(dict.getHubName());
-                                dictDisDept.setUpdateTime(DateUtils.getNowDate());
-                                dictDisDeptMapper.updateByPrimaryKey(dictDisDept);
                                 isExist = true;
+                                break;
                             }
                         }
-                        // 不存在则获取默认前置软件代码
                         if (!isExist){
-                            deptParam.setEmrCode(null);
-                            deptParam.setIsDefault(Constants.IS_DEFAULT);
-                            dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
-//                            dictDisDept.setEmrCode(deptDict.getDeptCode());
-//                            dictDisDept.setEmrName(deptDict.getDeptName());
-//                            dictDisDept.setCreateTime(DateUtils.getNowDate());
-//                            dictDisDept.setId(null);
-//                            dictDisDeptMapper.insertSelective(dictDisDept);
+                            dictDisDept.setHubCode("D99");
+                            dictDisDept.setHubName("其他科室");
                         }
+                        dictDisDept.setEmrCode(deptDict.getDeptCode());
+                        dictDisDept.setEmrName(deptDict.getDeptName());
+                        dictDisDept.setCreateTime(DateUtils.getNowDate());
+                        dictDisDeptMapper.insertSelective(dictDisDept);
                     }else {
                         // 更新转码表
                         dictDisDept.setEmrCode(deptDict.getDeptCode());
@@ -219,7 +215,8 @@ public class HubToolService {
                     baseDept.setTargetDeptCode(dictDisDept.getHubCode());
                     baseDept.setTargetDeptName(dictDisDept.getHubName());
                     baseDept.setCreateTime(DateUtils.getNowDate());
-                    synchroBaseService.syncBaseDept(baseDept, Constants.HTTP_METHOD_POST);
+                    logger.info("同步数据：{}", JSONUtil.toJsonStr(baseDept));
+//                    synchroBaseService.syncBaseDept(baseDept, Constants.HTTP_METHOD_POST);
                 }
                 return true;
             }
@@ -413,29 +410,19 @@ public class HubToolService {
         deptParam.setStatus(Constants.STATUS_NORMAL);
         deptParam.setEmrCode(code);
         DictDisDept dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
-        if (dictDisDept == null ){
+        if (dictDisDept == null || dictDisDept.getHubCode().equals("D99")){
             R<DeptDict> deptResult = commFeignClient.getDept(code);
             if (deptResult.getCode() == R.SUCCESS && deptResult.getData() != null){
-                // 更新转码表并同步
-                deptParam.setEmrName(deptResult.getData().getDeptName());
-
+                // 转码表没有的直接传院内编码
+                dictDisDept.setHubCode(code);
+                dictDisDept.setHubName(deptResult.getData().getDeptName());
+            }else {
+                deptParam.setEmrCode(null);
+                deptParam.setIsDefault(Constants.IS_DEFAULT);
+                dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
             }
-            deptParam.setEmrCode(null);
-            deptParam.setIsDefault(Constants.IS_DEFAULT);
-            dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
         }
         return dictDisDept;
     }
 
-    /*public DictDiseaseIcd10 geticd10(String code, String name){
-        DictDiseaseIcd10 dictDiseaseIcd10 = dictDiseaseIcd10Mapper.selectByEmrCode(code);
-        if(dictDiseaseIcd10 == null){
-            emrOutpatientRecord.setWmDiagnosisCode(HubCodeEnum.DISEASE_ICD10_CODE.getCode());
-            emrOutpatientRecord.setWmDiagnosisName(HubCodeEnum.DISEASE_ICD10_CODE.getName());
-        }else {
-            emrOutpatientRecord.setWmDiagnosisCode(dictDiseaseIcd10.getHubCode());
-            emrOutpatientRecord.setWmDiagnosisName(dictDiseaseIcd10.getHubName());
-        }
-        return dictDiseaseIcd10;
-    }*/
 }
