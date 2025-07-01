@@ -80,7 +80,7 @@ public class HubToolService {
                 emrPatientInfo.setGenderCode(patMasterIndex.getSexCode());
                 emrPatientInfo.setGenderName(patMasterIndex.getSex());
                 emrPatientInfo.setBirthDate(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD, patMasterIndex.getDateOfBirth()));
-                if(patMasterIndex.getCitizenship().equals("CN")){
+                if("CN".equals(patMasterIndex.getCitizenship())){
                     emrPatientInfo.setNationalityCode(HubCodeEnum.NATIONALITY_CODE.getCode());
                     emrPatientInfo.setNationalityName(HubCodeEnum.NATIONALITY_CODE.getName());
                 }
@@ -368,7 +368,7 @@ public class HubToolService {
         }
         emrPatientInfo.setGenderName(patMasterIndex.getSex());
         emrPatientInfo.setBirthDate(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD, patMasterIndex.getDateOfBirth()));
-        if(patMasterIndex.getCitizenship().equals("CN")){
+        if("CN".equals(patMasterIndex.getCitizenship())){
             emrPatientInfo.setNationalityCode(HubCodeEnum.NATIONALITY_CODE.getCode());
             emrPatientInfo.setNationalityName(HubCodeEnum.NATIONALITY_CODE.getName());
         }
@@ -410,7 +410,7 @@ public class HubToolService {
         deptParam.setStatus(Constants.STATUS_NORMAL);
         deptParam.setEmrCode(code);
         DictDisDept dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
-        if (dictDisDept == null || dictDisDept.getHubCode().equals("D99")){
+        if (dictDisDept == null || "D99".equals(dictDisDept.getHubCode())){
             R<DeptDict> deptResult = commFeignClient.getDept(code);
             if (deptResult.getCode() == R.SUCCESS && deptResult.getData() != null){
                 // 转码表没有的直接传院内编码

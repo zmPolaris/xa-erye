@@ -122,7 +122,7 @@ public class MedrecConvertService {
         }
         emrPatientInfo.setGenderName(patMasterIndex.getSex());
         emrPatientInfo.setBirthDate(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD, patMasterIndex.getDateOfBirth()));
-        if(patMasterIndex.getCitizenship().equals("CN")){
+        if("CN".equals(patMasterIndex.getCitizenship())){
             emrPatientInfo.setNationalityCode(HubCodeEnum.NATIONALITY_CODE.getCode());
             emrPatientInfo.setNationalityName(HubCodeEnum.NATIONALITY_CODE.getName());
         }

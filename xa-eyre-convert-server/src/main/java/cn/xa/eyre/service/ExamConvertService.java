@@ -96,11 +96,11 @@ public class ExamConvertService {
             EmrExClinicalItem emrExClinicalItem = new EmrExClinicalItem();
             emrExClinical.setId(examMaster.getExamNo());
             emrExClinical.setPatientId(examMaster.getPatientId());
-            if(examMaster.getPatientSource().equals("1")){
+            if("1".equals(examMaster.getPatientSource())){
                 emrExClinical.setActivityTypeCode(HubCodeEnum.DIAGNOSIS_ACTIVITIES_OUTPATIENT.getCode());
                 emrExClinical.setActivityTypeName(HubCodeEnum.DIAGNOSIS_ACTIVITIES_OUTPATIENT.getName());
                 emrExClinical.setSerialNumber(String.valueOf(examMaster.getVisitNo()));
-            }else if(examMaster.getPatientSource().equals("2")){
+            }else if("2".equals(examMaster.getPatientSource())){
                 emrExClinical.setActivityTypeCode(HubCodeEnum.DIAGNOSIS_ACTIVITIES_HOSPITALIZATION.getCode());
                 emrExClinical.setActivityTypeName(HubCodeEnum.DIAGNOSIS_ACTIVITIES_HOSPITALIZATION.getName());
                 emrExClinical.setSerialNumber(String.valueOf(examMaster.getVisitId()));
@@ -191,7 +191,7 @@ public class ExamConvertService {
                 emrExClinicalItem.setItemName(dictExamItem.getHubName());
             }
             emrExClinicalItem.setExaminationQuantification(examReport.getExamPara());
-            if (examReport.getIsAbnormal().equals("1")){
+            if ("1".equals(examReport.getIsAbnormal())){
                 emrExClinicalItem.setExaminationResultCode(HubCodeEnum.EXAM_RESULT_ABNORMAL.getCode());
                 emrExClinicalItem.setExaminationResultName(HubCodeEnum.EXAM_RESULT_ABNORMAL.getName());
             }else {
