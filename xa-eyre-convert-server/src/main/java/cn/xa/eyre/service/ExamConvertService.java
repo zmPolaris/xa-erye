@@ -53,6 +53,8 @@ public class ExamConvertService {
     private DictExamItemMapper dictExamItemMapper;
     @Autowired
     private ExamFeignClient examFeignClient;
+    @Autowired
+    private HubToolService hubToolService;
 
 
     public void examMaster(DBMessage dbMessage) {
@@ -82,6 +84,8 @@ public class ExamConvertService {
         R<ExamReport> examResult = examFeignClient.getExamReport(examMaster.getExamNo());
         if (R.SUCCESS == medrecResult.getCode() && medrecResult.getData() != null
                 && R.SUCCESS == examResult.getCode() && examResult.getData() != null){
+            // 更新推送患者信息
+            hubToolService.syncPatInfo(medrecResult.getData());
             DictDisDept dept = new DictDisDept();
             dept.setStatus(Constants.STATUS_NORMAL);
             dept.setIsDefault(Constants.IS_DEFAULT);

@@ -55,6 +55,8 @@ public class OutpdoctConvertService {
     private DictDiseaseIcd10Mapper dictDiseaseIcd10Mapper;// ICD10转码表
     @Autowired
     private OutpdoctFeignClient outpdoctFeignClient;
+    @Autowired
+    private HubToolService hubToolService;
 
     public void outpMr(DBMessage dbMessage) {
         logger.debug("OUTP_MR表变更接口");
@@ -79,6 +81,8 @@ public class OutpdoctConvertService {
             R<ClinicMaster> outpadmResult = outpadmFeignClient.getClinicMaster(outpMr.getPatientId(), outpMr.getVisitNo(), DateUtils.dateTime(outpMr.getVisitDate()));
             if (R.SUCCESS == medrecResult.getCode() && medrecResult.getData() != null
                     && R.SUCCESS == outpadmResult.getCode() && outpadmResult.getData() != null){
+                // 更新推送患者信息
+                hubToolService.syncPatInfo(medrecResult.getData());
                 EmrOutpatientRecord emrOutpatientRecord = new EmrOutpatientRecord();
                 // ID使用OUTP_MR表联合主键拼接计算MD5
                 String id = DigestUtil.md5Hex(DateUtils.dateTime(outpMr.getVisitDate()) + outpMr.getVisitNo() + outpMr.getOrdinal());
@@ -110,18 +114,18 @@ public class OutpdoctConvertService {
                 if(outpMrYbResult.getCode() == R.SUCCESS && outpMrYbResult.getData() != null){
                     if (StringUtils.isNotBlank(outpMrYbResult.getData().getIcdCode01())){
                         DictDiseaseIcd10 dictDiseaseIcd10 = dictDiseaseIcd10Mapper.selectByEmrCode(outpMrYbResult.getData().getIcdCode01());
-                        if(dictDiseaseIcd10 == null){
-                            emrOutpatientRecord.setWmDiagnosisCode(HubCodeEnum.DISEASE_ICD10_CODE.getCode());
-                            emrOutpatientRecord.setWmDiagnosisName(HubCodeEnum.DISEASE_ICD10_CODE.getName());
+                        if(dictDiseaseIcd10 == null || dictDiseaseIcd10.getHubCode().equals(HubCodeEnum.DISEASE_ICD10_CODE.getCode())){
+                            emrOutpatientRecord.setWmDiagnosisCode(outpMrYbResult.getData().getIcdCode01());
+                            emrOutpatientRecord.setWmDiagnosisName(outpMrYbResult.getData().getIcdName01());
                         }else {
                             emrOutpatientRecord.setWmDiagnosisCode(dictDiseaseIcd10.getHubCode());
                             emrOutpatientRecord.setWmDiagnosisName(dictDiseaseIcd10.getHubName());
                         }
                         if (StringUtils.isNotBlank(outpMrYbResult.getData().getIcdCode02())){
                             DictDiseaseIcd10 dictDiseaseIcd102 = dictDiseaseIcd10Mapper.selectByEmrCode(outpMrYbResult.getData().getIcdCode02());
-                            if(dictDiseaseIcd102 == null){
-                                emrOutpatientRecord.setWmDiagnosisCode(HubCodeEnum.DISEASE_ICD10_CODE.getCode());
-                                emrOutpatientRecord.setWmDiagnosisName(HubCodeEnum.DISEASE_ICD10_CODE.getName());
+                            if(dictDiseaseIcd102 == null || dictDiseaseIcd102.getHubCode().equals(HubCodeEnum.DISEASE_ICD10_CODE.getCode())){
+                                emrOutpatientRecord.setWmDiagnosisCode(emrOutpatientRecord.getWmDiagnosisCode() + "||" + outpMrYbResult.getData().getIcdCode02());
+                                emrOutpatientRecord.setWmDiagnosisName(emrOutpatientRecord.getWmDiagnosisName() + "||" + outpMrYbResult.getData().getIcdName02());
                             }else {
                                 emrOutpatientRecord.setWmDiagnosisCode(emrOutpatientRecord.getWmDiagnosisCode() + "||" + dictDiseaseIcd102.getHubCode());
                                 emrOutpatientRecord.setWmDiagnosisName(emrOutpatientRecord.getWmDiagnosisName() + "||" + dictDiseaseIcd102.getHubName());
@@ -131,9 +135,9 @@ public class OutpdoctConvertService {
                 }else {
                     if (StringUtils.isNotBlank(outpMr.getDiagnosisCodeMz1())){
                         DictDiseaseIcd10 dictDiseaseIcd10 = dictDiseaseIcd10Mapper.selectByEmrCode(outpMr.getDiagnosisCodeMz1());
-                        if(dictDiseaseIcd10 == null){
-                            emrOutpatientRecord.setWmDiagnosisCode(HubCodeEnum.DISEASE_ICD10_CODE.getCode());
-                            emrOutpatientRecord.setWmDiagnosisName(HubCodeEnum.DISEASE_ICD10_CODE.getName());
+                        if(dictDiseaseIcd10 == null || dictDiseaseIcd10.getHubCode().equals(HubCodeEnum.DISEASE_ICD10_CODE.getCode())){
+                            emrOutpatientRecord.setWmDiagnosisCode(outpMr.getDiagnosisCodeMz1());
+                            emrOutpatientRecord.setWmDiagnosisName(outpMr.getDiagnosisMz1());
                         }else {
                             emrOutpatientRecord.setWmDiagnosisCode(dictDiseaseIcd10.getHubCode());
                             emrOutpatientRecord.setWmDiagnosisName(dictDiseaseIcd10.getHubName());
@@ -141,8 +145,8 @@ public class OutpdoctConvertService {
                         if (StringUtils.isNotBlank(outpMr.getDiagnosisCodeMz2())){
                             DictDiseaseIcd10 dictDiseaseIcd102 = dictDiseaseIcd10Mapper.selectByEmrCode(outpMr.getDiagnosisCodeMz2());
                             if(dictDiseaseIcd102 == null){
-                                emrOutpatientRecord.setWmDiagnosisCode(HubCodeEnum.DISEASE_ICD10_CODE.getCode());
-                                emrOutpatientRecord.setWmDiagnosisName(HubCodeEnum.DISEASE_ICD10_CODE.getName());
+                                emrOutpatientRecord.setWmDiagnosisCode(emrOutpatientRecord.getWmDiagnosisCode() + "||" + outpMr.getDiagnosisCodeMz2());
+                                emrOutpatientRecord.setWmDiagnosisName(emrOutpatientRecord.getWmDiagnosisName() + "||" + outpMr.getDiagnosisMz2());
                             }else {
                                 emrOutpatientRecord.setWmDiagnosisCode(emrOutpatientRecord.getWmDiagnosisCode() + "||" + dictDiseaseIcd102.getHubCode());
                                 emrOutpatientRecord.setWmDiagnosisName(emrOutpatientRecord.getWmDiagnosisName() + "||" + dictDiseaseIcd102.getHubName());
@@ -239,25 +243,9 @@ public class OutpdoctConvertService {
                 emrActivityInfo.setDiagnoseTime(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, outpMr.getVisitDate()));
 
                 // 诊断代码
-                if (StringUtils.isNotBlank(outpMr.getDiagnosisCodeMz1())){
-                    DictDiseaseIcd10 dictDiseaseIcd10 = dictDiseaseIcd10Mapper.selectByEmrCode(outpMr.getDiagnosisCodeMz1());
-                    if(dictDiseaseIcd10 == null){
-                        emrActivityInfo.setWmDiseaseCode(HubCodeEnum.DISEASE_ICD10_CODE.getCode());
-                        emrActivityInfo.setWmDiseaseName(HubCodeEnum.DISEASE_ICD10_CODE.getName());
-                    }else {
-                        emrActivityInfo.setWmDiseaseCode(dictDiseaseIcd10.getHubCode());
-                        emrActivityInfo.setWmDiseaseName(dictDiseaseIcd10.getHubName());
-                    }
-                    if (StringUtils.isNotBlank(outpMr.getDiagnosisCodeMz2())){
-                        DictDiseaseIcd10 dictDiseaseIcd102 = dictDiseaseIcd10Mapper.selectByEmrCode(outpMr.getDiagnosisCodeMz2());
-                        if(dictDiseaseIcd102 == null){
-                            emrActivityInfo.setWmDiseaseCode(HubCodeEnum.DISEASE_ICD10_CODE.getCode());
-                            emrActivityInfo.setWmDiseaseName(HubCodeEnum.DISEASE_ICD10_CODE.getName());
-                        }else {
-                            emrActivityInfo.setWmDiseaseCode(emrActivityInfo.getWmDiseaseCode() + "||" + dictDiseaseIcd102.getHubCode());
-                            emrActivityInfo.setWmDiseaseName(emrActivityInfo.getWmDiseaseName() + "||" + dictDiseaseIcd102.getHubName());
-                        }
-                    }
+                if (StringUtils.isNotBlank(emrOutpatientRecord.getWmDiagnosisCode())){
+                    emrActivityInfo.setWmDiseaseCode(emrOutpatientRecord.getWmDiagnosisCode());
+                    emrActivityInfo.setWmDiseaseName(emrOutpatientRecord.getWmDiagnosisName());
                 }else {
                     emrActivityInfo.setWmDiseaseCode(HubCodeEnum.DISEASE_ICD10_CODE.getCode());
                     emrActivityInfo.setWmDiseaseName(HubCodeEnum.DISEASE_ICD10_CODE.getName());

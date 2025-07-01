@@ -9,6 +9,7 @@ import cn.xa.eyre.medrec.domain.PatMasterIndex;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
@@ -25,4 +26,7 @@ public interface CommFeignClient {
 
     @GetMapping("/comm/getDeptList")
     public R<List<DeptDict>> getDeptList(@RequestParam("num") Integer num);
+
+    @GetMapping("/comm/getDept{deptCode}")
+    public R<DeptDict> getDept(@PathVariable("deptCode") String deptCode);
 }

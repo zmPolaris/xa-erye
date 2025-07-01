@@ -57,6 +57,8 @@ public class PharmacyConvertService {
     private CommFeignClient commFeignClient;
     @Autowired
     private PharmacyFeignClient pharmacyFeignClient;
+    @Autowired
+    private HubToolService hubToolService;
 
     public void drugPrescMaster(DBMessage dbMessage) {
         logger.debug("药品处方主记录DRUG_PRESC_MASTER变更接口");
@@ -80,6 +82,8 @@ public class PharmacyConvertService {
         String patientId = drugPrescMaster.getPatientId();
         R<PatMasterIndex> medrecResult = medrecFeignClient.getPatMasterIndex(patientId);
         if (R.SUCCESS == medrecResult.getCode()) {
+            // 更新推送患者信息
+            hubToolService.syncPatInfo(medrecResult.getData());
             PatMasterIndex patMasterIndex = medrecResult.getData();
             emrOrder.setPatientId(patientId);
             Short prescSource = drugPrescMaster.getPrescSource();

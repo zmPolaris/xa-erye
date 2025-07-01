@@ -3,6 +3,7 @@ package cn.xa.eyre.service;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.IdcardUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import cn.hutool.json.JSONUtil;
@@ -62,6 +63,8 @@ public class MedrecConvertService {
     private DictChargeTypeMapper dictChargeTypeMapper;// 付费方式转码
     @Autowired
     private DictDiseaseIcd10Mapper dictDiseaseIcd10Mapper;// ICD10转码表
+    @Autowired
+    private HubToolService hubToolService;
 
     public void patMasterIndex(DBMessage dbMessage) {
         logger.debug("病人主索引表PAT_MASTER_INDEX变更接口");
@@ -93,9 +96,15 @@ public class MedrecConvertService {
             emrPatientInfo.setIdCardTypeName(HubCodeEnum.ID_CARD_TYPE_OTHER.getName());
             emrPatientInfo.setIdCard("-");
         }else {
-            emrPatientInfo.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE.getCode());
-            emrPatientInfo.setIdCardTypeName(HubCodeEnum.ID_CARD_TYPE.getName());
-            emrPatientInfo.setIdCard(patMasterIndex.getIdNo());
+            if (IdcardUtil.isValidCard(patMasterIndex.getIdNo())){
+                emrPatientInfo.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE.getCode());
+                emrPatientInfo.setIdCardTypeName(HubCodeEnum.ID_CARD_TYPE.getName());
+                emrPatientInfo.setIdCard(patMasterIndex.getIdNo());
+            }else {
+                emrPatientInfo.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE_OTHER.getCode());
+                emrPatientInfo.setIdCardTypeName(HubCodeEnum.ID_CARD_TYPE_OTHER.getName());
+                emrPatientInfo.setIdCard(patMasterIndex.getIdNo());
+            }
         }
         if (StringUtils.isBlank(patMasterIndex.getSexCode())){
             emrPatientInfo.setGenderCode(HubCodeEnum.SEX_OTHER.getCode());
@@ -173,6 +182,8 @@ public class MedrecConvertService {
         R<PatsInHospital> hospitalResult = inpadmFeignClient.getPatsInHospital(diagnosis.getPatientId(), diagnosis.getVisitId());
         if (R.SUCCESS == hospitalResult.getCode() && hospitalResult.getData() != null
                 && R.SUCCESS == medrecResult.getCode() && medrecResult.getData() != null){
+            // 更新推送患者信息
+            hubToolService.syncPatInfo(medrecResult.getData());
             EmrFirstCourse emrFirstCourse = new EmrFirstCourse();
             EmrDailyCourse emrDailyCourse = new EmrDailyCourse();
             // ID使用DIAGNOSIS表patientId、visitId、diagnosisDate拼接计算MD5
@@ -208,9 +219,9 @@ public class MedrecConvertService {
                 }
                 if (diagnosticCatResult.getCode() == R.SUCCESS && diagnosticCatResult.getData() != null){
                     DictDiseaseIcd10 dictDiseaseIcd10 = dictDiseaseIcd10Mapper.selectByEmrCode(diagnosticCatResult.getData().getDiagnosisCode());
-                    if(dictDiseaseIcd10 == null){
-                        emrFirstCourse.setWmInitalDiagnosisCode(HubCodeEnum.DISEASE_ICD10_CODE.getCode());
-                        emrFirstCourse.setWmInitalDiagnosisName(HubCodeEnum.DISEASE_ICD10_CODE.getName());
+                    if(dictDiseaseIcd10 == null || dictDiseaseIcd10.getHubCode().equals(HubCodeEnum.DISEASE_ICD10_CODE.getCode())){
+                        emrFirstCourse.setWmInitalDiagnosisCode(diagnosticCatResult.getData().getDiagnosisCode());
+                        emrFirstCourse.setWmInitalDiagnosisName(diagnosis.getDiagnosisDesc());
                     }else {
                         emrFirstCourse.setWmInitalDiagnosisCode(dictDiseaseIcd10.getHubCode());
                         emrFirstCourse.setWmInitalDiagnosisName(dictDiseaseIcd10.getHubName());
@@ -422,11 +433,11 @@ public class MedrecConvertService {
             }
 
             DictDiseaseIcd10 inDictDiseaseIcd10 = dictDiseaseIcd10Mapper.selectByEmrCode(diagnosticInCatResult.getData().getDiagnosisCode());
-            if(inDictDiseaseIcd10 == null){
-                emrAdmissionRecord.setWmOutpatientDiagnosisCode(HubCodeEnum.DISEASE_ICD10_CODE.getCode());
-                emrAdmissionRecord.setWmOutpatientDiagnosisName(HubCodeEnum.DISEASE_ICD10_CODE.getName());
-                emrDischargeInfo.setAdmissionDiagnosisCode(HubCodeEnum.DISEASE_ICD10_CODE.getCode());
-                emrDischargeInfo.setAdmissionDiagnosisName(HubCodeEnum.DISEASE_ICD10_CODE.getName());
+            if(inDictDiseaseIcd10 == null || inDictDiseaseIcd10.getHubCode().equals(HubCodeEnum.DISEASE_ICD10_CODE.getCode())){
+                emrAdmissionRecord.setWmOutpatientDiagnosisCode(diagnosticInCatResult.getData().getDiagnosisCode());
+                emrAdmissionRecord.setWmOutpatientDiagnosisName(diagnosisInResult.getData().getDiagnosisDesc());
+                emrDischargeInfo.setAdmissionDiagnosisCode(diagnosticInCatResult.getData().getDiagnosisCode());
+                emrDischargeInfo.setAdmissionDiagnosisName(diagnosisInResult.getData().getDiagnosisDesc());
             }else {
                 emrAdmissionRecord.setWmOutpatientDiagnosisCode(inDictDiseaseIcd10.getHubCode());
                 emrAdmissionRecord.setWmOutpatientDiagnosisName(inDictDiseaseIcd10.getHubName());
@@ -450,12 +461,15 @@ public class MedrecConvertService {
                 // 出院诊断
                 DiagnosisKey diagnosisKeyOut = new DiagnosisKey(patVisit.getPatientId(), patVisit.getVisitId(), Constants.DIAGNOSIS_TYPE_CODE_ZYZD);
                 R<Diagnosis> diagnosisOutResult = medrecFeignClient.getDiagnosis(diagnosisKeyOut);
-                DictDiseaseIcd10 outDictDiseaseIcd10 = dictDiseaseIcd10Mapper.selectByEmrCode(diagnosisOutResult.getData().getDiagnosisCode());
-                if(outDictDiseaseIcd10 == null){
-                    emrAdmissionRecord.setDischargeDiagnosisCode(HubCodeEnum.DISEASE_ICD10_CODE.getCode());
-                    emrAdmissionRecord.setDischargeDiagnosisName(HubCodeEnum.DISEASE_ICD10_CODE.getName());
-                    emrDischargeInfo.setDischargeDiagnosisCode(HubCodeEnum.DISEASE_ICD10_CODE.getCode());
-                    emrDischargeInfo.setDischargeDiagnosisName(HubCodeEnum.DISEASE_ICD10_CODE.getName());
+                DiagnosticCategoryKey diagnosticCategoryKeyout = new DiagnosticCategoryKey();
+                BeanUtil.copyProperties(diagnosisInResult.getData(), diagnosticCategoryKeyout);
+                R<DiagnosticCategory> diagnosticOutCatResult = medrecFeignClient.getDiagnosticCategory(diagnosticCategoryKeyout);
+                DictDiseaseIcd10 outDictDiseaseIcd10 = dictDiseaseIcd10Mapper.selectByEmrCode(diagnosticOutCatResult.getData().getDiagnosisCode());
+                if(outDictDiseaseIcd10 == null || outDictDiseaseIcd10.getHubCode().equals(HubCodeEnum.DISEASE_ICD10_CODE.getCode())){
+                    emrAdmissionRecord.setDischargeDiagnosisCode(diagnosticOutCatResult.getData().getDiagnosisCode());
+                    emrAdmissionRecord.setDischargeDiagnosisName(diagnosisOutResult.getData().getDiagnosisDesc());
+                    emrDischargeInfo.setDischargeDiagnosisCode(diagnosticOutCatResult.getData().getDiagnosisCode());
+                    emrDischargeInfo.setDischargeDiagnosisName(diagnosisOutResult.getData().getDiagnosisDesc());
                 }else {
                     emrAdmissionRecord.setDischargeDiagnosisCode(outDictDiseaseIcd10.getHubCode());
                     emrAdmissionRecord.setDischargeDiagnosisName(outDictDiseaseIcd10.getHubName());

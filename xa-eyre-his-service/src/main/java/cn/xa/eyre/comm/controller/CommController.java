@@ -5,10 +5,7 @@ import cn.xa.eyre.comm.mapper.DeptDictMapper;
 import cn.xa.eyre.comm.mapper.UsersMapper;
 import cn.xa.eyre.common.core.domain.AjaxResult;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -40,5 +37,10 @@ public class CommController {
     @GetMapping("/getDeptList")
     public AjaxResult getDeptList(@RequestParam("num") Integer num){
         return AjaxResult.success("接口调用成功", deptDictMapper.selectDeptList(num));
+    }
+
+    @GetMapping("/getDept{deptCode}")
+    public AjaxResult getDept(@PathVariable("deptCode") String deptCode){
+        return AjaxResult.success("接口调用成功", deptDictMapper.selectByPrimaryKey(deptCode));
     }
 }

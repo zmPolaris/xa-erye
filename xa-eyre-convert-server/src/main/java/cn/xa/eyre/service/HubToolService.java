@@ -1,5 +1,6 @@
 package cn.xa.eyre.service;
 
+import cn.hutool.core.util.IdcardUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import cn.xa.eyre.comm.domain.DeptDict;
@@ -332,4 +333,109 @@ public class HubToolService {
         }
         return false;
     }
+
+    public void syncPatInfo(PatMasterIndex patMasterIndex){
+        logger.debug("构造emrPatientInfo接口数据...");
+        // 构造请求参数
+        EmrPatientInfo emrPatientInfo = new EmrPatientInfo();
+        emrPatientInfo.setId(patMasterIndex.getPatientId());
+        emrPatientInfo.setPatientName(patMasterIndex.getName());
+        if (StringUtils.isBlank(patMasterIndex.getIdNo())){
+            emrPatientInfo.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE_OTHER.getCode());
+            emrPatientInfo.setIdCardTypeName(HubCodeEnum.ID_CARD_TYPE_OTHER.getName());
+            emrPatientInfo.setIdCard("-");
+        }else {
+            if (IdcardUtil.isValidCard(patMasterIndex.getIdNo())){
+                emrPatientInfo.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE.getCode());
+                emrPatientInfo.setIdCardTypeName(HubCodeEnum.ID_CARD_TYPE.getName());
+                emrPatientInfo.setIdCard(patMasterIndex.getIdNo());
+            }else {
+                emrPatientInfo.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE_OTHER.getCode());
+                emrPatientInfo.setIdCardTypeName(HubCodeEnum.ID_CARD_TYPE_OTHER.getName());
+                emrPatientInfo.setIdCard(patMasterIndex.getIdNo());
+            }
+        }
+        if (StringUtils.isBlank(patMasterIndex.getSexCode())){
+            emrPatientInfo.setGenderCode(HubCodeEnum.SEX_OTHER.getCode());
+            if(StringUtils.isNotBlank(patMasterIndex.getSex())){
+                if (patMasterIndex.getSex().equals("男")){
+                    emrPatientInfo.setGenderCode("1");
+                } else if (patMasterIndex.getSex().equals("女")) {
+                    emrPatientInfo.setGenderCode("2");
+                } else {
+                    emrPatientInfo.setGenderCode(HubCodeEnum.SEX_OTHER.getCode());
+                }
+            }
+        }else {
+            emrPatientInfo.setGenderCode(patMasterIndex.getSexCode());
+        }
+        emrPatientInfo.setGenderName(patMasterIndex.getSex());
+        emrPatientInfo.setBirthDate(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD, patMasterIndex.getDateOfBirth()));
+        if(patMasterIndex.getCitizenship().equals("CN")){
+            emrPatientInfo.setNationalityCode(HubCodeEnum.NATIONALITY_CODE.getCode());
+            emrPatientInfo.setNationalityName(HubCodeEnum.NATIONALITY_CODE.getName());
+        }
+        DdNation ddNation = ddNationMapper.selectByName(patMasterIndex.getNation());
+        if (ddNation != null){
+            emrPatientInfo.setNationCode(ddNation.getCode());
+            emrPatientInfo.setNationName(ddNation.getName());
+        }else {
+            emrPatientInfo.setNationCode(HubCodeEnum.NATION_CODE.getCode());
+            emrPatientInfo.setNationName(HubCodeEnum.NATION_CODE.getName());
+        }
+        emrPatientInfo.setCurrentAddrCode(patMasterIndex.getMailingAreaCode4());
+        emrPatientInfo.setCurrentAddrName(patMasterIndex.getMailingAddress());
+        emrPatientInfo.setCurrentAddrDetail(patMasterIndex.getNextOfKinAddr());
+        emrPatientInfo.setWorkunit(patMasterIndex.getWorkunit());
+        if(patMasterIndex.getNextOfKin() != null){
+            emrPatientInfo.setContacts(patMasterIndex.getNextOfKin());
+            emrPatientInfo.setContactsTel(patMasterIndex.getNextOfKinPhone());
+        }else {
+            emrPatientInfo.setContacts(patMasterIndex.getGuardianName());
+            emrPatientInfo.setContactsTel(patMasterIndex.getGuardianPhone());
+        }
+        emrPatientInfo.setOrgCode(HubCodeEnum.ORG_CODE.getCode());
+        emrPatientInfo.setOrgName(HubCodeEnum.ORG_CODE.getName());
+        // 查询操作员ID
+        if (StringUtils.isNotBlank(patMasterIndex.getOperator())){
+            R<Users> user = commFeignClient.getUserByName(patMasterIndex.getOperator());
+            if (R.SUCCESS == user.getCode() && user.getData() != null){
+                emrPatientInfo.setOperatorId(user.getData().getUserId());
+            }
+        }
+
+        emrPatientInfo.setOperationTime(DateUtils.getTime());
+        synchroEmrRealService.syncEmrPatientInfo(emrPatientInfo, Constants.HTTP_METHOD_POST);
+    }
+
+    public DictDisDept getDept(String code){
+        DictDisDept deptParam = new DictDisDept();
+        deptParam.setStatus(Constants.STATUS_NORMAL);
+        deptParam.setEmrCode(code);
+        DictDisDept dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
+        if (dictDisDept == null ){
+            R<DeptDict> deptResult = commFeignClient.getDept(code);
+            if (deptResult.getCode() == R.SUCCESS && deptResult.getData() != null){
+                // 更新转码表并同步
+                deptParam.setEmrName(deptResult.getData().getDeptName());
+
+            }
+            deptParam.setEmrCode(null);
+            deptParam.setIsDefault(Constants.IS_DEFAULT);
+            dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
+        }
+        return dictDisDept;
+    }
+
+    /*public DictDiseaseIcd10 geticd10(String code, String name){
+        DictDiseaseIcd10 dictDiseaseIcd10 = dictDiseaseIcd10Mapper.selectByEmrCode(code);
+        if(dictDiseaseIcd10 == null){
+            emrOutpatientRecord.setWmDiagnosisCode(HubCodeEnum.DISEASE_ICD10_CODE.getCode());
+            emrOutpatientRecord.setWmDiagnosisName(HubCodeEnum.DISEASE_ICD10_CODE.getName());
+        }else {
+            emrOutpatientRecord.setWmDiagnosisCode(dictDiseaseIcd10.getHubCode());
+            emrOutpatientRecord.setWmDiagnosisName(dictDiseaseIcd10.getHubName());
+        }
+        return dictDiseaseIcd10;
+    }*/
 }
