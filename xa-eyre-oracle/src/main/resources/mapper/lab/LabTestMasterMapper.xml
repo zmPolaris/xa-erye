@@ -50,6 +50,7 @@
     <include refid="Base_Column_List" />
     from LAB_TEST_MASTER
     where TEST_NO = #{testNo,jdbcType=VARCHAR}
+    AND RESULT_STATUS ='4'
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
     delete from LAB_TEST_MASTER

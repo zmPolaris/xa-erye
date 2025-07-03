@@ -3,7 +3,6 @@ package cn.xa.eyre.hub.domain.emrmonitor;
 import java.util.Date;
 
 import cn.xa.eyre.common.core.domain.BaseEntity;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -42,8 +41,7 @@ public class EmrExLabItem extends BaseEntity
     private String examinationQuantificationUnit;
 
     /** 操作时间 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date operationTime;
+    private String operationTime;
 
     /** 操作人ID */
     private String operatorId;
@@ -55,8 +53,7 @@ public class EmrExLabItem extends BaseEntity
     private String dataStatus;
 
     /** 入库日期 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date createDate;
+    private String createDate;
 
     /** 检验定量结果参考区间-下限 */
     private String examinationQuantificationLower;
@@ -145,12 +142,12 @@ public class EmrExLabItem extends BaseEntity
     {
         return examinationQuantificationUnit;
     }
-    public void setOperationTime(Date operationTime)
+    public void setOperationTime(String operationTime)
     {
         this.operationTime = operationTime;
     }
 
-    public Date getOperationTime()
+    public String getOperationTime()
     {
         return operationTime;
     }
@@ -181,12 +178,12 @@ public class EmrExLabItem extends BaseEntity
     {
         return dataStatus;
     }
-    public void setCreateDate(Date createDate)
+    public void setCreateDate(String createDate)
     {
         this.createDate = createDate;
     }
 
-    public Date getCreateDate()
+    public String getCreateDate()
     {
         return createDate;
     }

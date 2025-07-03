@@ -1,7 +1,10 @@
 package cn.xa.eyre.service;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.lang.Validator;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
+import cn.hutool.json.JSONUtil;
 import cn.xa.eyre.comm.domain.Users;
 import cn.xa.eyre.common.constant.Constants;
 import cn.xa.eyre.common.core.domain.R;
@@ -19,11 +22,15 @@ import cn.xa.eyre.hub.service.SynchroEmrMonitorService;
 import cn.xa.eyre.hub.staticvalue.HubCodeEnum;
 import cn.xa.eyre.inpadm.domain.PatsInHospital;
 import cn.xa.eyre.lab.domain.LabResult;
+import cn.xa.eyre.lab.domain.LabTestItems;
+import cn.xa.eyre.lab.domain.LabTestItemsKey;
 import cn.xa.eyre.lab.domain.LabTestMaster;
 import cn.xa.eyre.medrec.domain.PatMasterIndex;
+import cn.xa.eyre.system.dict.domain.DdExQuantification;
 import cn.xa.eyre.system.dict.domain.DictDisDept;
 import cn.xa.eyre.system.dict.domain.DictExamType;
 import cn.xa.eyre.system.dict.domain.DictSpecimenCategory;
+import cn.xa.eyre.system.dict.mapper.DdExQuantificationMapper;
 import cn.xa.eyre.system.dict.mapper.DictDisDeptMapper;
 import cn.xa.eyre.system.dict.mapper.DictSpecimenCategoryMapper;
 import org.slf4j.Logger;
@@ -52,6 +59,8 @@ public class LabConvertService {
     private HubToolService hubToolService;
     @Autowired
     private DictSpecimenCategoryMapper dictSpecimenCategoryMapper;// 标本转码表
+    @Autowired
+    private DdExQuantificationMapper ddExQuantificationMapper;// 检验结果
 
     public void labResult(DBMessage dbMessage) {
         logger.debug("检验结果表LAB_RESULT变更接口");
@@ -82,10 +91,17 @@ public class LabConvertService {
 
                 logger.debug("构造emrExLab接口数据...");
                 EmrExLab emrExLab = new EmrExLab();
+                EmrExLabItem emrExLabItem = new EmrExLabItem();
                 // ID使用LAB_RESULT表联合主键拼接计算MD5
                 String id = DigestUtil.md5Hex(labResult.getTestNo() + labResult.getItemNo() + labResult.getPrintOrder());
                 emrExLab.setId(id);
                 emrExLab.setApplicationFormNo(String.valueOf(labResult.getItemNo()));
+                emrExLab.setExaminationDate(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, labTestMaster.getResultsRptDateTime()));
+                emrExLab.setExaminationReportDate(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, labResult.getResultDateTime()));
+                emrExLab.setExaminationReportNo(id);
+                emrExLab.setExaminationObjectiveDesc(labResult.getResult());
+                emrExLab.setExaminationSubjectiveDesc(labResult.getResult());
+                emrExLab.setExaminationNotes(labResult.getReportItemName());
 
                 emrExLab.setPatientId(labTestMaster.getPatientId());
                 if("1".equals(labTestMaster.getPatientSource())){
@@ -122,6 +138,35 @@ public class LabConvertService {
                     emrExLab.setSpecimenCategoryCode(dictSpecimenCategory.getHubCode());
                     emrExLab.setSpecimenCategoryName(dictSpecimenCategory.getHubName());
                 }
+                if (labTestMaster.getSpcmSampleDateTime()!= null && labTestMaster.getSpcmReceivedDateTime() != null){
+                    // 标本号
+                    String specimenNo = DigestUtil.md5Hex(labTestMaster.getSpecimen() +
+                            DateUtils.getYyyyMMddHHmmssString(labTestMaster.getSpcmSampleDateTime()) + DateUtils.getYyyyMMddHHmmssString(labTestMaster.getSpcmReceivedDateTime()));
+                    emrExLab.setSpecimenNo(specimenNo);
+                    emrExLab.setSpecimenSamplingDate(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, labTestMaster.getSpcmSampleDateTime()));
+                    emrExLab.setSpecimenReceivingDate(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, labTestMaster.getSpcmReceivedDateTime()));
+                }
+                if(StringUtils.isNotBlank(labTestMaster.getTranscriptionist())){
+                    R<Users> usero = commFeignClient.getUserByName(labTestMaster.getOrderingProvider());
+                    if (R.SUCCESS == usero.getCode() && usero.getData() != null){
+                        emrExLab.setExaminationPhysicianId(usero.getData().getUserId());
+                        emrExLab.setExaminationReportId(usero.getData().getUserId());
+                        emrExLab.setOperatorId(usero.getData().getUserId());
+                    }
+                }else {
+                    emrExLab.setExaminationPhysicianId("-");
+                    emrExLab.setExaminationReportId("-");
+                    emrExLab.setOperatorId("-");
+                }
+                if (StringUtils.isNotBlank(labTestMaster.getPerformedBy())){
+                    DictDisDept dictDisDept = hubToolService.getDept(labTestMaster.getPerformedBy());
+                    emrExLab.setDeptCode(dictDisDept.getHubCode());
+                    emrExLab.setDeptName(dictDisDept.getHubName());
+                }else {
+                    emrExLab.setDeptCode(dictDisDeptDefault.getHubCode());
+                    emrExLab.setDeptName(dictDisDeptDefault.getHubName());
+                }
+                emrExLab.setOperationTime(DateUtils.getTime());
 
                 emrExLab.setPatientName(medrecResult.getData().getName());
                 if (StringUtils.isBlank(medrecResult.getData().getIdNo())){
@@ -133,14 +178,59 @@ public class LabConvertService {
                     emrExLab.setIdCardTypeName(HubCodeEnum.ID_CARD_TYPE.getName());
                     emrExLab.setIdCard(medrecResult.getData().getIdNo());
                 }
+                synchroEmrMonitorService.syncEmrExLab(emrExLab, httpMethod);
 
                 logger.debug("构造emrExLabItem接口数据...");
-                EmrExLabItem emrExLabItem = new EmrExLabItem();
+                emrExLabItem.setId(id);
+                emrExLabItem.setExLabId(id);
+
+                LabTestItemsKey labTestItemsKey = new LabTestItemsKey();
+                labTestItemsKey.setItemNo(labResult.getItemNo());
+                labTestItemsKey.setTestNo(labResult.getTestNo());
+                R<LabTestItems> labTestItemsResult = labFeignClient.getLabTestItems(labTestItemsKey);
+                if (labTestItemsResult.getCode() == R.SUCCESS && labTestItemsResult.getData() != null){
+                    emrExLabItem.setItemCode(labTestItemsResult.getData().getItemCode());
+                    emrExLabItem.setItemName(labTestItemsResult.getData().getItemName());
+                }else {
+                    logger.error("{}对应LabTestItems信息为空，无法同步", JSONUtil.toJsonStr(labTestItemsKey));
+                }
+
+                if (Validator.hasChinese(labResult.getResult())){
+                    // 定性
+                    emrExLabItem.setSourceExaminationResultCode(DigestUtil.md5Hex(labResult.getResult()));
+                    emrExLabItem.setSourceExaminationResultCode(labResult.getResult());
+                    DdExQuantification ddExQuantification = ddExQuantificationMapper.selectByName(labResult.getResult());
+                    if (ddExQuantification == null){
+                        emrExLabItem.setExaminationResultCode("07");
+                        emrExLabItem.setExaminationResultName(labResult.getResult());
+                    }else {
+                        emrExLabItem.setExaminationResultCode(ddExQuantification.getCode());
+                        emrExLabItem.setExaminationResultName(ddExQuantification.getName());
+                    }
+                }else {
+                    // 定量
+                    emrExLabItem.setExaminationQuantification(labResult.getResult());
+                    emrExLabItem.setExaminationQuantificationUnit(labResult.getUnits());
+                    String between = StrUtil.removeAll(labResult.getResultRange(), "");
+                    String[] betweens = between.split("-");
+                    emrExLabItem.setExaminationQuantificationLower(betweens[0]);
+                    emrExLabItem.setExaminationQuantificationUpper(betweens[1]);
+                    if (labResult.getAbnormalIndicator().equals("H")){
+                        emrExLabItem.setExaminationQuantificationRi("2");
+                    }else if (labResult.getAbnormalIndicator().equals("L")){
+                        emrExLabItem.setExaminationQuantificationRi("1");
+                    }else {
+                        emrExLabItem.setExaminationQuantificationRi("0");
+                    }
+                }
+                emrExLabItem.setOperatorId(emrExLab.getOperatorId());
+                emrExLabItem.setOperationTime(emrExLab.getOperationTime());
+                synchroEmrMonitorService.syncEmrExLabItem(emrExLabItem, httpMethod);
             }else {
                 logger.error("{}对应PatMasterIndex信息为空，无法同步", labTestMaster.getPatientId());
             }
         }else {
-            logger.error("{}LabTestMaster，无法同步", labResult.getTestNo());
+            logger.error("{}LabTestMaster信息为空或报告未确认，无法同步", labResult.getTestNo());
         }
     }
 }
