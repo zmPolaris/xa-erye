@@ -28,6 +28,12 @@
       <include refid="Base_Column_List" />
       from dict_specimen_category
     </select>
+    <select id="selectByEmrName" resultMap="BaseResultMap">
+      select
+      <include refid="Base_Column_List" />
+      from dict_specimen_category
+      where emr_name = #{emrName,jdbcType=VARCHAR} limit 1
+    </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from dict_specimen_category
     where id = #{id,jdbcType=INTEGER}

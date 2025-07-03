@@ -98,7 +98,7 @@ public class PharmacyConvertService {
                 R<List<OutpMr>> mrResult = outpdoctFeignClient.getOutpMrByCondition(outpMr);
                 if (R.SUCCESS == mrResult.getCode()) {
                     outpMr = mrResult.getData().get(0);
-                    emrOrder.setSerialNumber(String.valueOf(outpMr.getVisitNo()));
+                    emrOrder.setSerialNumber(DigestUtil.md5Hex(patientId + outpMr.getVisitNo()));
                 }
                 preNo = DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, drugPrescMaster.getPrescDate()) + drugPrescMaster.getPrescNo();
 
@@ -109,7 +109,7 @@ public class PharmacyConvertService {
                 R<PatsInHospital> hospitalResult = inpadmFeignClient.getPatsInHospitalByPatientId(patientId);
                 if (R.SUCCESS == hospitalResult.getCode()) {
                     PatsInHospital pats = hospitalResult.getData();
-                    emrOrder.setSerialNumber(String.valueOf(pats.getVisitId()));
+                    emrOrder.setSerialNumber(DigestUtil.md5Hex(patientId + pats.getVisitId()));
                 }
                 preNo = DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD, drugPrescMaster.getPrescDate()) + drugPrescMaster.getPrescNo();
             }

@@ -251,7 +251,7 @@ public class HubToolService {
 
                         }
                     }
-                    emrActivityInfo.setSerialNumber(String.valueOf(outpMr.getVisitNo()));
+                    emrActivityInfo.setSerialNumber(DigestUtil.md5Hex(outpMr.getPatientId() + outpMr.getVisitNo()));
                     emrActivityInfo.setActivityTime(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, outpMr.getVisitDate()));
                     String idNo = patMasterIndex.getIdNo();
                     if (StringUtils.isNotBlank(idNo)) {

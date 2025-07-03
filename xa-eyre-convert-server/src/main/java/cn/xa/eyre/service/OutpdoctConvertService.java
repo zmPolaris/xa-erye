@@ -88,7 +88,7 @@ public class OutpdoctConvertService {
                 String id = DigestUtil.md5Hex(DateUtils.dateTime(outpMr.getVisitDate()) + outpMr.getVisitNo() + outpMr.getOrdinal());
                 emrOutpatientRecord.setId(id);
                 emrOutpatientRecord.setPatientId(outpMr.getPatientId());
-                emrOutpatientRecord.setSerialNumber(String.valueOf(outpMr.getVisitNo()));
+                emrOutpatientRecord.setSerialNumber(DigestUtil.md5Hex(outpMr.getPatientId() + outpMr.getVisitNo()));
                 emrOutpatientRecord.setOutpatientDate(outpMr.getVisitDate());
                 emrOutpatientRecord.setInitalDiagnosisCode(String.valueOf(1)); // 初诊标识，表中没有这个字段
                 emrOutpatientRecord.setChiefComplaint(outpMr.getIllnessDesc());
@@ -214,7 +214,7 @@ public class OutpdoctConvertService {
 
                     }
                 }
-                emrActivityInfo.setSerialNumber(String.valueOf(outpMr.getVisitNo()));
+                emrActivityInfo.setSerialNumber(emrOutpatientRecord.getSerialNumber());
                 emrActivityInfo.setActivityTime(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, outpMr.getVisitDate()));
                 String idNo = patMasterIndex.getIdNo();
                 if (StringUtils.isNotBlank(idNo)) {

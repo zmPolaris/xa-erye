@@ -75,19 +75,16 @@ public class EmrExLab extends BaseEntity
     private String specimenNo;
 
     /** 标本采样日期时间 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date specimenSamplingDate;
+    private String specimenSamplingDate;
 
     /** 接收标本日期时间 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date specimenReceivingDate;
+    private String specimenReceivingDate;
 
     /** 检验医师ID */
     private String examinationPhysicianId;
 
     /** 检验日期 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date examinationDate;
+    private String examinationDate;
 
     /** 检验报告单编号 */
     private String examinationReportNo;
@@ -102,8 +99,7 @@ public class EmrExLab extends BaseEntity
     private String examinationNotes;
 
     /** 检验报告日期 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date examinationReportDate;
+    private String examinationReportDate;
 
     /** 报告医师ID */
     private String examinationReportId;
@@ -124,8 +120,7 @@ public class EmrExLab extends BaseEntity
     private String operatorId;
 
     /** 操作时间 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date operationTime;
+    private String operationTime;
 
     /** 作废标志 */
     private String invalidFlag;
@@ -134,8 +129,7 @@ public class EmrExLab extends BaseEntity
     private String dataStatus;
 
     /** 入库日期 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date createDate;
+    private String createDate;
 
     /** 标本类别代码 */
     private String specimenCategoryCode;
@@ -314,21 +308,21 @@ public class EmrExLab extends BaseEntity
     {
         return specimenNo;
     }
-    public void setSpecimenSamplingDate(Date specimenSamplingDate)
+    public void setSpecimenSamplingDate(String specimenSamplingDate)
     {
         this.specimenSamplingDate = specimenSamplingDate;
     }
 
-    public Date getSpecimenSamplingDate()
+    public String getSpecimenSamplingDate()
     {
         return specimenSamplingDate;
     }
-    public void setSpecimenReceivingDate(Date specimenReceivingDate)
+    public void setSpecimenReceivingDate(String specimenReceivingDate)
     {
         this.specimenReceivingDate = specimenReceivingDate;
     }
 
-    public Date getSpecimenReceivingDate()
+    public String getSpecimenReceivingDate()
     {
         return specimenReceivingDate;
     }
@@ -341,12 +335,12 @@ public class EmrExLab extends BaseEntity
     {
         return examinationPhysicianId;
     }
-    public void setExaminationDate(Date examinationDate)
+    public void setExaminationDate(String examinationDate)
     {
         this.examinationDate = examinationDate;
     }
 
-    public Date getExaminationDate()
+    public String getExaminationDate()
     {
         return examinationDate;
     }
@@ -386,12 +380,12 @@ public class EmrExLab extends BaseEntity
     {
         return examinationNotes;
     }
-    public void setExaminationReportDate(Date examinationReportDate)
+    public void setExaminationReportDate(String examinationReportDate)
     {
         this.examinationReportDate = examinationReportDate;
     }
 
-    public Date getExaminationReportDate()
+    public String getExaminationReportDate()
     {
         return examinationReportDate;
     }
@@ -449,12 +443,12 @@ public class EmrExLab extends BaseEntity
     {
         return operatorId;
     }
-    public void setOperationTime(Date operationTime)
+    public void setOperationTime(String operationTime)
     {
         this.operationTime = operationTime;
     }
 
-    public Date getOperationTime()
+    public String getOperationTime()
     {
         return operationTime;
     }
@@ -476,12 +470,12 @@ public class EmrExLab extends BaseEntity
     {
         return dataStatus;
     }
-    public void setCreateDate(Date createDate)
+    public void setCreateDate(String createDate)
     {
         this.createDate = createDate;
     }
 
-    public Date getCreateDate()
+    public String getCreateDate()
     {
         return createDate;
     }

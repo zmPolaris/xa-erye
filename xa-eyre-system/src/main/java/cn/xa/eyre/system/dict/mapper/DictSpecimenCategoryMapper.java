@@ -1,6 +1,7 @@
 package cn.xa.eyre.system.dict.mapper;
 
 import cn.xa.eyre.system.dict.domain.DictSpecimenCategory;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -18,4 +19,6 @@ public interface DictSpecimenCategoryMapper {
     int updateByPrimaryKey(DictSpecimenCategory record);
 
     List<DictSpecimenCategory> selectAll();
+
+    DictSpecimenCategory selectByEmrName(@Param("emrName") String emrName);
 }

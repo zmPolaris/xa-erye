@@ -35,6 +35,8 @@ public class DataConvertCoiontroller {
     private OrdadmConvertService ordadmConvertService;
     @Autowired
     private PharmacyConvertService pharmacyConvertService;
+    @Autowired
+    private LabConvertService labConvertService;
 
     /**
      * 部门信息转码
@@ -94,8 +96,11 @@ public class DataConvertCoiontroller {
             case "medrec.pat_visit":
                 medrecConvertService.patVisit(dbMessage);
                 break;
-            case "exam.exam_master":
-                examConvertService.examMaster(dbMessage);
+            case "exam.exam_report":
+                examConvertService.examReport(dbMessage);
+                break;
+            case "lab.lab_result":
+                labConvertService.labResult(dbMessage);
                 break;
             case "pharmacy.drug_presc_master":
                 pharmacyConvertService.drugPrescMaster(dbMessage);

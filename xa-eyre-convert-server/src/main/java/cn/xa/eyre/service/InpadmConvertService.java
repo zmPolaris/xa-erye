@@ -98,11 +98,11 @@ public class InpadmConvertService {
             }
 
             EmrAdmissionInfo emrAdmissionInfo = new EmrAdmissionInfo();
-            // ID使用OUTP_MR表patientId、visitId拼接计算MD5
+            // ID使用住院表patientId、visitId拼接计算MD5
             String id = DigestUtil.md5Hex(patsInHospital.getPatientId() + patsInHospital.getVisitId());
             emrAdmissionInfo.setId(id);
             emrAdmissionInfo.setPatientId(patsInHospital.getPatientId());
-            emrAdmissionInfo.setSerialNumber(String.valueOf(patsInHospital.getVisitId()));
+            emrAdmissionInfo.setSerialNumber(id);
             emrAdmissionInfo.setWardNo(patsInHospital.getWardCode());
             emrAdmissionInfo.setBedNo(String.valueOf(patsInHospital.getBedNo()));
             emrAdmissionInfo.setAdmissionDate(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, patsInHospital.getAdmissionDateTime()));

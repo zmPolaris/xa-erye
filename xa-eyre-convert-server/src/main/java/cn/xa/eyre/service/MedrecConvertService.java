@@ -193,7 +193,7 @@ public class MedrecConvertService {
                 logger.debug("构造emrFirstCourse接口数据...");
                 emrFirstCourse.setId(id);
                 emrFirstCourse.setPatientId(diagnosis.getPatientId());
-                emrFirstCourse.setSerialNumber(String.valueOf(diagnosis.getVisitId()));
+                emrFirstCourse.setSerialNumber(DigestUtil.md5Hex(diagnosis.getPatientId() + diagnosis.getVisitId()));
                 emrFirstCourse.setCreateDate(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, diagnosis.getDiagnosisDate()));
                 emrFirstCourse.setPresentIllnessHis(diagnosis.getDiagnosisDesc());
 
@@ -270,7 +270,7 @@ public class MedrecConvertService {
                 logger.debug("构造emrDailyCourse接口数据...");
                 emrDailyCourse.setId(id);
                 emrDailyCourse.setPatientId(diagnosis.getPatientId());
-                emrDailyCourse.setSerialNumber(String.valueOf(diagnosis.getVisitId()));
+                emrDailyCourse.setSerialNumber(DigestUtil.md5Hex(diagnosis.getPatientId() + diagnosis.getVisitId()));
                 emrDailyCourse.setCreateDate(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, diagnosis.getDiagnosisDate()));
                 emrDailyCourse.setCourse(diagnosis.getDiagnosisDesc());
 
@@ -365,7 +365,7 @@ public class MedrecConvertService {
             logger.debug("构造emrAdmissionRecord接口数据...");
             emrAdmissionRecord.setId(id);
             emrAdmissionRecord.setPatientId(patVisit.getPatientId());
-            emrAdmissionRecord.setSerialNumber(String.valueOf(patVisit.getVisitId()));
+            emrAdmissionRecord.setSerialNumber(id);
             if (StringUtils.isNotBlank(patVisit.getChargeType())){
                 DictChargeType dictChargeType = dictChargeTypeMapper.selectByEmrCode(patVisit.getChargeType());
                 if (dictChargeType == null){
@@ -473,7 +473,7 @@ public class MedrecConvertService {
                 logger.debug("构造emrDischargeInfo接口数据...");
                 emrDischargeInfo.setId(id);
                 emrDischargeInfo.setPatientId(patVisit.getPatientId());
-                emrDischargeInfo.setSerialNumber(String.valueOf(patVisit.getVisitId()));
+                emrDischargeInfo.setSerialNumber(id);
                 emrDischargeInfo.setDischargeDate(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, patVisit.getDischargeDateTime()));
                 emrDischargeInfo.setAdmissionDate(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, patVisit.getAdmissionDateTime()));
                 // 住院医师

@@ -56,12 +56,11 @@ public class ExamConvertService {
     @Autowired
     private HubToolService hubToolService;
 
-
-    public void examMaster(DBMessage dbMessage) {
-        logger.debug("检查表EXAM_MASTER变更接口");
-        logger.debug("EXAM_MASTER变更需调用emrExClinical、emrExClinicalItem同步接口");
+    public void examReport(DBMessage dbMessage) {
+        logger.debug("检查报告表EXAM_REPORT变更接口");
+        logger.debug("EXAM_REPORT变更需调用emrExClinical、emrExClinicalItem同步接口");
         String httpMethod = null;
-        ExamMaster examMaster;
+        ExamReport examReport;
         Map<String, String> data;
         if(dbMessage.getOperation().equalsIgnoreCase("DELETE")){
             httpMethod = Constants.HTTP_METHOD_DELETE;
@@ -70,138 +69,133 @@ public class ExamConvertService {
             httpMethod = Constants.HTTP_METHOD_POST;
             data = dbMessage.getAfterData();
         }
-        examMaster = BeanUtil.toBeanIgnoreError(data, ExamMaster.class);
-        examMaster.setDateOfBirth(DateUtils.getLongDate(dbMessage.getAfterData().get("dateOfBirth")));
-        examMaster.setSpmRecvedDate(DateUtils.getLongDate(dbMessage.getAfterData().get("spmRecvedDate")));
-        examMaster.setScheduledDateTime(DateUtils.getLongDate(dbMessage.getAfterData().get("scheduledDateTime")));
-        examMaster.setExamDateTime(DateUtils.getLongDate(dbMessage.getAfterData().get("examDateTime")));
-        examMaster.setReportDateTime(DateUtils.getLongDate(dbMessage.getAfterData().get("reportDateTime")));
-        examMaster.setConfirmDateTime(DateUtils.getLongDate(dbMessage.getAfterData().get("confirmDateTime")));
-        examMaster.setAuditingDateTime(DateUtils.getLongDate(dbMessage.getAfterData().get("auditingDateTime")));
-        examMaster.setVisitDate(DateUtils.getLongDate(dbMessage.getAfterData().get("visitDate")));
+        examReport = BeanUtil.toBeanIgnoreError(data, ExamReport.class);
 
-        R<PatMasterIndex> medrecResult = medrecFeignClient.getPatMasterIndex(examMaster.getPatientId());
-        R<ExamReport> examResult = examFeignClient.getExamReport(examMaster.getExamNo());
-        if (R.SUCCESS == medrecResult.getCode() && medrecResult.getData() != null
-                && R.SUCCESS == examResult.getCode() && examResult.getData() != null){
-            // 更新推送患者信息
-            hubToolService.syncPatInfo(medrecResult.getData());
-            DictDisDept dept = new DictDisDept();
-            dept.setStatus(Constants.STATUS_NORMAL);
-            dept.setIsDefault(Constants.IS_DEFAULT);
-            DictDisDept dictDisDeptDefault = dictDisDeptMapper.selectByCondition(dept);
+        R<ExamMaster> examMasterResult = examFeignClient.getExamMaster(examReport.getExamNo());
+        if (R.SUCCESS == examMasterResult.getCode() && examMasterResult.getData() != null){
+            ExamMaster examMaster = examMasterResult.getData();
+            R<PatMasterIndex> medrecResult = medrecFeignClient.getPatMasterIndex(examMaster.getPatientId());
+            if (R.SUCCESS == medrecResult.getCode() && medrecResult.getData() != null){
+                // 更新推送患者信息
+                hubToolService.syncPatInfo(medrecResult.getData());
+                DictDisDept dept = new DictDisDept();
+                dept.setStatus(Constants.STATUS_NORMAL);
+                dept.setIsDefault(Constants.IS_DEFAULT);
+                DictDisDept dictDisDeptDefault = dictDisDeptMapper.selectByCondition(dept);
 
-            logger.debug("构造emrExClinical接口数据...");
-            EmrExClinical emrExClinical = new EmrExClinical();
-            EmrExClinicalItem emrExClinicalItem = new EmrExClinicalItem();
-            emrExClinical.setId(examMaster.getExamNo());
-            emrExClinical.setPatientId(examMaster.getPatientId());
-            if("1".equals(examMaster.getPatientSource())){
-                emrExClinical.setActivityTypeCode(HubCodeEnum.DIAGNOSIS_ACTIVITIES_OUTPATIENT.getCode());
-                emrExClinical.setActivityTypeName(HubCodeEnum.DIAGNOSIS_ACTIVITIES_OUTPATIENT.getName());
-                emrExClinical.setSerialNumber(String.valueOf(examMaster.getVisitNo()));
-            }else if("2".equals(examMaster.getPatientSource())){
-                emrExClinical.setActivityTypeCode(HubCodeEnum.DIAGNOSIS_ACTIVITIES_HOSPITALIZATION.getCode());
-                emrExClinical.setActivityTypeName(HubCodeEnum.DIAGNOSIS_ACTIVITIES_HOSPITALIZATION.getName());
-                emrExClinical.setSerialNumber(String.valueOf(examMaster.getVisitId()));
-                R<PatsInHospital> hospitalResult = inpadmFeignClient.getPatsInHospital(examMaster.getPatientId(), examMaster.getVisitId());
-                emrExClinical.setWardNo(hospitalResult.getData().getWardCode());
-                emrExClinical.setBedNo(String.valueOf(hospitalResult.getData().getBedNo()));
-            }
-            emrExClinical.setApplicationFormNo(examMaster.getPatientLocalId());
-            if(StringUtils.isNotBlank(examMaster.getFacility())){
-                emrExClinical.setApplyOrgCode(HubCodeEnum.ORG_CODE.getCode());
-                emrExClinical.setApplyOrgName(HubCodeEnum.ORG_CODE.getName());
-                emrExClinical.setOrgCode(HubCodeEnum.ORG_CODE.getCode());
-                emrExClinical.setOrgName(HubCodeEnum.ORG_CODE.getName());
-            }else {
-                emrExClinical.setApplyOrgCode("-");
-                emrExClinical.setApplyOrgName(examMaster.getFacility());
-                emrExClinical.setOrgCode("-");
-                emrExClinical.setOrgName(examMaster.getFacility());
-            }
-            if(StringUtils.isNotBlank(examMaster.getReqDept())){
-                DictDisDept dictDisDept = hubToolService.getDept(examMaster.getReqDept());
-                emrExClinical.setApplyDeptCode(dictDisDept.getHubCode());
-                emrExClinical.setApplyDeptName(dictDisDept.getHubName());
-            }
-            emrExClinical.setSymptomDesc(examMaster.getClinDiag());
-            DictExamType dictExamType = dictExamTypeMapper.selectByEmrName(examMaster.getExamClass());
-            if (dictExamType == null){
-                emrExClinical.setExaminationTypeCode(HubCodeEnum.PAY_TYPE_OTHER.getCode());
-                emrExClinical.setExaminationTypeName(HubCodeEnum.PAY_TYPE_OTHER.getName());
-            }else {
-                emrExClinical.setExaminationTypeCode(dictExamType.getHubCode());
-                emrExClinical.setExaminationTypeName(dictExamType.getHubName());
-            }
-            emrExClinical.setExaminationReportDate(DateUtils.dateTime(examMaster.getReportDateTime()));
+                logger.debug("构造emrExClinical接口数据...");
+                EmrExClinical emrExClinical = new EmrExClinical();
+                EmrExClinicalItem emrExClinicalItem = new EmrExClinicalItem();
+                emrExClinical.setId(examMaster.getExamNo());
+                emrExClinical.setPatientId(examMaster.getPatientId());
+                if("1".equals(examMaster.getPatientSource())){
+                    emrExClinical.setActivityTypeCode(HubCodeEnum.DIAGNOSIS_ACTIVITIES_OUTPATIENT.getCode());
+                    emrExClinical.setActivityTypeName(HubCodeEnum.DIAGNOSIS_ACTIVITIES_OUTPATIENT.getName());
+                    emrExClinical.setSerialNumber(DigestUtil.md5Hex(examMaster.getPatientId() + examMaster.getVisitNo()));
+                }else if("2".equals(examMaster.getPatientSource())){
+                    emrExClinical.setActivityTypeCode(HubCodeEnum.DIAGNOSIS_ACTIVITIES_HOSPITALIZATION.getCode());
+                    emrExClinical.setActivityTypeName(HubCodeEnum.DIAGNOSIS_ACTIVITIES_HOSPITALIZATION.getName());
+                    emrExClinical.setSerialNumber(DigestUtil.md5Hex(examMaster.getPatientId() + examMaster.getVisitId()));
+                    R<PatsInHospital> hospitalResult = inpadmFeignClient.getPatsInHospital(examMaster.getPatientId(), examMaster.getVisitId());
+                    emrExClinical.setWardNo(hospitalResult.getData().getWardCode());
+                    emrExClinical.setBedNo(String.valueOf(hospitalResult.getData().getBedNo()));
+                }
+                emrExClinical.setApplicationFormNo(examMaster.getPatientLocalId());
+                if(StringUtils.isNotBlank(examMaster.getFacility())){
+                    emrExClinical.setApplyOrgCode(HubCodeEnum.ORG_CODE.getCode());
+                    emrExClinical.setApplyOrgName(HubCodeEnum.ORG_CODE.getName());
+                    emrExClinical.setOrgCode(HubCodeEnum.ORG_CODE.getCode());
+                    emrExClinical.setOrgName(HubCodeEnum.ORG_CODE.getName());
+                }else {
+                    emrExClinical.setApplyOrgCode("-");
+                    emrExClinical.setApplyOrgName(examMaster.getFacility());
+                    emrExClinical.setOrgCode("-");
+                    emrExClinical.setOrgName(examMaster.getFacility());
+                }
+                if(StringUtils.isNotBlank(examMaster.getReqDept())){
+                    DictDisDept dictDisDept = hubToolService.getDept(examMaster.getReqDept());
+                    emrExClinical.setApplyDeptCode(dictDisDept.getHubCode());
+                    emrExClinical.setApplyDeptName(dictDisDept.getHubName());
+                }
+                emrExClinical.setSymptomDesc(examMaster.getClinDiag());
+                DictExamType dictExamType = dictExamTypeMapper.selectByEmrName(examMaster.getExamClass());
+                if (dictExamType == null){
+                    emrExClinical.setExaminationTypeCode(HubCodeEnum.PAY_TYPE_OTHER.getCode());
+                    emrExClinical.setExaminationTypeName(examMaster.getClinDiag());
+                }else {
+                    emrExClinical.setExaminationTypeCode(dictExamType.getHubCode());
+                    emrExClinical.setExaminationTypeName(dictExamType.getHubName());
+                }
+                emrExClinical.setExaminationReportDate(DateUtils.dateTime(examMaster.getReportDateTime()));
 
-            PatMasterIndex patMasterIndex = medrecResult.getData();
-            emrExClinical.setPatientName(patMasterIndex.getName());
-            if (StringUtils.isBlank(patMasterIndex.getIdNo())){
-                emrExClinical.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE_OTHER.getCode());
-                emrExClinical.setIdCardTypeName(HubCodeEnum.ID_CARD_TYPE_OTHER.getName());
-                emrExClinical.setIdCard("-");
-            }else {
-                emrExClinical.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE.getCode());
-                emrExClinical.setIdCardTypeName(HubCodeEnum.ID_CARD_TYPE.getName());
-                emrExClinical.setIdCard(patMasterIndex.getIdNo());
-            }
+                PatMasterIndex patMasterIndex = medrecResult.getData();
+                emrExClinical.setPatientName(patMasterIndex.getName());
+                if (StringUtils.isBlank(patMasterIndex.getIdNo())){
+                    emrExClinical.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE_OTHER.getCode());
+                    emrExClinical.setIdCardTypeName(HubCodeEnum.ID_CARD_TYPE_OTHER.getName());
+                    emrExClinical.setIdCard("-");
+                }else {
+                    emrExClinical.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE.getCode());
+                    emrExClinical.setIdCardTypeName(HubCodeEnum.ID_CARD_TYPE.getName());
+                    emrExClinical.setIdCard(patMasterIndex.getIdNo());
+                }
 
-            ExamReport examReport = examResult.getData();
-            emrExClinical.setExaminationObjectiveDesc(examReport.getDescription());
-            emrExClinical.setExaminationSubjectiveDesc(examReport.getRecommendation());
-            // 检查报告编号使用EXAM_REPORT表EXAM_NO、DESCRIPTION拼接计算MD5
-            String no = DigestUtil.md5Hex(examReport.getExamNo() + examReport.getDescription());
-            emrExClinical.setExaminationReportId(no);
-            String reportname = examMaster.getReporter();
-            if (StringUtils.isBlank(reportname)){
-                reportname = examMaster.getReqPhysician();
-            }
-            R<Users> user = commFeignClient.getUserByName(reportname);
-            if (R.SUCCESS == user.getCode() && user.getData() != null){
-                emrExClinical.setExaminationReportId(user.getData().getUserId());
-                emrExClinical.setOperatorId(user.getData().getUserId());
-                emrExClinicalItem.setOperatorId(user.getData().getUserId());
-            }else {
-                emrExClinical.setExaminationReportId("-");
-                emrExClinical.setOperatorId("-");
-                emrExClinicalItem.setOperatorId("-");
-            }
-            if (StringUtils.isNotBlank(examMaster.getPerformedBy())){
-                DictDisDept dictDisDept = hubToolService.getDept(examMaster.getPerformedBy());
-                emrExClinical.setDeptCode(dictDisDept.getHubCode());
-                emrExClinical.setDeptName(dictDisDept.getHubName());
-            }else {
-                emrExClinical.setDeptCode(dictDisDeptDefault.getHubCode());
-                emrExClinical.setDeptName(dictDisDeptDefault.getHubName());
-            }
-            emrExClinical.setOperationTime(DateUtils.getTime());
-            synchroEmrMonitorService.syncEmrExClinical(emrExClinical, httpMethod);
+                emrExClinical.setExaminationObjectiveDesc(examReport.getDescription());
+                emrExClinical.setExaminationSubjectiveDesc(examReport.getRecommendation());
+                // 检查报告编号使用EXAM_REPORT表EXAM_NO、DESCRIPTION拼接计算MD5
+                String no = DigestUtil.md5Hex(examReport.getExamNo() + examReport.getDescription());
+                emrExClinical.setExaminationReportId(no);
+                String reportname = examMaster.getReporter();
+                if (StringUtils.isBlank(reportname)){
+                    reportname = examMaster.getReqPhysician();
+                }
+                R<Users> user = commFeignClient.getUserByName(reportname);
+                if (R.SUCCESS == user.getCode() && user.getData() != null){
+                    emrExClinical.setExaminationReportId(user.getData().getUserId());
+                    emrExClinical.setOperatorId(user.getData().getUserId());
+                    emrExClinicalItem.setOperatorId(user.getData().getUserId());
+                }else {
+                    emrExClinical.setExaminationReportId("-");
+                    emrExClinical.setOperatorId("-");
+                    emrExClinicalItem.setOperatorId("-");
+                }
+                if (StringUtils.isNotBlank(examMaster.getPerformedBy())){
+                    DictDisDept dictDisDept = hubToolService.getDept(examMaster.getPerformedBy());
+                    emrExClinical.setDeptCode(dictDisDept.getHubCode());
+                    emrExClinical.setDeptName(dictDisDept.getHubName());
+                }else {
+                    emrExClinical.setDeptCode(dictDisDeptDefault.getHubCode());
+                    emrExClinical.setDeptName(dictDisDeptDefault.getHubName());
+                }
+                emrExClinical.setOperationTime(DateUtils.getTime());
+                synchroEmrMonitorService.syncEmrExClinical(emrExClinical, httpMethod);
 
-            logger.debug("构造emrExClinicalItem接口数据...");
-            emrExClinicalItem.setId(no);
-            emrExClinicalItem.setExClinicalId(examMaster.getExamNo());
-            DictExamItem dictExamItem = dictExamItemMapper.selectByEmrName(examMaster.getExamSubClass());
-            if (dictExamItem == null){
-                emrExClinicalItem.setItemCode(HubCodeEnum.PAY_TYPE_OTHER.getCode());
-                emrExClinicalItem.setItemName(HubCodeEnum.PAY_TYPE_OTHER.getName());
+                logger.debug("构造emrExClinicalItem接口数据...");
+                emrExClinicalItem.setId(no);
+                emrExClinicalItem.setExClinicalId(examMaster.getExamNo());
+                DictExamItem dictExamItem = dictExamItemMapper.selectByEmrName(examMaster.getExamSubClass());
+                if (dictExamItem == null){
+                    emrExClinicalItem.setItemCode(HubCodeEnum.PAY_TYPE_OTHER.getCode());
+                    emrExClinicalItem.setItemName(HubCodeEnum.PAY_TYPE_OTHER.getName());
+                }else {
+                    emrExClinicalItem.setItemCode(dictExamItem.getHubCode());
+                    emrExClinicalItem.setItemName(dictExamItem.getHubName());
+                }
+                emrExClinicalItem.setExaminationQuantification(examReport.getExamPara());
+                if ("1".equals(examReport.getIsAbnormal())){
+                    emrExClinicalItem.setExaminationResultCode(HubCodeEnum.EXAM_RESULT_ABNORMAL.getCode());
+                    emrExClinicalItem.setExaminationResultName(HubCodeEnum.EXAM_RESULT_ABNORMAL.getName());
+                }else {
+                    emrExClinicalItem.setExaminationResultCode(HubCodeEnum.EXAM_RESULT_OTHER.getCode());
+                    emrExClinicalItem.setExaminationResultName(HubCodeEnum.EXAM_RESULT_OTHER.getName());
+                }
+                emrExClinicalItem.setOperationTime(DateUtils.getTime());
+                synchroEmrMonitorService.syncEmrExClinicalItem(emrExClinicalItem, httpMethod);
             }else {
-                emrExClinicalItem.setItemCode(dictExamItem.getHubCode());
-                emrExClinicalItem.setItemName(dictExamItem.getHubName());
+                logger.error("{}对应PatMasterIndex信息为空，无法同步", examMaster.getPatientId());
             }
-            emrExClinicalItem.setExaminationQuantification(examReport.getExamPara());
-            if ("1".equals(examReport.getIsAbnormal())){
-                emrExClinicalItem.setExaminationResultCode(HubCodeEnum.EXAM_RESULT_ABNORMAL.getCode());
-                emrExClinicalItem.setExaminationResultName(HubCodeEnum.EXAM_RESULT_ABNORMAL.getName());
-            }else {
-                emrExClinicalItem.setExaminationResultCode(HubCodeEnum.EXAM_RESULT_OTHER.getCode());
-                emrExClinicalItem.setExaminationResultName(HubCodeEnum.EXAM_RESULT_OTHER.getName());
-            }
-            emrExClinicalItem.setOperationTime(DateUtils.getTime());
-            synchroEmrMonitorService.syncEmrExClinicalItem(emrExClinicalItem, httpMethod);
         }else {
-            logger.error("{}对应PatMasterIndex或ExamReport信息为空，无法同步", examMaster.getPatientId());
+            logger.error("{}对应ExamMaster信息为空，无法同步", examReport.getExamNo());
         }
     }
 }
