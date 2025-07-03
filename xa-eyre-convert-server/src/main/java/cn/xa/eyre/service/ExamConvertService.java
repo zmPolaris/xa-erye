@@ -11,16 +11,14 @@ import cn.xa.eyre.common.utils.DateUtils;
 import cn.xa.eyre.common.utils.StringUtils;
 import cn.xa.eyre.exam.domain.ExamMaster;
 import cn.xa.eyre.exam.domain.ExamReport;
-import cn.xa.eyre.hisapi.CommFeignClient;
-import cn.xa.eyre.hisapi.ExamFeignClient;
-import cn.xa.eyre.hisapi.InpadmFeignClient;
-import cn.xa.eyre.hisapi.MedrecFeignClient;
+import cn.xa.eyre.hisapi.*;
 import cn.xa.eyre.hub.domain.emrmonitor.EmrExClinical;
 import cn.xa.eyre.hub.domain.emrmonitor.EmrExClinicalItem;
 import cn.xa.eyre.hub.service.SynchroEmrMonitorService;
 import cn.xa.eyre.hub.staticvalue.HubCodeEnum;
 import cn.xa.eyre.inpadm.domain.PatsInHospital;
 import cn.xa.eyre.medrec.domain.PatMasterIndex;
+import cn.xa.eyre.outpdoct.domain.OutpTreatRec;
 import cn.xa.eyre.system.dict.domain.DictDisDept;
 import cn.xa.eyre.system.dict.domain.DictExamItem;
 import cn.xa.eyre.system.dict.domain.DictExamType;
@@ -55,6 +53,8 @@ public class ExamConvertService {
     private ExamFeignClient examFeignClient;
     @Autowired
     private HubToolService hubToolService;
+    @Autowired
+    private OutpdoctFeignClient outpdoctFeignClient;
 
     public void examReport(DBMessage dbMessage) {
         logger.debug("检查报告表EXAM_REPORT变更接口");
@@ -91,7 +91,8 @@ public class ExamConvertService {
                 if("1".equals(examMaster.getPatientSource())){
                     emrExClinical.setActivityTypeCode(HubCodeEnum.DIAGNOSIS_ACTIVITIES_OUTPATIENT.getCode());
                     emrExClinical.setActivityTypeName(HubCodeEnum.DIAGNOSIS_ACTIVITIES_OUTPATIENT.getName());
-                    emrExClinical.setSerialNumber(DigestUtil.md5Hex(examMaster.getPatientId() + examMaster.getVisitNo()));
+                    R<OutpTreatRec> outpTreatRecResult = outpdoctFeignClient.getOutpTreatRec(examMaster.getExamNo());
+                    emrExClinical.setSerialNumber(DigestUtil.md5Hex(examMaster.getPatientId() + outpTreatRecResult.getData().getVisitNo()));
                 }else if("2".equals(examMaster.getPatientSource())){
                     emrExClinical.setActivityTypeCode(HubCodeEnum.DIAGNOSIS_ACTIVITIES_HOSPITALIZATION.getCode());
                     emrExClinical.setActivityTypeName(HubCodeEnum.DIAGNOSIS_ACTIVITIES_HOSPITALIZATION.getName());

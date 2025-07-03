@@ -28,4 +28,8 @@ public interface MedrecFeignClient {
 
     @PostMapping("/medrec/getOutpMrYb")
     public R<OutpMrYb> getOutpMrYb(@RequestBody OutpMrYbKey outpMrYbKey);
+
+    @PostMapping("/medrec/getPatVisit")
+    public R<PatVisit> getPatVisit(@RequestBody PatVisitKey patVisitKey);
+
 }

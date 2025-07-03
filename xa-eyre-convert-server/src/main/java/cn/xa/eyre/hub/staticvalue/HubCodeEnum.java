@@ -14,6 +14,7 @@ public enum HubCodeEnum {
     EXAM_RESULT_ABNORMAL("01", "阳性"),
     EXAM_RESULT_OTHER("07", "未检出"),
     SEX_OTHER("0", "未知的性别"),
+    TREAT_RESULT_OTHER("9", "其他"),
 
 
     DIAGNOSIS_ACTIVITIES_OUTPATIENT("1", "门诊"),

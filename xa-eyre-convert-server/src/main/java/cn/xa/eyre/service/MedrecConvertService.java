@@ -27,14 +27,8 @@ import cn.xa.eyre.hub.service.SynchroEmrRealService;
 import cn.xa.eyre.hub.staticvalue.HubCodeEnum;
 import cn.xa.eyre.inpadm.domain.PatsInHospital;
 import cn.xa.eyre.medrec.domain.*;
-import cn.xa.eyre.system.dict.domain.DdNation;
-import cn.xa.eyre.system.dict.domain.DictChargeType;
-import cn.xa.eyre.system.dict.domain.DictDisDept;
-import cn.xa.eyre.system.dict.domain.DictDiseaseIcd10;
-import cn.xa.eyre.system.dict.mapper.DdNationMapper;
-import cn.xa.eyre.system.dict.mapper.DictChargeTypeMapper;
-import cn.xa.eyre.system.dict.mapper.DictDisDeptMapper;
-import cn.xa.eyre.system.dict.mapper.DictDiseaseIcd10Mapper;
+import cn.xa.eyre.system.dict.domain.*;
+import cn.xa.eyre.system.dict.mapper.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +59,9 @@ public class MedrecConvertService {
     private DictDiseaseIcd10Mapper dictDiseaseIcd10Mapper;// ICD10转码表
     @Autowired
     private HubToolService hubToolService;
+    @Autowired
+    private DictTreatResultMapper dictTreatResultMapper;
+
 
     public void patMasterIndex(DBMessage dbMessage) {
         logger.debug("病人主索引表PAT_MASTER_INDEX变更接口");
@@ -179,8 +176,11 @@ public class MedrecConvertService {
         DiagnosticCategoryKey diagnosticCategoryKey = new DiagnosticCategoryKey();
         BeanUtil.copyProperties(diagnosis, diagnosticCategoryKey);
         R<DiagnosticCategory> diagnosticCatResult = medrecFeignClient.getDiagnosticCategory(diagnosticCategoryKey);
-        R<PatsInHospital> hospitalResult = inpadmFeignClient.getPatsInHospital(diagnosis.getPatientId(), diagnosis.getVisitId());
-        if (R.SUCCESS == hospitalResult.getCode() && hospitalResult.getData() != null
+        PatVisitKey patVisitKey = new PatVisitKey();
+        BeanUtil.copyProperties(diagnosis, patVisitKey);
+        R<PatVisit> patVisitResult = medrecFeignClient.getPatVisit(patVisitKey);
+//        R<PatsInHospital> hospitalResult = inpadmFeignClient.getPatsInHospital(diagnosis.getPatientId(), diagnosis.getVisitId());
+        if (R.SUCCESS == patVisitResult.getCode() && patVisitResult.getData() != null
                 && R.SUCCESS == medrecResult.getCode() && medrecResult.getData() != null){
             // 更新推送患者信息
             hubToolService.syncPatInfo(medrecResult.getData());
@@ -208,15 +208,27 @@ public class MedrecConvertService {
                     emrFirstCourse.setIdCard(medrecResult.getData().getIdNo());
                 }
 
-                emrFirstCourse.setWardNo(hospitalResult.getData().getWardCode());
-                emrFirstCourse.setBedNo(String.valueOf(hospitalResult.getData().getBedNo()));
+                R<PatsInHospital> hospitalResult = inpadmFeignClient.getPatsInHospital(diagnosis.getPatientId(), diagnosis.getVisitId());
+                if (hospitalResult.getCode() == R.SUCCESS && hospitalResult.getData() != null){
+                    emrFirstCourse.setWardNo(hospitalResult.getData().getWardCode());
+                    emrFirstCourse.setBedNo(String.valueOf(hospitalResult.getData().getBedNo()));
+                }
+
                 // 治疗医生
-                if (StringUtils.isNotBlank(hospitalResult.getData().getDoctorInCharge())){
+                if (StringUtils.isNotBlank(patVisitResult.getData().getDoctorInCharge())){
+                    R<Users> user = commFeignClient.getUserByName(patVisitResult.getData().getDoctorInCharge());
+                    if (R.SUCCESS == user.getCode() && user.getData() != null){
+                        emrFirstCourse.setResidentPhysicianId(user.getData().getUserId());
+                        emrFirstCourse.setOperatorId(user.getData().getUserId());
+                    }
+                }else {
                     R<Users> user = commFeignClient.getUserByName(hospitalResult.getData().getDoctorInCharge());
                     if (R.SUCCESS == user.getCode() && user.getData() != null){
                         emrFirstCourse.setResidentPhysicianId(user.getData().getUserId());
+                        emrFirstCourse.setOperatorId(user.getData().getUserId());
                     }
                 }
+
                 if (diagnosticCatResult.getCode() == R.SUCCESS && diagnosticCatResult.getData() != null){
                     DictDiseaseIcd10 dictDiseaseIcd10 = dictDiseaseIcd10Mapper.selectByEmrCode(diagnosticCatResult.getData().getDiagnosisCode());
                     if(dictDiseaseIcd10 == null || dictDiseaseIcd10.getHubCode().equals(HubCodeEnum.DISEASE_ICD10_CODE.getCode())){
@@ -225,6 +237,17 @@ public class MedrecConvertService {
                     }else {
                         emrFirstCourse.setWmInitalDiagnosisCode(dictDiseaseIcd10.getHubCode());
                         emrFirstCourse.setWmInitalDiagnosisName(dictDiseaseIcd10.getHubName());
+                    }
+                }
+
+                if(StringUtils.isNotBlank(diagnosis.getTreatResult())){
+                    DictTreatResult dictTreatResult = dictTreatResultMapper.selectByEmrName(diagnosis.getTreatResult());
+                    if(dictTreatResult == null || dictTreatResult.getHubCode().equals(HubCodeEnum.TREAT_RESULT_OTHER.getCode())){
+                        emrFirstCourse.setDiseaseProgressionCode(HubCodeEnum.TREAT_RESULT_OTHER.getCode());
+                        emrFirstCourse.setDiseaseProgressionName(diagnosis.getTreatResult());
+                    }else {
+                        emrFirstCourse.setDiseaseProgressionCode(dictTreatResult.getHubCode());
+                        emrFirstCourse.setDiseaseProgressionName(dictTreatResult.getHubName());
                     }
                 }
 
@@ -256,7 +279,7 @@ public class MedrecConvertService {
                 emrActivityInfo.setDiagnoseTime(emrFirstCourse.getCreateDate());
                 emrActivityInfo.setWmDiseaseCode(emrFirstCourse.getWmInitalDiagnosisCode());
                 emrActivityInfo.setWmDiseaseName(emrFirstCourse.getWmInitalDiagnosisName());
-                emrActivityInfo.setFillDoctor(hospitalResult.getData().getDoctorInCharge());
+                emrActivityInfo.setFillDoctor(patVisitResult.getData().getDoctorInCharge());
                 emrActivityInfo.setOperatorId(emrFirstCourse.getOperatorId());
                 emrActivityInfo.setDeptCode(emrFirstCourse.getDeptCode());
                 emrActivityInfo.setDeptName(emrFirstCourse.getDeptName());
@@ -266,7 +289,7 @@ public class MedrecConvertService {
                 synchroEmrRealService.syncEmrActivityInfo(emrActivityInfo, httpMethod);
 
 
-            }else if (diagnosis.getDiagnosisCode().equals(Constants.DIAGNOSIS_TYPE_CODE_ZYZD)){
+            }else if (diagnosis.getDiagnosisCode().equals(Constants.DIAGNOSIS_TYPE_CODE_QT) && diagnosis.getVisitId() != null){
                 logger.debug("构造emrDailyCourse接口数据...");
                 emrDailyCourse.setId(id);
                 emrDailyCourse.setPatientId(diagnosis.getPatientId());
@@ -284,10 +307,12 @@ public class MedrecConvertService {
                     emrDailyCourse.setIdCardTypeName(HubCodeEnum.ID_CARD_TYPE.getName());
                     emrDailyCourse.setIdCard(medrecResult.getData().getIdNo());
                 }
+                R<Users> user = commFeignClient.getUserByName(patVisitResult.getData().getDoctorInCharge());
+                if (R.SUCCESS == user.getCode() && user.getData() != null){
+                    emrDailyCourse.setOperatorId(user.getData().getUserId());
+                }
 
-                emrDailyCourse.setWardNo(hospitalResult.getData().getWardCode());
-                emrDailyCourse.setBedNo(String.valueOf(hospitalResult.getData().getBedNo()));
-                DictDisDept dictDisDept = hubToolService.getDept(hospitalResult.getData().getDeptCode());
+                DictDisDept dictDisDept = hubToolService.getDept(patVisitResult.getData().getDeptAdmissionTo());
 
                 emrDailyCourse.setDeptCode(dictDisDept.getHubCode());
                 emrDailyCourse.setDeptName(dictDisDept.getHubName());
@@ -295,6 +320,17 @@ public class MedrecConvertService {
                 emrDailyCourse.setOrgCode(HubCodeEnum.ORG_CODE.getCode());
                 emrDailyCourse.setOrgName(HubCodeEnum.ORG_CODE.getName());
                 emrDailyCourse.setOperationTime(DateUtils.getTime());
+
+                if(StringUtils.isNotBlank(diagnosis.getTreatResult())){
+                    DictTreatResult dictTreatResult = dictTreatResultMapper.selectByEmrName(diagnosis.getTreatResult());
+                    if(dictTreatResult == null || dictTreatResult.getHubCode().equals(HubCodeEnum.TREAT_RESULT_OTHER.getCode())){
+                        emrDailyCourse.setDiseaseProgressionCode(HubCodeEnum.TREAT_RESULT_OTHER.getCode());
+                        emrDailyCourse.setDiseaseProgressionName(diagnosis.getTreatResult());
+                    }else {
+                        emrDailyCourse.setDiseaseProgressionCode(dictTreatResult.getHubCode());
+                        emrDailyCourse.setDiseaseProgressionName(dictTreatResult.getHubName());
+                    }
+                }
 
                 synchroEmrMonitorService.syncEmrDailyCourse(emrDailyCourse, httpMethod);
 
@@ -313,8 +349,11 @@ public class MedrecConvertService {
                 emrActivityInfo.setDiagnoseTime(emrDailyCourse.getCreateDate());
                 emrActivityInfo.setWmDiseaseCode(HubCodeEnum.DISEASE_ICD10_CODE.getCode());
                 emrActivityInfo.setWmDiseaseName(HubCodeEnum.DISEASE_ICD10_CODE.getName());
-                emrActivityInfo.setFillDoctor(hospitalResult.getData().getDoctorInCharge());
+                emrActivityInfo.setFillDoctor(patVisitResult.getData().getDoctorInCharge());
                 emrActivityInfo.setOperatorId(emrDailyCourse.getOperatorId());
+                if (StringUtils.isBlank(emrDailyCourse.getOperatorId())){
+                    emrActivityInfo.setOperatorId("-");
+                }
                 emrActivityInfo.setDeptCode(emrDailyCourse.getDeptCode());
                 emrActivityInfo.setDeptName(emrDailyCourse.getDeptName());
                 emrActivityInfo.setOrgCode(emrDailyCourse.getOrgCode());
@@ -324,7 +363,7 @@ public class MedrecConvertService {
             }
 
         }else {
-            logger.error("{}对应PatMasterIndex或PatsInHospital信息为空，无法同步", diagnosis.getPatientId());
+            logger.error("{}对应PatMasterIndex或PatVisit信息为空，无法同步", diagnosis.getPatientId());
         }
     }
 
@@ -347,15 +386,13 @@ public class MedrecConvertService {
         patVisit.setConsultingDate(DateUtils.getLongDate(dbMessage.getAfterData().get("consultingDate")));
 
         R<PatMasterIndex> medrecResult = medrecFeignClient.getPatMasterIndex(patVisit.getPatientId());
-        R<PatsInHospital> hospitalResult = inpadmFeignClient.getPatsInHospital(patVisit.getPatientId(), patVisit.getVisitId());
         // 入院诊断
         DiagnosisKey diagnosisKeyIn = new DiagnosisKey(patVisit.getPatientId(), patVisit.getVisitId(), Constants.DIAGNOSIS_TYPE_CODE_RYCZ);
         R<Diagnosis> diagnosisInResult = medrecFeignClient.getDiagnosis(diagnosisKeyIn);
         DiagnosticCategoryKey diagnosticCategoryKey = new DiagnosticCategoryKey();
         BeanUtil.copyProperties(diagnosisInResult.getData(), diagnosticCategoryKey);
         R<DiagnosticCategory> diagnosticInCatResult = medrecFeignClient.getDiagnosticCategory(diagnosticCategoryKey);
-        if (R.SUCCESS == hospitalResult.getCode() && hospitalResult.getData() != null
-                && R.SUCCESS == medrecResult.getCode() && medrecResult.getData() != null
+        if ( R.SUCCESS == medrecResult.getCode() && medrecResult.getData() != null
                 && R.SUCCESS == diagnosisInResult.getCode() && diagnosisInResult.getData() != null
                 && R.SUCCESS == diagnosticInCatResult.getCode() && diagnosticInCatResult.getData() != null){
             EmrAdmissionRecord emrAdmissionRecord = new EmrAdmissionRecord();
@@ -431,7 +468,6 @@ public class MedrecConvertService {
                 emrAdmissionRecord.setIdCardTypeName(HubCodeEnum.ID_CARD_TYPE.getName());
                 emrAdmissionRecord.setIdCard(medrecResult.getData().getIdNo());
             }
-            emrAdmissionRecord.setWardNo(hospitalResult.getData().getWardCode());
 
             if (patVisit.getDischargeDateTime() != null){
                 // 出院诊断
@@ -452,12 +488,22 @@ public class MedrecConvertService {
                     emrDischargeInfo.setDischargeDiagnosisCode(outDictDiseaseIcd10.getHubCode());
                     emrDischargeInfo.setDischargeDiagnosisName(outDictDiseaseIcd10.getHubName());
                 }
+                if(StringUtils.isNotBlank(diagnosisOutResult.getData().getTreatResult())){
+                    DictTreatResult dictTreatResult = dictTreatResultMapper.selectByEmrName(diagnosisOutResult.getData().getTreatResult());
+                    if(dictTreatResult == null || dictTreatResult.getHubCode().equals(HubCodeEnum.TREAT_RESULT_OTHER.getCode())){
+                        emrDischargeInfo.setDiseaseProgressionCode(HubCodeEnum.TREAT_RESULT_OTHER.getCode());
+                        emrDischargeInfo.setDiseaseProgressionName(diagnosisOutResult.getData().getTreatResult());
+                    }else {
+                        emrDischargeInfo.setDiseaseProgressionCode(dictTreatResult.getHubCode());
+                        emrDischargeInfo.setDiseaseProgressionName(dictTreatResult.getHubName());
+                    }
+                }
+                emrDischargeInfo.setAdmissionDesc(diagnosisOutResult.getData().getDiagnosisDesc());
 
                 emrAdmissionRecord.setDischargeDate(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, patVisit.getDischargeDateTime()));
                 // 计算住院天数
                 long betweenDay = DateUtil.between(patVisit.getAdmissionDateTime(), patVisit.getDischargeDateTime(), DateUnit.DAY);
                 emrAdmissionRecord.setAdmissionDays(String.valueOf(betweenDay));
-                emrAdmissionRecord.setDischargeWard(hospitalResult.getData().getWardCode());
                 dictDisDept = hubToolService.getDept(patVisit.getDeptDischargeFrom());
                 emrAdmissionRecord.setDischargeDeptCode(dictDisDept.getHubCode());
                 emrAdmissionRecord.setDischargeDeptName(dictDisDept.getHubName());
@@ -502,10 +548,6 @@ public class MedrecConvertService {
                     emrDischargeInfo.setIdCard(medrecResult.getData().getIdNo());
                 }
 
-                emrDischargeInfo.setWardNo(hospitalResult.getData().getWardCode());
-                emrDischargeInfo.setBedNo(String.valueOf(hospitalResult.getData().getBedNo()));
-                emrDischargeInfo.setAdmissionDesc(hospitalResult.getData().getDiagnosis());
-
                 emrDischargeInfo.setDeptCode(dictDisDept.getHubCode());
                 emrDischargeInfo.setDeptName(dictDisDept.getHubName());
 
@@ -542,7 +584,7 @@ public class MedrecConvertService {
             }
 
         }else {
-            logger.error("{}对应PatMasterIndex或PatsInHospital信息为空，无法同步", patVisit.getPatientId());
+            logger.error("{}对应PatMasterIndex信息为空，无法同步", patVisit.getPatientId());
         }
     }
 }

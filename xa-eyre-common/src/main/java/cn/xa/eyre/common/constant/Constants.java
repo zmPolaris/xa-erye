@@ -97,5 +97,6 @@ public class Constants
     public static final String DIAGNOSIS_TYPE_CODE_MZZD = "1";
     public static final String DIAGNOSIS_TYPE_CODE_RYCZ = "2";
     public static final String DIAGNOSIS_TYPE_CODE_ZYZD = "3";
+    public static final String DIAGNOSIS_TYPE_CODE_QT = "A";
 
 }

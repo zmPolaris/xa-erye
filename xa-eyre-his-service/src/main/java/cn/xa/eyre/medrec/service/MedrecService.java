@@ -1,10 +1,7 @@
 package cn.xa.eyre.medrec.service;
 
 import cn.xa.eyre.medrec.domain.*;
-import cn.xa.eyre.medrec.mapper.DiagnosisMapper;
-import cn.xa.eyre.medrec.mapper.DiagnosticCategoryMapper;
-import cn.xa.eyre.medrec.mapper.OutpMrYbMapper;
-import cn.xa.eyre.medrec.mapper.PatMasterIndexMapper;
+import cn.xa.eyre.medrec.mapper.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +17,8 @@ public class MedrecService {
     private DiagnosisMapper diagnosisMapper;
     @Autowired
     private OutpMrYbMapper outpMrYbMapper;
+    @Autowired
+    private PatVisitMapper patVisitMapper;
 
     public PatMasterIndex selectPatMasterIndex(String patientId) {
         return patMasterIndexMapper.selectByPrimaryKey(patientId);
@@ -39,5 +38,9 @@ public class MedrecService {
 
     public OutpMrYb selectOutpMrYb(OutpMrYbKey outpMrYbKey) {
         return outpMrYbMapper.selectByPrimaryKey(outpMrYbKey);
+    }
+
+    public PatVisit selectPatVisit(PatVisitKey patVisitKey) {
+        return patVisitMapper.selectByPrimaryKey(patVisitKey);
     }
 }

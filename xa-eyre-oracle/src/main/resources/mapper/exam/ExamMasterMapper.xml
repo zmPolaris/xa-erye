@@ -76,6 +76,7 @@
     <include refid="Base_Column_List" />
     from EXAM_MASTER
     where EXAM_NO = #{examNo,jdbcType=VARCHAR}
+    AND RESULT_STATUS ='4'
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
     delete from EXAM_MASTER
