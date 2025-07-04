@@ -493,9 +493,11 @@ public class MedrecConvertService {
                     if(dictTreatResult == null || dictTreatResult.getHubCode().equals(HubCodeEnum.TREAT_RESULT_OTHER.getCode())){
                         emrDischargeInfo.setDiseaseProgressionCode(HubCodeEnum.TREAT_RESULT_OTHER.getCode());
                         emrDischargeInfo.setDiseaseProgressionName(diagnosisOutResult.getData().getTreatResult());
+                        emrDischargeInfo.setTreatmentDesc("无");
                     }else {
                         emrDischargeInfo.setDiseaseProgressionCode(dictTreatResult.getHubCode());
                         emrDischargeInfo.setDiseaseProgressionName(dictTreatResult.getHubName());
+                        emrDischargeInfo.setTreatmentDesc(diagnosisOutResult.getData().getTreatResult());
                     }
                 }
                 emrDischargeInfo.setAdmissionDesc(diagnosisOutResult.getData().getDiagnosisDesc());
