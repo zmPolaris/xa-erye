@@ -94,7 +94,7 @@ public class PharmacyConvertService {
                 emrOrder.setActivityTypeCode(HubCodeEnum.DIAGNOSIS_ACTIVITIES_OUTPATIENT.getCode());
                 OutpMr outpMr = new OutpMr();
                 outpMr.setPatientId(patientId);
-                outpMr.setVisitDate(drugPrescMaster.getPrescDate());
+                outpMr.setVisitDateStr(DateUtils.dateTime(drugPrescMaster.getPrescDate()));
                 R<List<OutpMr>> mrResult = outpdoctFeignClient.getOutpMrByCondition(outpMr);
                 if (R.SUCCESS == mrResult.getCode()) {
                     outpMr = mrResult.getData().get(0);

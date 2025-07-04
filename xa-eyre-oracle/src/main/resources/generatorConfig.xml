@@ -17,21 +17,21 @@
                 password="orcl">
         </jdbcConnection>
 
-        <javaModelGenerator targetPackage="cn.xa.eyre.medrec.domain" targetProject="src/main/java/">
+        <javaModelGenerator targetPackage="cn.xa.eyre.outpdoct.domain" targetProject="src/main/java/">
             <property name="constructorBased" value="false"/>
             <property name="enableSubPackages" value="true" />
             <property name="trimStrings" value="true" />
         </javaModelGenerator>
 
-        <sqlMapGenerator targetPackage="mapper.medrec" targetProject="src/main/resources">
+        <sqlMapGenerator targetPackage="mapper.outpdoct" targetProject="src/main/resources">
             <property name="enableSubPackages" value="true"/>
         </sqlMapGenerator>
 
-        <javaClientGenerator type="XMLMAPPER" targetPackage="cn.xa.eyre.medrec.mapper" targetProject="src/main/java">
+        <javaClientGenerator type="XMLMAPPER" targetPackage="cn.xa.eyre.outpdoct.mapper" targetProject="src/main/java">
             <property name="enableSubPackages" value="true"/>
         </javaClientGenerator>
 
-        <table tableName="DIAGNOSTIC_CATEGORY" domainObjectName="DiagnosticCategory"
+        <table tableName="OUTP_TREAT_REC" domainObjectName="OutpTreatRec"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false"
                selectByExampleQueryId="false"></table>

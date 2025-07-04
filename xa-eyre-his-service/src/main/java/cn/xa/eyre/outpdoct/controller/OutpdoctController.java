@@ -37,7 +37,7 @@ public class OutpdoctController {
     @PostMapping("/getOutpWaitQueueByCondition")
     public AjaxResult getOutpWaitQueueByCondition(@RequestBody OutpWaitQueue outpWaitQueue){
         List<OutpWaitQueue> outpWaitQueues = outpWaitQueueMapper.selectOutpWaitQueueByCondition(outpWaitQueue);
-        return AjaxResult.success("接口调用成功", outpWaitQueues.get(0));
+        return AjaxResult.success("接口调用成功", outpWaitQueues.isEmpty() ? null : outpWaitQueues.get(0));
     }
 
     @GetMapping("/getOutpTreatRec")

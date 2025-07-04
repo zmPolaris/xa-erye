@@ -2,10 +2,7 @@ package cn.xa.eyre.medrec.controller;
 
 import cn.xa.eyre.common.core.domain.AjaxResult;
 import cn.xa.eyre.convertapi.ConvertFeignClient;
-import cn.xa.eyre.medrec.domain.DiagnosisKey;
-import cn.xa.eyre.medrec.domain.DiagnosticCategoryKey;
-import cn.xa.eyre.medrec.domain.OutpMrYbKey;
-import cn.xa.eyre.medrec.domain.PatVisitKey;
+import cn.xa.eyre.medrec.domain.*;
 import cn.xa.eyre.medrec.mapper.PatVisitMapper;
 import cn.xa.eyre.medrec.service.MedrecService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,8 +40,8 @@ public class MedrecController {
     }
 
     @PostMapping("/getOutpMrYb")
-    public AjaxResult getOutpMrYb(@RequestBody OutpMrYbKey outpMrYbKey){
-        return AjaxResult.success("接口调用成功", medrecService.selectOutpMrYb(outpMrYbKey));
+    public AjaxResult getOutpMrYb(@RequestBody OutpMrYb outpMrYb){
+        return AjaxResult.success("接口调用成功", medrecService.selectOutpMrYb(outpMrYb));
     }
 
     @PostMapping("/getPatVisit")

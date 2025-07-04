@@ -15,4 +15,6 @@ public interface OutpMrYbMapper {
     int updateByPrimaryKeySelective(OutpMrYb record);
 
     int updateByPrimaryKey(OutpMrYb record);
+
+    OutpMrYb selectOutpMrYb(OutpMrYb outpMrYb);
 }

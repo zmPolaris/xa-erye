@@ -47,6 +47,8 @@ public class OutpMr extends OutpMrKey {
 
     private Date endVisitDate;
 
+    private String visitDateStr;
+
     public String getPatientId() {
         return patientId;
     }
@@ -221,5 +223,13 @@ public class OutpMr extends OutpMrKey {
 
     public void setEndVisitDate(Date endVisitDate) {
         this.endVisitDate = endVisitDate;
+    }
+
+    public String getVisitDateStr() {
+        return visitDateStr;
+    }
+
+    public void setVisitDateStr(String visitDateStr) {
+        this.visitDateStr = visitDateStr;
     }
 }

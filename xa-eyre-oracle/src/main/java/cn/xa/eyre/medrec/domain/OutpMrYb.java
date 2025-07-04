@@ -53,6 +53,8 @@ public class OutpMrYb extends OutpMrYbKey {
 
     private String icdType08;
 
+    private String visitDateStr;
+
     public String getDiagDesc() {
         return diagDesc;
     }
@@ -259,5 +261,13 @@ public class OutpMrYb extends OutpMrYbKey {
 
     public void setIcdType08(String icdType08) {
         this.icdType08 = icdType08 == null ? null : icdType08.trim();
+    }
+
+    public String getVisitDateStr() {
+        return visitDateStr;
+    }
+
+    public void setVisitDateStr(String visitDateStr) {
+        this.visitDateStr = visitDateStr;
     }
 }

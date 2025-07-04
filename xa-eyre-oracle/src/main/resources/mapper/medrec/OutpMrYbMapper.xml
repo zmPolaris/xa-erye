@@ -46,6 +46,14 @@
       and VISIT_DATE = #{visitDate,jdbcType=TIMESTAMP}
       and VISIT_NO = #{visitNo,jdbcType=NUMERIC}
   </select>
+  <select id="selectOutpMrYb" parameterType="cn.xa.eyre.medrec.domain.OutpMrYb" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from OUTP_MR_YB
+    where PATIENT_ID = #{patientId,jdbcType=VARCHAR}
+    and VISIT_DATE = TO_DATE(#{visitDateStr,jdbcType=VARCHAR}, 'YYYY/MM/DD')
+    and VISIT_NO = #{visitNo,jdbcType=NUMERIC}
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="cn.xa.eyre.medrec.domain.OutpMrYbKey">
     delete from OUTP_MR_YB
     where PATIENT_ID = #{patientId,jdbcType=VARCHAR}

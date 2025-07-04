@@ -11,6 +11,8 @@ public class OutpWaitQueue extends OutpWaitQueueKey {
 
     private String doctor;
 
+    private String visitDateStr;
+
     public Date getVisitDate() {
         return visitDate;
     }
@@ -41,5 +43,13 @@ public class OutpWaitQueue extends OutpWaitQueueKey {
 
     public void setDoctor(String doctor) {
         this.doctor = doctor == null ? null : doctor.trim();
+    }
+
+    public String getVisitDateStr() {
+        return visitDateStr;
+    }
+
+    public void setVisitDateStr(String visitDateStr) {
+        this.visitDateStr = visitDateStr;
     }
 }

@@ -36,8 +36,8 @@ public class MedrecService {
         return diagnosisMapper.selectByPrimaryKey(diagnosisKey);
     }
 
-    public OutpMrYb selectOutpMrYb(OutpMrYbKey outpMrYbKey) {
-        return outpMrYbMapper.selectByPrimaryKey(outpMrYbKey);
+    public OutpMrYb selectOutpMrYb(OutpMrYb outpMrYb) {
+        return outpMrYbMapper.selectOutpMrYb(outpMrYb);
     }
 
     public PatVisit selectPatVisit(PatVisitKey patVisitKey) {

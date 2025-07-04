@@ -26,7 +26,7 @@ public class CommController {
     @GetMapping("/getUserByName")
     public AjaxResult getUserByName(@RequestParam("userName") String userName){
         List<Users> users = usersMapper.selectUserByName(userName);
-        return AjaxResult.success("接口调用成功", users.get(0));
+        return AjaxResult.success("接口调用成功", users.isEmpty() ? null : users.get(0));
     }
 
     @GetMapping("/getUserList")
