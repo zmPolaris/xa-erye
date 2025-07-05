@@ -32,8 +32,6 @@ public class DataConvertCoiontroller {
     @Autowired
     private ExamConvertService examConvertService;
     @Autowired
-    private OrdadmConvertService ordadmConvertService;
-    @Autowired
     private PharmacyConvertService pharmacyConvertService;
     @Autowired
     private LabConvertService labConvertService;

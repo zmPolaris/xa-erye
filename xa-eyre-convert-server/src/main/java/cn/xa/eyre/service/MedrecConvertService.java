@@ -16,10 +16,7 @@ import cn.xa.eyre.common.utils.StringUtils;
 import cn.xa.eyre.hisapi.CommFeignClient;
 import cn.xa.eyre.hisapi.InpadmFeignClient;
 import cn.xa.eyre.hisapi.MedrecFeignClient;
-import cn.xa.eyre.hub.domain.emrmonitor.EmrAdmissionRecord;
-import cn.xa.eyre.hub.domain.emrmonitor.EmrDailyCourse;
-import cn.xa.eyre.hub.domain.emrmonitor.EmrDischargeInfo;
-import cn.xa.eyre.hub.domain.emrmonitor.EmrFirstCourse;
+import cn.xa.eyre.hub.domain.emrmonitor.*;
 import cn.xa.eyre.hub.domain.emrreal.EmrActivityInfo;
 import cn.xa.eyre.hub.domain.emrreal.EmrPatientInfo;
 import cn.xa.eyre.hub.service.SynchroEmrMonitorService;
@@ -559,6 +556,8 @@ public class MedrecConvertService {
                 synchroEmrMonitorService.syncEmrDischargeInfo(emrDischargeInfo, httpMethod);
 
                 logger.debug("构造emrActivityInfo(出院)接口数据...");
+                // 更新推送患者信息
+                hubToolService.syncPatInfo(medrecResult.getData());
                 EmrActivityInfo emrActivityInfo = new EmrActivityInfo();
                 emrActivityInfo.setId(id);
                 emrActivityInfo.setPatientId(emrDischargeInfo.getPatientId());
@@ -583,8 +582,54 @@ public class MedrecConvertService {
                 emrActivityInfo.setOrgName(emrDischargeInfo.getOrgName());
                 emrActivityInfo.setOperationTime(emrDischargeInfo.getOperationTime());
                 synchroEmrRealService.syncEmrActivityInfo(emrActivityInfo, httpMethod);
-            }
 
+                if ("3".equalsIgnoreCase(patVisit.getDischargeDisposition())) {
+                    diagnosisKeyIn = new DiagnosisKey(patVisit.getPatientId(), patVisit.getVisitId(), Constants.DIAGNOSIS_TYPE_CODE_ZYZD);
+                    diagnosisInResult = medrecFeignClient.getDiagnosis(diagnosisKeyIn);
+                    if (R.SUCCESS == diagnosisInResult.getCode() && diagnosisInResult.getData() != null
+                            && "死亡".equalsIgnoreCase(diagnosisInResult.getData().getTreatResult())) {
+                        diagnosticCategoryKey = new DiagnosticCategoryKey();
+                        BeanUtil.copyProperties(diagnosisInResult.getData(), diagnosticCategoryKey);
+                        diagnosticInCatResult = medrecFeignClient.getDiagnosticCategory(diagnosticCategoryKey);
+                        if (R.SUCCESS == diagnosticInCatResult.getCode() && diagnosticInCatResult.getData() != null) {
+                            logger.debug("构造emrDeathInfo接口数据...");
+                            EmrDeathInfo emrDeathInfo = new EmrDeathInfo();
+                            emrDeathInfo.setId(id);
+                            emrDeathInfo.setPatientId(emrDischargeInfo.getPatientId());
+                            emrDeathInfo.setActivityTypeCode(HubCodeEnum.DIAGNOSIS_ACTIVITIES_DISCHARGE.getCode());
+                            emrDeathInfo.setActivityTypeName(HubCodeEnum.DIAGNOSIS_ACTIVITIES_DISCHARGE.getName());
+                            emrDeathInfo.setSerialNumber(emrDischargeInfo.getSerialNumber());
+                            emrDeathInfo.setPatientId(emrDischargeInfo.getPatientId());
+                            emrDeathInfo.setPatientName(emrDischargeInfo.getPatientName());
+                            emrDeathInfo.setIdCard(emrDischargeInfo.getIdCard());
+                            emrDeathInfo.setIdCardTypeCode(emrDischargeInfo.getIdCardTypeCode());
+                            emrDeathInfo.setIdCardTypeName(emrDischargeInfo.getIdCardTypeName());
+                            emrDeathInfo.setDeadDate(emrDischargeInfo.getDischargeDate());
+                            String code = diagnosticInCatResult.getData().getDiagnosisCode();
+                            DictDiseaseIcd10 icd10 = dictDiseaseIcd10Mapper.selectByEmrCode(code);
+                            emrDeathInfo.setDeathDiagnosisCode(icd10.getHubCode());
+                            emrDeathInfo.setDeathDiagnosisName(icd10.getHubName());
+                            // TODO: 传染病判断
+                            emrDeathInfo.setChiefPhysicianId(emrDischargeInfo.getChiefPhysicianId());
+                            emrDeathInfo.setOrgCode(emrDischargeInfo.getOrgCode());
+                            emrDeathInfo.setOrgName(emrDischargeInfo.getOrgName());
+                            emrDeathInfo.setDeptCode(emrDischargeInfo.getDeptCode());
+                            emrDeathInfo.setDeptName(emrDischargeInfo.getDeptName());
+                            emrDeathInfo.setOperatorId(emrDischargeInfo.getOperatorId());
+                            emrDeathInfo.setOperationTime(emrDischargeInfo.getOperationTime());
+
+                            synchroEmrMonitorService.syncEmrDeathInfo(emrDeathInfo, httpMethod);
+
+                            logger.debug("构造emrActivityInfo(出院)接口数据...");
+                            // 更新推送患者信息
+                            hubToolService.syncPatInfo(medrecResult.getData());
+                            emrActivityInfo.setWmDiseaseCode(emrDeathInfo.getDeathDiagnosisCode());
+                            emrActivityInfo.setWmDiseaseName(emrDeathInfo.getDeathDiagnosisName());
+                            synchroEmrRealService.syncEmrActivityInfo(emrActivityInfo, httpMethod);
+                        }
+                    }
+                }
+            }
         }else {
             logger.error("{}对应PatMasterIndex信息为空，无法同步", patVisit.getPatientId());
         }

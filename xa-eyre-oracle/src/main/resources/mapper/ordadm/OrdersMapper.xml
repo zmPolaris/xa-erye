@@ -476,4 +476,21 @@
       </if>
     </trim>
   </insert>
+  <select id="getICUAndAMVInfo" resultMap="BaseResultMap">
+    SELECT
+      PATIENT_ID, VISIT_ID, ORDER_NO,
+      ORDER_SUB_NO, REPEAT_INDICATOR, ORDER_CLASS,
+      ORDER_TEXT, ORDER_CODE, DOSAGE,
+      START_DATE_TIME, STOP_DATE_TIME,
+      ORDERING_DEPT, DOCTOR,
+      STOP_DOCTOR, NURSE, ENTER_DATE_TIME,
+      ORDER_STATUS, BILLING_ATTR, LAST_PERFORM_DATE_TIME,
+      LAST_ACCTING_DATE_TIME, DRUG_BILLING_ATTR,
+      STOP_NURSE, STOP_ORDER_DATE_TIME
+    FROM ORDADM.ORDERS t
+    WHERE( order_text LIKE '重症监护%'or order_text like '%呼吸机%')
+      AND start_date_time<= TRUNC(SYSDATE) + 1
+      AND start_date_time > TRUNC(SYSDATE) - 30
+      AND (stop_date_time >= TRUNC(SYSDATE) OR stop_date_time IS NULL);
+  </select>
 </mapper>

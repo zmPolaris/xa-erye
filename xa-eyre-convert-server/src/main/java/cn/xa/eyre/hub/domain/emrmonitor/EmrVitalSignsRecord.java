@@ -45,8 +45,7 @@ public class EmrVitalSignsRecord extends BaseEntity
     private String idCard;
 
     /** 记录创建时间 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date createDate;
+    private String createDate;
 
     /** 患者是否同意使用呼吸机辅助通气代码 */
     private String ventilatorusedCode;
@@ -76,8 +75,7 @@ public class EmrVitalSignsRecord extends BaseEntity
     private String operatorId;
 
     /** 操作时间 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date operationTime;
+    private String operationTime;
 
     /** 作废标志 */
     private String invalidFlag;
@@ -163,12 +161,12 @@ public class EmrVitalSignsRecord extends BaseEntity
     {
         return idCard;
     }
-    public void setCreateDate(Date createDate)
+    public void setCreateDate(String createDate)
     {
         this.createDate = createDate;
     }
 
-    public Date getCreateDate()
+    public String getCreateDate()
     {
         return createDate;
     }
@@ -253,12 +251,12 @@ public class EmrVitalSignsRecord extends BaseEntity
     {
         return operatorId;
     }
-    public void setOperationTime(Date operationTime)
+    public void setOperationTime(String operationTime)
     {
         this.operationTime = operationTime;
     }
 
-    public Date getOperationTime()
+    public String getOperationTime()
     {
         return operationTime;
     }
@@ -297,5 +295,69 @@ public class EmrVitalSignsRecord extends BaseEntity
                 .append("operationTime", getOperationTime())
                 .append("invalidFlag", getInvalidFlag())
                 .toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        EmrVitalSignsRecord that = (EmrVitalSignsRecord) o;
+
+        if (id != null ? !id.equals(that.id) : that.id != null) return false;
+        if (patientId != null ? !patientId.equals(that.patientId) : that.patientId != null) return false;
+        if (activityTypeCode != null ? !activityTypeCode.equals(that.activityTypeCode) : that.activityTypeCode != null)
+            return false;
+        if (activityTypeName != null ? !activityTypeName.equals(that.activityTypeName) : that.activityTypeName != null)
+            return false;
+        if (serialNumber != null ? !serialNumber.equals(that.serialNumber) : that.serialNumber != null) return false;
+        if (patientName != null ? !patientName.equals(that.patientName) : that.patientName != null) return false;
+        if (idCardTypeCode != null ? !idCardTypeCode.equals(that.idCardTypeCode) : that.idCardTypeCode != null)
+            return false;
+        if (idCardTypeName != null ? !idCardTypeName.equals(that.idCardTypeName) : that.idCardTypeName != null)
+            return false;
+        if (idCard != null ? !idCard.equals(that.idCard) : that.idCard != null) return false;
+        if (createDate != null ? !createDate.equals(that.createDate) : that.createDate != null) return false;
+        if (ventilatorusedCode != null ? !ventilatorusedCode.equals(that.ventilatorusedCode) : that.ventilatorusedCode != null)
+            return false;
+        if (ventilatorusedName != null ? !ventilatorusedName.equals(that.ventilatorusedName) : that.ventilatorusedName != null)
+            return false;
+        if (criticalCareCode != null ? !criticalCareCode.equals(that.criticalCareCode) : that.criticalCareCode != null)
+            return false;
+        if (criticalCareName != null ? !criticalCareName.equals(that.criticalCareName) : that.criticalCareName != null)
+            return false;
+        if (orgCode != null ? !orgCode.equals(that.orgCode) : that.orgCode != null) return false;
+        if (orgName != null ? !orgName.equals(that.orgName) : that.orgName != null) return false;
+        if (deptCode != null ? !deptCode.equals(that.deptCode) : that.deptCode != null) return false;
+        if (deptName != null ? !deptName.equals(that.deptName) : that.deptName != null) return false;
+        if (operatorId != null ? !operatorId.equals(that.operatorId) : that.operatorId != null) return false;
+        if (operationTime != null ? !operationTime.equals(that.operationTime) : that.operationTime != null) return false;
+        return invalidFlag != null ? invalidFlag.equals(that.invalidFlag) : that.invalidFlag == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (patientId != null ? patientId.hashCode() : 0);
+        result = 31 * result + (activityTypeCode != null ? activityTypeCode.hashCode() : 0);
+        result = 31 * result + (activityTypeName != null ? activityTypeName.hashCode() : 0);
+        result = 31 * result + (serialNumber != null ? serialNumber.hashCode() : 0);
+        result = 31 * result + (patientName != null ? patientName.hashCode() : 0);
+        result = 31 * result + (idCardTypeCode != null ? idCardTypeCode.hashCode() : 0);
+        result = 31 * result + (idCardTypeName != null ? idCardTypeName.hashCode() : 0);
+        result = 31 * result + (idCard != null ? idCard.hashCode() : 0);
+        result = 31 * result + (createDate != null ? createDate.hashCode() : 0);
+        result = 31 * result + (ventilatorusedCode != null ? ventilatorusedCode.hashCode() : 0);
+        result = 31 * result + (ventilatorusedName != null ? ventilatorusedName.hashCode() : 0);
+        result = 31 * result + (criticalCareCode != null ? criticalCareCode.hashCode() : 0);
+        result = 31 * result + (criticalCareName != null ? criticalCareName.hashCode() : 0);
+        result = 31 * result + (orgCode != null ? orgCode.hashCode() : 0);
+        result = 31 * result + (orgName != null ? orgName.hashCode() : 0);
+        result = 31 * result + (deptCode != null ? deptCode.hashCode() : 0);
+        result = 31 * result + (deptName != null ? deptName.hashCode() : 0);
+        result = 31 * result + (operatorId != null ? operatorId.hashCode() : 0);
+        result = 31 * result + (operationTime != null ? operationTime.hashCode() : 0);
+        result = 31 * result + (invalidFlag != null ? invalidFlag.hashCode() : 0);
+        return result;
     }
 }

@@ -48,8 +48,7 @@ public class EmrDeathInfo extends BaseEntity
     private String treatmentDesc;
 
     /** 死亡日期时间 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date deadDate;
+    private String deadDate;
 
     /** 直接死亡原因名称 */
     private String directCauseName;
@@ -82,8 +81,7 @@ public class EmrDeathInfo extends BaseEntity
     private String operatorId;
 
     /** 操作时间 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date operationTime;
+    private String operationTime;
 
     /** 作废标志 */
     private String invalidFlag;
@@ -185,12 +183,12 @@ public class EmrDeathInfo extends BaseEntity
     {
         return treatmentDesc;
     }
-    public void setDeadDate(Date deadDate)
+    public void setDeadDate(String deadDate)
     {
         this.deadDate = deadDate;
     }
 
-    public Date getDeadDate()
+    public String getDeadDate()
     {
         return deadDate;
     }
@@ -284,12 +282,12 @@ public class EmrDeathInfo extends BaseEntity
     {
         return operatorId;
     }
-    public void setOperationTime(Date operationTime)
+    public void setOperationTime(String operationTime)
     {
         this.operationTime = operationTime;
     }
 
-    public Date getOperationTime()
+    public String getOperationTime()
     {
         return operationTime;
     }
