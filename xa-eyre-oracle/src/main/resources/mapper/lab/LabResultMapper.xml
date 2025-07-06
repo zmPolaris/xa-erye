@@ -281,4 +281,38 @@
       and ITEM_NO = #{itemNo,jdbcType=NUMERIC}
       and PRINT_ORDER = #{printOrder,jdbcType=NUMERIC}
   </update>
+
+  <select id="selectResultItemsByTestNo" resultType="cn.xa.eyre.lab.domain.LabResultVo">
+    SELECT
+      r.TEST_NO AS testNo,
+      r.ITEM_NO AS itemNo,
+      r.PRINT_ORDER AS printOrder,
+      r.REPORT_ITEM_NAME AS reportItemName,
+      r.REPORT_ITEM_CODE AS reportItemCode,
+      r.RESULT AS result,
+      r.UNITS AS units,
+      r.ABNORMAL_INDICATOR AS abnormalIndicator,
+      r.INSTRUMENT_ID AS instrumentId,
+      r.RESULT_DATE_TIME AS resultDateTime,
+      r.PRINT_CONTEXT AS printContext,
+      r.RESULT_RANGE AS resultRange,
+      r.REFER_CONTEXT AS referContext,
+      r.SAMPLEID AS sampleId,
+      r.REPORTID AS reportId,
+      r.MICRO_DATA_ID2_RESULT2 AS microDataId2Result2,
+      r.MICRO_DATA_ID2_RESULT1 AS microDataId2Result1,
+      r.MICRO_DATA_ID2_NAME AS microDataId2Name,
+      r.INFECT_HANDLE AS infectHandle,
+      r.INFECT_HANDLE_TIME AS infectHandleTime,
+      r.INFECT_HANDLE_DOCTOR_ID AS infectHandleDoctorId,
+      i.ITEM_NAME AS itemName,
+      i.ITEM_CODE AS itemCode,
+      i.LAB_SHEET_ID AS labSheetId,
+      i.CLASS_NAME AS className,
+      i.LAB_SUBJECT AS labSubject,
+      i.REPORT_PRINT_INDICATOR AS reportPrintIndicator
+    FROM LAB_RESULT r LEFT JOIN LAB_TEST_ITEMS i
+    ON r.TEST_NO = i.TEST_NO AND r.ITEM_NO = i.ITEM_NO
+    WHERE r.TEST_NO = #{testNo,jdbcType=VARCHAR}
+  </select>
 </mapper>

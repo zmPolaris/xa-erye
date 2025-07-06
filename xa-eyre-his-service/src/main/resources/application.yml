@@ -77,8 +77,9 @@ kafka:
     - oracle_service.INPADM.PATS_IN_HOSPITAL
     - oracle_service.MEDREC.DIAGNOSIS
     - oracle_service.MEDREC.PAT_VISIT
-    - oracle_service.EXAM.EXAM_REPORT
-    - oracle_service.LAB.LAB_RESULT
+    - oracle_service.EXAM.EXAM_MASTER
+    - oracle_service.LAB.LAB_TEST_MASTER
+    - oracle_service.PHARMACY.DRUG_PRESC_MASTER
 
 # token配置
 token:
