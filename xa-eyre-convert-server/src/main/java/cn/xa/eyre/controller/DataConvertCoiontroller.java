@@ -94,12 +94,18 @@ public class DataConvertCoiontroller {
             case "medrec.pat_visit":
                 medrecConvertService.patVisit(dbMessage);
                 break;
-            case "exam.exam_report":
+            case "exam.exam_master":
+                examConvertService.examMaster(dbMessage);
+                break;
+            /*case "exam.exam_report":
                 examConvertService.examReport(dbMessage);
+                break;*/
+            case "lab.lab_test_master":
+                labConvertService.labTestMaster(dbMessage);
                 break;
-            case "lab.lab_result":
+            /*case "lab.lab_result":
                 labConvertService.labResult(dbMessage);
-                break;
+                break;*/
             case "pharmacy.drug_presc_master":
                 pharmacyConvertService.drugPrescMaster(dbMessage);
                 break;

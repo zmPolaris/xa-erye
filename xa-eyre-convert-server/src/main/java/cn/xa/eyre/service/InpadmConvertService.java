@@ -184,8 +184,8 @@ public class InpadmConvertService {
 
             DictDiseaseIcd10 dictDiseaseIcd10 = dictDiseaseIcd10Mapper.selectByEmrCode(diagnosticCatResult.getData().getDiagnosisCode());
             if(dictDiseaseIcd10 == null || dictDiseaseIcd10.getHubCode().equals(HubCodeEnum.DISEASE_ICD10_CODE.getCode())){
-                emrAdmissionInfo.setWmInitalDiagnosisCode(diagnosticCatResult.getData().getDiagnosisCode());
-                emrAdmissionInfo.setWmInitalDiagnosisName(diagnosisResult.getData().getDiagnosisDesc());
+                emrAdmissionInfo.setWmConfirmedDiagnosisCode(diagnosticCatResult.getData().getDiagnosisCode());
+                emrAdmissionInfo.setWmConfirmedDiagnosisName(diagnosisResult.getData().getDiagnosisDesc());
             }else {
                 emrAdmissionInfo.setInfectionCode("1");
                 emrAdmissionInfo.setWmConfirmedDiagnosisCode(dictDiseaseIcd10.getHubCode());
