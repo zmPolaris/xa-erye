@@ -76,7 +76,7 @@ public class PharmacyConvertService {
         }
         drugPrescMaster = BeanUtil.toBeanIgnoreError(data, DrugPrescMaster.class);
         EmrOrder emrOrder = new EmrOrder();
-        drugPrescMaster.setPrescDate(DateUtils.getLongDate(dbMessage.getAfterData().get("prescDate")));
+        drugPrescMaster.setPrescDate(DateUtils.getLongDate(data.get("prescDate")));
         String id = DigestUtil.md5Hex(DateUtils.dateTime(drugPrescMaster.getPrescDate()) + drugPrescMaster.getPrescNo());
         emrOrder.setId(id);
         String patientId = drugPrescMaster.getPatientId();

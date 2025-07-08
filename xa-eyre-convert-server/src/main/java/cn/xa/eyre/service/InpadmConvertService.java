@@ -74,12 +74,12 @@ public class InpadmConvertService {
             data = dbMessage.getAfterData();
         }
         patsInHospital = BeanUtil.toBeanIgnoreError(data, PatsInHospital.class);
-        patsInHospital.setAdmissionDateTime(DateUtils.getLongDate(dbMessage.getAfterData().get("admissionDateTime")));
-        patsInHospital.setAdmWardDateTime(DateUtils.getLongDate(dbMessage.getAfterData().get("admWardDateTime")));
-        patsInHospital.setOperatingDate(DateUtils.getLongDate(dbMessage.getAfterData().get("operatingDate")));
-        patsInHospital.setBillingDateTime(DateUtils.getLongDate(dbMessage.getAfterData().get("billingDateTime")));
-        patsInHospital.setBillCheckedDateTime(DateUtils.getLongDate(dbMessage.getAfterData().get("billCheckedDateTime")));
-        patsInHospital.setStartDateTime(DateUtils.getLongDate(dbMessage.getAfterData().get("startDateTime")));
+        patsInHospital.setAdmissionDateTime(DateUtils.getLongDate(data.get("admissionDateTime")));
+        patsInHospital.setAdmWardDateTime(DateUtils.getLongDate(data.get("admWardDateTime")));
+        patsInHospital.setOperatingDate(DateUtils.getLongDate(data.get("operatingDate")));
+        patsInHospital.setBillingDateTime(DateUtils.getLongDate(data.get("billingDateTime")));
+        patsInHospital.setBillCheckedDateTime(DateUtils.getLongDate(data.get("billCheckedDateTime")));
+        patsInHospital.setStartDateTime(DateUtils.getLongDate(data.get("startDateTime")));
 
         logger.debug("构造emrAdmissionInfo接口数据...");
         R<PatMasterIndex> medrecResult = medrecFeignClient.getPatMasterIndex(patsInHospital.getPatientId());

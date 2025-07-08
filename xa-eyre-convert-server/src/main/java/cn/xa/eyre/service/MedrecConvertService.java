@@ -4,7 +4,6 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdcardUtil;
-import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import cn.hutool.json.JSONUtil;
 import cn.xa.eyre.comm.domain.Users;
@@ -75,11 +74,11 @@ public class MedrecConvertService {
             data = dbMessage.getAfterData();
         }
         patMasterIndex = BeanUtil.toBeanIgnoreError(data, PatMasterIndex.class);
-        patMasterIndex.setDateOfBirth(DateUtils.getLongDate(dbMessage.getAfterData().get("dateOfBirth")));
-        patMasterIndex.setLastVisitDate(DateUtils.getLongDate(dbMessage.getAfterData().get("lastVisitDate")));
-        patMasterIndex.setCreateDate(DateUtils.getLongDate(dbMessage.getAfterData().get("createDate")));
-        patMasterIndex.setModifyTime(DateUtils.getLongDate(dbMessage.getAfterData().get("modifyTime")));
-        patMasterIndex.setIdentityExpireDate(DateUtils.getLongDate(dbMessage.getAfterData().get("identityExpireDate")));
+        patMasterIndex.setDateOfBirth(DateUtils.getLongDate(data.get("dateOfBirth")));
+        patMasterIndex.setLastVisitDate(DateUtils.getLongDate(data.get("lastVisitDate")));
+        patMasterIndex.setCreateDate(DateUtils.getLongDate(data.get("createDate")));
+        patMasterIndex.setModifyTime(DateUtils.getLongDate(data.get("modifyTime")));
+        patMasterIndex.setIdentityExpireDate(DateUtils.getLongDate(data.get("identityExpireDate")));
 
         logger.debug("构造emrPatientInfo接口数据...");
         // 构造请求参数
@@ -167,7 +166,7 @@ public class MedrecConvertService {
             data = dbMessage.getAfterData();
         }
         diagnosis = BeanUtil.toBeanIgnoreError(data, Diagnosis.class);
-        diagnosis.setDiagnosisDate(DateUtils.getLongDate(dbMessage.getAfterData().get("diagnosisDate")));
+        diagnosis.setDiagnosisDate(DateUtils.getLongDate(data.get("diagnosisDate")));
 
         R<PatMasterIndex> medrecResult = medrecFeignClient.getPatMasterIndex(diagnosis.getPatientId());
         DiagnosticCategoryKey diagnosticCategoryKey = new DiagnosticCategoryKey();
@@ -378,9 +377,9 @@ public class MedrecConvertService {
             data = dbMessage.getAfterData();
         }
         patVisit = BeanUtil.toBeanIgnoreError(data, PatVisit.class);
-        patVisit.setAdmissionDateTime(DateUtils.getLongDate(dbMessage.getAfterData().get("admissionDateTime")));
-        patVisit.setDischargeDateTime(DateUtils.getLongDate(dbMessage.getAfterData().get("dischargeDateTime")));
-        patVisit.setConsultingDate(DateUtils.getLongDate(dbMessage.getAfterData().get("consultingDate")));
+        patVisit.setAdmissionDateTime(DateUtils.getLongDate(data.get("admissionDateTime")));
+        patVisit.setDischargeDateTime(DateUtils.getLongDate(data.get("dischargeDateTime")));
+        patVisit.setConsultingDate(DateUtils.getLongDate(data.get("consultingDate")));
 
         R<PatMasterIndex> medrecResult = medrecFeignClient.getPatMasterIndex(patVisit.getPatientId());
         // 入院诊断

@@ -126,8 +126,8 @@ public class CommConvertService {
             data = dbMessage.getAfterData();
         }
         users = BeanUtil.toBeanIgnoreError(data, Users.class);
-        users.setCreateDate(DateUtils.getLongDate(dbMessage.getAfterData().get("createDate")));
-        users.setLeaveDate(DateUtils.getLongDate(dbMessage.getAfterData().get("leaveDate")));
+        users.setCreateDate(DateUtils.getLongDate(data.get("createDate")));
+        users.setLeaveDate(DateUtils.getLongDate(data.get("leaveDate")));
         String deptCode = users.getUserDept();
         if(deptCode != null && !deptCode.equals("")){
             DictDisDept deptParam = new DictDisDept();
