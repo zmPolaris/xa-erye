@@ -102,7 +102,7 @@ public class ExamConvertService {
                     emrExClinical.setBedNo(String.valueOf(hospitalResult.getData().getBedNo()));
                 }
                 emrExClinical.setApplicationFormNo(examMaster.getPatientLocalId());
-                if(StringUtils.isNotBlank(examMaster.getFacility())){
+                if(StringUtils.isBlank(examMaster.getFacility())){
                     emrExClinical.setApplyOrgCode(HubCodeEnum.ORG_CODE.getCode());
                     emrExClinical.setApplyOrgName(HubCodeEnum.ORG_CODE.getName());
                     emrExClinical.setOrgCode(HubCodeEnum.ORG_CODE.getCode());
@@ -260,7 +260,7 @@ public class ExamConvertService {
                 emrExClinical.setBedNo(String.valueOf(hospitalResult.getData().getBedNo()));
             }
             emrExClinical.setApplicationFormNo(examMaster.getPatientLocalId());
-            if(StringUtils.isNotBlank(examMaster.getFacility())){
+            if(StringUtils.isBlank(examMaster.getFacility())){
                 emrExClinical.setApplyOrgCode(HubCodeEnum.ORG_CODE.getCode());
                 emrExClinical.setApplyOrgName(HubCodeEnum.ORG_CODE.getName());
                 emrExClinical.setOrgCode(HubCodeEnum.ORG_CODE.getCode());

@@ -287,11 +287,11 @@ public class LabConvertService {
                 emrExLab.setExaminationNotes(labResult.getReportItemName());
 
                 emrExLab.setPatientId(labTestMaster.getPatientId());
-                if("1".equals(labTestMaster.getPatientSource())){
+                if("1".equals(labTestMaster.getPatientSource()) || labTestMaster.getVisitNo() != null ){
                     emrExLab.setActivityTypeCode(HubCodeEnum.DIAGNOSIS_ACTIVITIES_OUTPATIENT.getCode());
                     emrExLab.setActivityTypeName(HubCodeEnum.DIAGNOSIS_ACTIVITIES_OUTPATIENT.getName());
                     emrExLab.setSerialNumber(DigestUtil.md5Hex(labTestMaster.getPatientId() + labTestMaster.getVisitNo()));
-                }else if("2".equals(labTestMaster.getPatientSource())){
+                }else if("2".equals(labTestMaster.getPatientSource()) || labTestMaster.getVisitId() != null ){
                     emrExLab.setActivityTypeCode(HubCodeEnum.DIAGNOSIS_ACTIVITIES_HOSPITALIZATION.getCode());
                     emrExLab.setActivityTypeName(HubCodeEnum.DIAGNOSIS_ACTIVITIES_HOSPITALIZATION.getName());
                     emrExLab.setSerialNumber(DigestUtil.md5Hex(labTestMaster.getPatientId() + labTestMaster.getVisitId()));
@@ -383,19 +383,31 @@ public class LabConvertService {
                         emrExLabItem.setExaminationResultName(ddExQuantification.getName());
                     }
                 }else {
-                    // 定量
-                    emrExLabItem.setExaminationQuantification(labResult.getResult());
-                    emrExLabItem.setExaminationQuantificationUnit(labResult.getUnits());
-                    String between = StrUtil.removeAll(labResult.getResultRange(), "");
-                    String[] betweens = between.split("-");
-                    emrExLabItem.setExaminationQuantificationLower(betweens[0]);
-                    emrExLabItem.setExaminationQuantificationUpper(betweens[1]);
-                    if (labResult.getAbnormalIndicator().equals("H")){
-                        emrExLabItem.setExaminationQuantificationRi("2");
-                    }else if (labResult.getAbnormalIndicator().equals("L")){
-                        emrExLabItem.setExaminationQuantificationRi("1");
+                    if (labResult.getResult().equals("-")){
+                        emrExLabItem.setSourceExaminationResultCode(DigestUtil.md5Hex(labResult.getResult()));
+                        emrExLabItem.setSourceExaminationResultCode(labResult.getResult());
+                        emrExLabItem.setExaminationResultCode("02");
+                        emrExLabItem.setExaminationResultName("阴性");
+                    }else if(labResult.getResult().equals("+")){
+                        emrExLabItem.setSourceExaminationResultCode(DigestUtil.md5Hex(labResult.getResult()));
+                        emrExLabItem.setSourceExaminationResultCode(labResult.getResult());
+                        emrExLabItem.setExaminationResultCode("01");
+                        emrExLabItem.setExaminationResultName("阳性");
                     }else {
-                        emrExLabItem.setExaminationQuantificationRi("0");
+                        // 定量
+                        emrExLabItem.setExaminationQuantification(labResult.getResult());
+                        emrExLabItem.setExaminationQuantificationUnit(labResult.getUnits());
+                        String between = StrUtil.removeAll(labResult.getResultRange(), "");
+                        String[] betweens = between.split("-");
+                        emrExLabItem.setExaminationQuantificationLower(betweens[0]);
+                        emrExLabItem.setExaminationQuantificationUpper(betweens[1]);
+                        if (labResult.getAbnormalIndicator().equals("H")){
+                            emrExLabItem.setExaminationQuantificationRi("2");
+                        }else if (labResult.getAbnormalIndicator().equals("L")){
+                            emrExLabItem.setExaminationQuantificationRi("1");
+                        }else {
+                            emrExLabItem.setExaminationQuantificationRi("0");
+                        }
                     }
                 }
                 emrExLabItem.setOperatorId(emrExLab.getOperatorId());
