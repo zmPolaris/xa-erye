@@ -67,4 +67,7 @@
         #{code}
       </foreach>
     </select>
+  <select id="selectDistinctIcd10" resultType="java.lang.String">
+    SELECT DISTINCT icd10 FROM `dataset_disease_data`
+  </select>
 </mapper>

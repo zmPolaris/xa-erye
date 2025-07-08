@@ -11,4 +11,6 @@ public interface DatasetDiseaseDataMapper {
     int insertSelective(DatasetDiseaseData record);
 
     List<DatasetDiseaseData> selectByCodes(String[] codes);
+
+    List<String> selectDistinctIcd10();
 }

@@ -5,7 +5,6 @@ import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdcardUtil;
 import cn.hutool.crypto.digest.DigestUtil;
-import cn.hutool.json.JSONUtil;
 import cn.xa.eyre.comm.domain.Users;
 import cn.xa.eyre.common.constant.Constants;
 import cn.xa.eyre.common.core.domain.R;
@@ -30,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -58,6 +58,8 @@ public class MedrecConvertService {
     @Autowired
     private DictTreatResultMapper dictTreatResultMapper;
 
+    @Autowired
+    InitDiseaseDataService initDiseaseDataService;
 
     public void patMasterIndex(DBMessage dbMessage) {
         logger.debug("病人主索引表PAT_MASTER_INDEX变更接口");
@@ -606,9 +608,20 @@ public class MedrecConvertService {
                             emrDeathInfo.setDeadDate(emrDischargeInfo.getDischargeDate());
                             String code = diagnosticInCatResult.getData().getDiagnosisCode();
                             DictDiseaseIcd10 icd10 = dictDiseaseIcd10Mapper.selectByEmrCode(code);
-                            emrDeathInfo.setDeathDiagnosisCode(icd10.getHubCode());
-                            emrDeathInfo.setDeathDiagnosisName(icd10.getHubName());
-                            // TODO: 传染病判断
+                            String hubCode = icd10.getHubCode();
+                            if ("143".equals(hubCode)) {
+                                emrDeathInfo.setDirectCauseCode(code);
+                                emrDeathInfo.setDirectCauseName(diagnosisInResult.getData().getDiagnosisDesc());
+                            } else {
+                                emrDeathInfo.setDirectCauseCode(hubCode);
+                                emrDeathInfo.setDirectCauseName(icd10.getHubName());
+                                List<String> diseaseDate = initDiseaseDataService.getDiseaseDate();
+                                if (diseaseDate.contains(hubCode)) {
+                                    emrDeathInfo.setDeathDiagnosisCode(hubCode);
+                                    emrDeathInfo.setDeathDiagnosisName(icd10.getHubName());
+                                }
+                            }
+
                             emrDeathInfo.setChiefPhysicianId(emrDischargeInfo.getChiefPhysicianId());
                             emrDeathInfo.setOrgCode(emrDischargeInfo.getOrgCode());
                             emrDeathInfo.setOrgName(emrDischargeInfo.getOrgName());
