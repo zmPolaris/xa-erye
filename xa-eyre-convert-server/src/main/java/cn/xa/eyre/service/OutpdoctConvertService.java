@@ -73,7 +73,7 @@ public class OutpdoctConvertService {
             data = dbMessage.getAfterData();
         }
         outpMr = BeanUtil.toBeanIgnoreError(data, OutpMr.class);
-        outpMr.setVisitDate(DateUtils.getLongDate(dbMessage.getAfterData().get("visitDate")));
+        outpMr.setVisitDate(DateUtils.getLongDate(data.get("visitDate")));
 
         if (StringUtils.isNotBlank(outpMr.getPatientId())){
             logger.debug("构造emrOutpatientRecord接口数据...");

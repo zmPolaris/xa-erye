@@ -74,7 +74,7 @@ public class LabConvertService {
             data = dbMessage.getAfterData();
         }
         labResult = BeanUtil.toBeanIgnoreError(data, LabResult.class);
-        labResult.setResultDateTime(DateUtils.getLongDate(dbMessage.getAfterData().get("resultDateTime")));
+        labResult.setResultDateTime(DateUtils.getLongDate(data.get("resultDateTime")));
 
         R<LabTestMaster> labTestMasterResult = labFeignClient.getLabTestMaster(labResult.getTestNo());
         if (labTestMasterResult.getCode() == R.SUCCESS && labTestMasterResult.getData() != null){
@@ -234,8 +234,8 @@ public class LabConvertService {
     }
 
     public void labTestMaster(DBMessage dbMessage) {
-        logger.debug("检验结果表LAB_RESULT变更接口");
-        logger.debug("LAB_RESULT变更需调用emrExLab、emrExLabItem同步接口");
+        logger.debug("检验主表LAB_TEST_MASTER变更接口");
+        logger.debug("LAB_TEST_MASTER变更需调用emrExLab、emrExLabItem同步接口");
         String httpMethod = null;
         LabTestMaster labTestMaster;
         Map<String, String> data;
@@ -247,15 +247,15 @@ public class LabConvertService {
             data = dbMessage.getAfterData();
         }
         labTestMaster = BeanUtil.toBeanIgnoreError(data, LabTestMaster.class);
-        labTestMaster.setExecuteDate(DateUtils.getLongDate(dbMessage.getAfterData().get("executeDate")));
-        labTestMaster.setSpcmReceivedDateTime(DateUtils.getLongDate(dbMessage.getAfterData().get("spcmReceivedDateTime")));
-        labTestMaster.setSpcmSampleDateTime(DateUtils.getLongDate(dbMessage.getAfterData().get("spcmSampleDateTime")));
-        labTestMaster.setRequestedDateTime(DateUtils.getLongDate(dbMessage.getAfterData().get("requestedDateTime")));
-        labTestMaster.setResultsRptDateTime(DateUtils.getLongDate(dbMessage.getAfterData().get("resultsRptDateTime")));
-        labTestMaster.setDateOfBirth(DateUtils.getLongDate(dbMessage.getAfterData().get("dateOfBirth")));
-        labTestMaster.setVisitDate(DateUtils.getLongDate(dbMessage.getAfterData().get("visitDate")));
+        labTestMaster.setExecuteDate(DateUtils.getLongDate(data.get("executeDate")));
+        labTestMaster.setSpcmReceivedDateTime(DateUtils.getLongDate(data.get("spcmReceivedDateTime")));
+        labTestMaster.setSpcmSampleDateTime(DateUtils.getLongDate(data.get("spcmSampleDateTime")));
+        labTestMaster.setRequestedDateTime(DateUtils.getLongDate(data.get("requestedDateTime")));
+        labTestMaster.setResultsRptDateTime(DateUtils.getLongDate(data.get("resultsRptDateTime")));
+        labTestMaster.setDateOfBirth(DateUtils.getLongDate(data.get("dateOfBirth")));
+        labTestMaster.setVisitDate(DateUtils.getLongDate(data.get("visitDate")));
 
-        if(StringUtils.isNotBlank(labTestMaster.getResultStatus()) && labTestMaster.getResultStatus() != "4"){
+        if(StringUtils.isBlank(labTestMaster.getResultStatus()) || !"4".equals(labTestMaster.getResultStatus())){
             logger.error("检查报告未确认，无法同步");
             return;
         }

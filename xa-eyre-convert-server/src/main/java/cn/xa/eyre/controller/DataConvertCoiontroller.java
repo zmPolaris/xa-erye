@@ -1,5 +1,6 @@
 package cn.xa.eyre.controller;
 
+import cn.hutool.json.JSONUtil;
 import cn.xa.eyre.common.core.domain.AjaxResult;
 import cn.xa.eyre.common.core.kafka.DBMessage;
 import cn.xa.eyre.service.*;
@@ -68,7 +69,7 @@ public class DataConvertCoiontroller {
 
     @PostMapping("/receiveKafkaData")
     public AjaxResult receiveKafkaData(@RequestBody DBMessage dbMessage, HttpServletRequest request, HttpServletResponse response){
-        logger.debug("receiveKafkaData:{}", dbMessage);
+        logger.debug("receiveKafkaData:{}", JSONUtil.toJsonStr(dbMessage));
         String schema = dbMessage.getSchema();
         String table = dbMessage.getTable();
         String dbName = (schema + "." + table).toLowerCase();
