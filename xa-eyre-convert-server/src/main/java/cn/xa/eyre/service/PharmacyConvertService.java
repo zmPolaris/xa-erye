@@ -107,7 +107,7 @@ public class PharmacyConvertService {
             } else {
                 // 住院
                 emrOrder.setActivityTypeName(HubCodeEnum.DIAGNOSIS_ACTIVITIES_HOSPITALIZATION.getName());
-                emrOrder.setActivityTypeName(HubCodeEnum.DIAGNOSIS_ACTIVITIES_HOSPITALIZATION.getName());
+                emrOrder.setActivityTypeCode(HubCodeEnum.DIAGNOSIS_ACTIVITIES_HOSPITALIZATION.getCode());
                 R<PatsInHospital> hospitalResult = inpadmFeignClient.getPatsInHospitalByPatientId(patientId);
                 if (R.SUCCESS == hospitalResult.getCode()) {
                     PatsInHospital pats = hospitalResult.getData();
@@ -181,19 +181,22 @@ public class PharmacyConvertService {
             if (details.getCode() == R.SUCCESS && details.getData() != null) {
                 for (DrugPrescDetail prescDetail : details.getData()) {
                     String drugCode = prescDetail.getDrugCode();
+                    EmrOrderItem emrOrderItem = new EmrOrderItem();
+                    id = DigestUtil.md5Hex(DateUtils.dateTime(prescDetail.getPrescDate()) + prescDetail.getPrescNo() + prescDetail.getItemNo());
+                    emrOrderItem.setId(id);
+                    emrOrderItem.setOrderId(emrOrder.getId());
+                    emrOrderItem.setDrugSpecifications(prescDetail.getDrugSpec());
+                    emrOrderItem.setOperatorId(emrOrder.getOperatorId());
+                    emrOrderItem.setOperationTime(emrOrder.getOperationTime());
                     DictDrugType drugType = dictDrugTypeMapper.selectByEmrCode(drugCode);
                     if (StringUtils.isNotBlank(drugType.getHubCode())) {
-                        EmrOrderItem emrOrderItem = new EmrOrderItem();
-                        id = DigestUtil.md5Hex(DateUtils.dateTime(prescDetail.getPrescDate()) + prescDetail.getPrescNo() + prescDetail.getItemNo());
-                        emrOrderItem.setId(id);
-                        emrOrderItem.setOrderId(emrOrder.getId());
                         emrOrderItem.setDrugCode(drugType.getHubCode());
                         emrOrderItem.setDrugName(drugType.getHubName());
-                        emrOrderItem.setDrugSpecifications(prescDetail.getDrugSpec());
-                        emrOrderItem.setOperatorId(emrOrder.getOperatorId());
-                        emrOrderItem.setOperationTime(emrOrder.getOperationTime());
-                        synchroEmrMonitorService.syncEmrOrderItem(emrOrderItem, Constants.HTTP_METHOD_POST);
+                    } else {
+                        emrOrderItem.setDrugCode(drugCode);
+                        emrOrderItem.setDrugName(prescDetail.getDrugName());
                     }
+                    synchroEmrMonitorService.syncEmrOrderItem(emrOrderItem, Constants.HTTP_METHOD_POST);
                 }
 
             }
