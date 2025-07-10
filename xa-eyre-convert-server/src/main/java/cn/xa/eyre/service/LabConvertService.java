@@ -1,6 +1,7 @@
 package cn.xa.eyre.service;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.lang.UUID;
 import cn.hutool.core.lang.Validator;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
@@ -260,6 +261,14 @@ public class LabConvertService {
             return;
         }
 
+        if("1".equals(labTestMaster.getPatientSource()) || labTestMaster.getVisitNo() != null ){
+            logger.error("门诊");
+            return;
+        }else if("2".equals(labTestMaster.getPatientSource()) || labTestMaster.getVisitId() != null ){
+            logger.error("住院");
+            return;
+        }
+
         R<List<LabResultVo>> resultItemsResult = labFeignClient.getResultItemsByTestNo(labTestMaster.getTestNo());
         R<PatMasterIndex> medrecResult = medrecFeignClient.getPatMasterIndex(labTestMaster.getPatientId());
         if (R.SUCCESS == medrecResult.getCode() && medrecResult.getData() != null
@@ -287,17 +296,20 @@ public class LabConvertService {
                 emrExLab.setExaminationNotes(labResult.getReportItemName());
 
                 emrExLab.setPatientId(labTestMaster.getPatientId());
-                if("1".equals(labTestMaster.getPatientSource())){
+                if("1".equals(labTestMaster.getPatientSource()) || labTestMaster.getVisitNo() != null ){
                     emrExLab.setActivityTypeCode(HubCodeEnum.DIAGNOSIS_ACTIVITIES_OUTPATIENT.getCode());
                     emrExLab.setActivityTypeName(HubCodeEnum.DIAGNOSIS_ACTIVITIES_OUTPATIENT.getName());
                     emrExLab.setSerialNumber(DigestUtil.md5Hex(labTestMaster.getPatientId() + labTestMaster.getVisitNo()));
-                }else if("2".equals(labTestMaster.getPatientSource())){
+                }else if("2".equals(labTestMaster.getPatientSource()) || labTestMaster.getVisitId() != null ){
                     emrExLab.setActivityTypeCode(HubCodeEnum.DIAGNOSIS_ACTIVITIES_HOSPITALIZATION.getCode());
                     emrExLab.setActivityTypeName(HubCodeEnum.DIAGNOSIS_ACTIVITIES_HOSPITALIZATION.getName());
                     emrExLab.setSerialNumber(DigestUtil.md5Hex(labTestMaster.getPatientId() + labTestMaster.getVisitId()));
                     R<PatsInHospital> hospitalResult = inpadmFeignClient.getPatsInHospital(labTestMaster.getPatientId(), labTestMaster.getVisitId());
                     emrExLab.setWardNo(hospitalResult.getData().getWardCode());
                     emrExLab.setBedNo(String.valueOf(hospitalResult.getData().getBedNo()));
+                }else {
+                    logger.error("PATIENT_SOURCE:{}, 非门诊和住院，无法同步", labTestMaster.getPatientSource());
+                    return;
                 }
                 emrExLab.setApplyOrgCode(HubCodeEnum.ORG_CODE.getCode());
                 emrExLab.setApplyOrgName(HubCodeEnum.ORG_CODE.getName());
@@ -370,34 +382,59 @@ public class LabConvertService {
                 emrExLabItem.setItemCode(labResult.getItemCode());
                 emrExLabItem.setItemName(labResult.getItemName());
 
-                if (Validator.hasChinese(labResult.getResult())){
-                    // 定性
-                    emrExLabItem.setSourceExaminationResultCode(DigestUtil.md5Hex(labResult.getResult()));
-                    emrExLabItem.setSourceExaminationResultCode(labResult.getResult());
-                    DdExQuantification ddExQuantification = ddExQuantificationMapper.selectByName(labResult.getResult());
-                    if (ddExQuantification == null){
-                        emrExLabItem.setExaminationResultCode("07");
-                        emrExLabItem.setExaminationResultName(labResult.getResult());
+                if(StringUtils.isNotBlank(labResult.getResult())){
+                    if (Validator.hasChinese(labResult.getResult())){
+                        // 定性
+                        emrExLabItem.setSourceExaminationResultCode(DigestUtil.md5Hex(labResult.getResult()));
+                        emrExLabItem.setSourceExaminationResultCode(labResult.getResult());
+                        DdExQuantification ddExQuantification = ddExQuantificationMapper.selectByName(labResult.getResult());
+                        if (ddExQuantification == null){
+                            emrExLabItem.setExaminationResultCode("07");
+                            emrExLabItem.setExaminationResultName(labResult.getResult());
+                        }else {
+                            emrExLabItem.setExaminationResultCode(ddExQuantification.getCode());
+                            emrExLabItem.setExaminationResultName(ddExQuantification.getName());
+                        }
                     }else {
-                        emrExLabItem.setExaminationResultCode(ddExQuantification.getCode());
-                        emrExLabItem.setExaminationResultName(ddExQuantification.getName());
+                        if (labResult.getResult().equals("-")){
+                            emrExLabItem.setSourceExaminationResultCode(DigestUtil.md5Hex(labResult.getResult()));
+                            emrExLabItem.setSourceExaminationResultCode(labResult.getResult());
+                            emrExLabItem.setExaminationResultCode("02");
+                            emrExLabItem.setExaminationResultName("阴性");
+                        }else if(labResult.getResult().equals("+")){
+                            emrExLabItem.setSourceExaminationResultCode(DigestUtil.md5Hex(labResult.getResult()));
+                            emrExLabItem.setSourceExaminationResultCode(labResult.getResult());
+                            emrExLabItem.setExaminationResultCode("01");
+                            emrExLabItem.setExaminationResultName("阳性");
+                        }else {
+                            // 定量
+                            emrExLabItem.setExaminationQuantification(labResult.getResult());
+                            emrExLabItem.setExaminationQuantificationUnit(labResult.getUnits());
+                            if (labResult.getAbnormalIndicator().equals("H")){
+                                emrExLabItem.setExaminationQuantificationRi("2");
+                            }else if (labResult.getAbnormalIndicator().equals("L")){
+                                emrExLabItem.setExaminationQuantificationRi("1");
+                            }else {
+                                emrExLabItem.setExaminationQuantificationRi("0");
+                            }
+                            if (labResult.getResultRange().contains("健康非妊娠绝经前女性")){
+                                emrExLabItem.setExaminationQuantificationLower("0");
+                                emrExLabItem.setExaminationQuantificationUpper("7184");
+                            }else {
+                                String between = StrUtil.removeAll(labResult.getResultRange(), "");
+                                String[] betweens = between.split("-");
+                                emrExLabItem.setExaminationQuantificationLower(betweens[0]);
+                                emrExLabItem.setExaminationQuantificationUpper(betweens[1]);
+                            }
+                        }
                     }
                 }else {
-                    // 定量
-                    emrExLabItem.setExaminationQuantification(labResult.getResult());
-                    emrExLabItem.setExaminationQuantificationUnit(labResult.getUnits());
-                    String between = StrUtil.removeAll(labResult.getResultRange(), "");
-                    String[] betweens = between.split("-");
-                    emrExLabItem.setExaminationQuantificationLower(betweens[0]);
-                    emrExLabItem.setExaminationQuantificationUpper(betweens[1]);
-                    if (labResult.getAbnormalIndicator().equals("H")){
-                        emrExLabItem.setExaminationQuantificationRi("2");
-                    }else if (labResult.getAbnormalIndicator().equals("L")){
-                        emrExLabItem.setExaminationQuantificationRi("1");
-                    }else {
-                        emrExLabItem.setExaminationQuantificationRi("0");
-                    }
+                    emrExLabItem.setSourceExaminationResultCode(UUID.fastUUID().toString());
+                    emrExLabItem.setSourceExaminationResultCode("无");
+                    emrExLabItem.setExaminationResultCode("07");
+                    emrExLabItem.setExaminationResultName("未检出");
                 }
+
                 emrExLabItem.setOperatorId(emrExLab.getOperatorId());
                 emrExLabItem.setOperationTime(emrExLab.getOperationTime());
                 synchroEmrMonitorService.syncEmrExLabItem(emrExLabItem, httpMethod);
