@@ -576,7 +576,7 @@ public class MedrecConvertService {
                 emrActivityInfo.setWmDiseaseCode(emrDischargeInfo.getDischargeDiagnosisCode());
                 emrActivityInfo.setWmDiseaseName(emrDischargeInfo.getDischargeDiagnosisName());
                 emrActivityInfo.setFillDoctor(patVisit.getAttendingDoctor());
-                emrActivityInfo.setOperatorId(emrDischargeInfo.getOperatorId());
+                emrActivityInfo.setOperatorId(emrDischargeInfo.getChiefPhysicianId());
                 emrActivityInfo.setDeptCode(emrDischargeInfo.getDeptCode());
                 emrActivityInfo.setDeptName(emrDischargeInfo.getDeptName());
                 emrActivityInfo.setOrgCode(emrDischargeInfo.getOrgCode());
