@@ -214,14 +214,16 @@ public class ExamConvertService {
             data = dbMessage.getAfterData();
         }
         examMaster = BeanUtil.toBeanIgnoreError(data, ExamMaster.class);
-        examMaster.setDateOfBirth(DateUtils.getLongDate(data.get("dateOfBirth")));
+        // 反查数据
+        examMaster = examFeignClient.getExamMaster(examMaster.getExamNo()).getData();
+        /*examMaster.setDateOfBirth(DateUtils.getLongDate(data.get("dateOfBirth")));
         examMaster.setSpmRecvedDate(DateUtils.getLongDate(data.get("spmRecvedDate")));
         examMaster.setScheduledDateTime(DateUtils.getLongDate(data.get("scheduledDateTime")));
         examMaster.setExamDateTime(DateUtils.getLongDate(data.get("examDateTime")));
         examMaster.setReportDateTime(DateUtils.getLongDate(data.get("reportDateTime")));
         examMaster.setConfirmDateTime(DateUtils.getLongDate(data.get("confirmDateTime")));
         examMaster.setAuditingDateTime(DateUtils.getLongDate(data.get("auditingDateTime")));
-        examMaster.setVisitDate(DateUtils.getLongDate(data.get("visitDate")));
+        examMaster.setVisitDate(DateUtils.getLongDate(data.get("visitDate")));*/
 
         if(StringUtils.isBlank(examMaster.getResultStatus()) || !"4".equals(examMaster.getResultStatus())){
             logger.error("检查报告未确认，无法同步");

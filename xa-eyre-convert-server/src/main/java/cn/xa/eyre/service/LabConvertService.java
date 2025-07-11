@@ -248,13 +248,15 @@ public class LabConvertService {
             data = dbMessage.getAfterData();
         }
         labTestMaster = BeanUtil.toBeanIgnoreError(data, LabTestMaster.class);
-        labTestMaster.setExecuteDate(DateUtils.getLongDate(data.get("executeDate")));
+        // 反查数据
+        labTestMaster = labFeignClient.getLabTestMaster(labTestMaster.getTestNo()).getData();
+        /*labTestMaster.setExecuteDate(DateUtils.getLongDate(data.get("executeDate")));
         labTestMaster.setSpcmReceivedDateTime(DateUtils.getLongDate(data.get("spcmReceivedDateTime")));
         labTestMaster.setSpcmSampleDateTime(DateUtils.getLongDate(data.get("spcmSampleDateTime")));
         labTestMaster.setRequestedDateTime(DateUtils.getLongDate(data.get("requestedDateTime")));
         labTestMaster.setResultsRptDateTime(DateUtils.getLongDate(data.get("resultsRptDateTime")));
         labTestMaster.setDateOfBirth(DateUtils.getLongDate(data.get("dateOfBirth")));
-        labTestMaster.setVisitDate(DateUtils.getLongDate(data.get("visitDate")));
+        labTestMaster.setVisitDate(DateUtils.getLongDate(data.get("visitDate")));*/
 
         if(StringUtils.isBlank(labTestMaster.getResultStatus()) || !"4".equals(labTestMaster.getResultStatus())){
             logger.error("检查报告未确认，无法同步");
