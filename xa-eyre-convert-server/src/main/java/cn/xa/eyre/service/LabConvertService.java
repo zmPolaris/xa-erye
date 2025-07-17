@@ -389,7 +389,19 @@ public class LabConvertService {
                         // 定性
                         emrExLabItem.setSourceExaminationResultCode(DigestUtil.md5Hex(labResult.getResult()));
                         emrExLabItem.setSourceExaminationResultCode(labResult.getResult());
-                        DdExQuantification ddExQuantification = ddExQuantificationMapper.selectByName(labResult.getResult());
+                        List<DdExQuantification> ddExQuantifications = ddExQuantificationMapper.selectAll();
+                        DdExQuantification ddExQuantification = null;
+                        for (DdExQuantification dd : ddExQuantifications) {
+                            if (labResult.getResult().equals(dd.getName())){
+                                ddExQuantification = dd;
+                                break;
+                            }
+                            if (labResult.getResult().startsWith(dd.getName())){
+                                ddExQuantification = dd;
+                                break;
+                            }
+                        }
+//                        ddExQuantification = ddExQuantificationMapper.selectByName(labResult.getResult());
                         if (ddExQuantification == null){
                             emrExLabItem.setExaminationResultCode("07");
                             emrExLabItem.setExaminationResultName(labResult.getResult());

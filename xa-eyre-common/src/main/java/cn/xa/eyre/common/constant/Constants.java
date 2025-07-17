@@ -99,4 +99,6 @@ public class Constants
     public static final String DIAGNOSIS_TYPE_CODE_ZYZD = "3";
     public static final String DIAGNOSIS_TYPE_CODE_QT = "A";
 
+    public static final String CHARGE_TYPE_JDYG = "军队医改";
+
 }

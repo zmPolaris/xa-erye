@@ -39,7 +39,12 @@
       from dd_ex_quantification
       where name like concat(#{name,jdbcType=VARCHAR}, '%')
     </select>
-    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+  <select id="selectAll" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from dd_ex_quantification
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from dd_ex_quantification
     where id = #{id,jdbcType=BIGINT}
   </delete>
