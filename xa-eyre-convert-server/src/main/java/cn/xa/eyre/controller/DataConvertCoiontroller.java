@@ -36,6 +36,8 @@ public class DataConvertCoiontroller {
     private PharmacyConvertService pharmacyConvertService;
     @Autowired
     private LabConvertService labConvertService;
+    @Autowired
+    private Lqt2024ConvertService lqt2024ConvertService;
 
     /**
      * 部门信息转码
@@ -109,6 +111,9 @@ public class DataConvertCoiontroller {
                 break;*/
             case "pharmacy.drug_presc_master":
                 pharmacyConvertService.drugPrescMaster(dbMessage);
+                break;
+            case "lqt2024.lqt_crb_zd":
+                lqt2024ConvertService.lqtCrbZd(dbMessage);
                 break;
             default:
 

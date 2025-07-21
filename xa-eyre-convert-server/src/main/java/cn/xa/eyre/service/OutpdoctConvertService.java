@@ -81,6 +81,11 @@ public class OutpdoctConvertService {
             R<ClinicMaster> outpadmResult = outpadmFeignClient.getClinicMaster(outpMr.getPatientId(), outpMr.getVisitNo(), DateUtils.dateTime(outpMr.getVisitDate()));
             if (R.SUCCESS == medrecResult.getCode() && medrecResult.getData() != null
                     && R.SUCCESS == outpadmResult.getCode() && outpadmResult.getData() != null){
+                // 军队医改不推送
+                if (outpadmResult.getData().getChargeType().equals(Constants.CHARGE_TYPE_JDYG)){
+                    logger.error("费别为军队医改，不推送数据");
+                    return;
+                }
                 // 更新推送患者信息
                 hubToolService.syncPatInfo(medrecResult.getData());
                 EmrOutpatientRecord emrOutpatientRecord = new EmrOutpatientRecord();

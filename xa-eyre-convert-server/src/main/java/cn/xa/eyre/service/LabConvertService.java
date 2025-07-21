@@ -248,15 +248,17 @@ public class LabConvertService {
             data = dbMessage.getAfterData();
         }
         labTestMaster = BeanUtil.toBeanIgnoreError(data, LabTestMaster.class);
-        labTestMaster.setExecuteDate(DateUtils.getLongDate(data.get("executeDate")));
+        // 反查数据
+        labTestMaster = labFeignClient.getLabTestMaster(labTestMaster.getTestNo()).getData();
+        /*labTestMaster.setExecuteDate(DateUtils.getLongDate(data.get("executeDate")));
         labTestMaster.setSpcmReceivedDateTime(DateUtils.getLongDate(data.get("spcmReceivedDateTime")));
         labTestMaster.setSpcmSampleDateTime(DateUtils.getLongDate(data.get("spcmSampleDateTime")));
         labTestMaster.setRequestedDateTime(DateUtils.getLongDate(data.get("requestedDateTime")));
         labTestMaster.setResultsRptDateTime(DateUtils.getLongDate(data.get("resultsRptDateTime")));
         labTestMaster.setDateOfBirth(DateUtils.getLongDate(data.get("dateOfBirth")));
-        labTestMaster.setVisitDate(DateUtils.getLongDate(data.get("visitDate")));
+        labTestMaster.setVisitDate(DateUtils.getLongDate(data.get("visitDate")));*/
 
-        if(StringUtils.isBlank(labTestMaster.getResultStatus()) || !"4".equals(labTestMaster.getResultStatus())){
+        if(labTestMaster == null || StringUtils.isBlank(labTestMaster.getResultStatus()) || !"4".equals(labTestMaster.getResultStatus())){
             logger.error("检查报告未确认，无法同步");
             return;
         }
@@ -387,7 +389,19 @@ public class LabConvertService {
                         // 定性
                         emrExLabItem.setSourceExaminationResultCode(DigestUtil.md5Hex(labResult.getResult()));
                         emrExLabItem.setSourceExaminationResultCode(labResult.getResult());
-                        DdExQuantification ddExQuantification = ddExQuantificationMapper.selectByName(labResult.getResult());
+                        List<DdExQuantification> ddExQuantifications = ddExQuantificationMapper.selectAll();
+                        DdExQuantification ddExQuantification = null;
+                        for (DdExQuantification dd : ddExQuantifications) {
+                            if (labResult.getResult().equals(dd.getName())){
+                                ddExQuantification = dd;
+                                break;
+                            }
+                            if (labResult.getResult().startsWith(dd.getName())){
+                                ddExQuantification = dd;
+                                break;
+                            }
+                        }
+//                        ddExQuantification = ddExQuantificationMapper.selectByName(labResult.getResult());
                         if (ddExQuantification == null){
                             emrExLabItem.setExaminationResultCode("07");
                             emrExLabItem.setExaminationResultName(labResult.getResult());
