@@ -225,7 +225,7 @@ public class ExamConvertService {
         examMaster.setAuditingDateTime(DateUtils.getLongDate(data.get("auditingDateTime")));
         examMaster.setVisitDate(DateUtils.getLongDate(data.get("visitDate")));*/
 
-        if(StringUtils.isBlank(examMaster.getResultStatus()) || !"4".equals(examMaster.getResultStatus())){
+        if(examMaster == null || StringUtils.isBlank(examMaster.getResultStatus()) || !"4".equals(examMaster.getResultStatus())){
             logger.error("检查报告未确认，无法同步");
             return;
         }

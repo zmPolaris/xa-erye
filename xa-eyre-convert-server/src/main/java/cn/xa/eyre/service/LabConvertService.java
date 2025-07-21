@@ -258,7 +258,7 @@ public class LabConvertService {
         labTestMaster.setDateOfBirth(DateUtils.getLongDate(data.get("dateOfBirth")));
         labTestMaster.setVisitDate(DateUtils.getLongDate(data.get("visitDate")));*/
 
-        if(StringUtils.isBlank(labTestMaster.getResultStatus()) || !"4".equals(labTestMaster.getResultStatus())){
+        if(labTestMaster == null || StringUtils.isBlank(labTestMaster.getResultStatus()) || !"4".equals(labTestMaster.getResultStatus())){
             logger.error("检查报告未确认，无法同步");
             return;
         }

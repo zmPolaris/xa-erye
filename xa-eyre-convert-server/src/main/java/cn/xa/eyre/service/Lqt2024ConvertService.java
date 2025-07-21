@@ -16,13 +16,11 @@ import cn.xa.eyre.hub.domain.emrreal.EmrActivityInfo;
 import cn.xa.eyre.hub.service.SynchroEmrMonitorService;
 import cn.xa.eyre.hub.service.SynchroEmrRealService;
 import cn.xa.eyre.hub.staticvalue.HubCodeEnum;
-import cn.xa.eyre.lab.domain.LabResult;
 import cn.xa.eyre.lqt2024.domain.LqtCrbZd;
 import cn.xa.eyre.medrec.domain.PatMasterIndex;
 import cn.xa.eyre.medrec.domain.PatVisit;
 import cn.xa.eyre.medrec.domain.PatVisitKey;
 import cn.xa.eyre.system.dict.domain.DictDisDept;
-import cn.xa.eyre.system.dict.domain.DictTreatResult;
 import cn.xa.eyre.system.dict.mapper.DictDisDeptMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,11 +37,7 @@ public class Lqt2024ConvertService {
     @Autowired
     private SynchroEmrMonitorService synchroEmrMonitorService;
     @Autowired
-    private DictDisDeptMapper dictDisDeptMapper;// 转码表
-    @Autowired
     private CommFeignClient commFeignClient;
-    @Autowired
-    private InpadmFeignClient inpadmFeignClient;
     @Autowired
     private HubToolService hubToolService;
     @Autowired
