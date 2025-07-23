@@ -120,7 +120,7 @@ public class Lqt2024ConvertService {
             emrActivityInfo.setDiagnoseTime(emrDailyCourse.getCreateDate());
             emrActivityInfo.setWmDiseaseCode(lqtCrbZd.getIcd10());
             emrActivityInfo.setWmDiseaseName(lqtCrbZd.getIcd10name());
-            emrActivityInfo.setFillDoctor(emrDailyCourse.getOperatorId());
+            emrActivityInfo.setFillDoctor(lqtCrbZd.getFillDoctor());
             emrActivityInfo.setOperatorId(emrDailyCourse.getOperatorId());
             if (StringUtils.isBlank(emrDailyCourse.getOperatorId())){
                 emrActivityInfo.setOperatorId("-");
