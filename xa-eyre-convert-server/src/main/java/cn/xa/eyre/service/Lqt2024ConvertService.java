@@ -67,6 +67,8 @@ public class Lqt2024ConvertService {
         R<PatVisit> patVisitResult = medrecFeignClient.getPatVisit(patVisitKey);
         if (R.SUCCESS == patVisitResult.getCode() && patVisitResult.getData() != null
                 && R.SUCCESS == medrecResult.getCode() && medrecResult.getData() != null){
+            // 更新推送患者信息
+            hubToolService.syncPatInfo(medrecResult.getData());
             EmrDailyCourse emrDailyCourse = new EmrDailyCourse();
             // ID使用LQT_CRB_ZD表patientId、visitId、diagnosisNo拼接计算MD5
             String id = DigestUtil.md5Hex(lqtCrbZd.getPatientId() + lqtCrbZd.getVisitId() + lqtCrbZd.getDiagnosisNo());

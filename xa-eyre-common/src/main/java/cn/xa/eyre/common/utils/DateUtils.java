@@ -249,7 +249,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
 
     public static Date getLongDate(String datetime){
         if (StringUtils.isNotBlank(datetime) && !"null".equalsIgnoreCase(datetime)){
-            return new Date(Long.valueOf(datetime));
+            return new Date(Long.valueOf(datetime) - 28800000);
         }else return null;
     }
 }
