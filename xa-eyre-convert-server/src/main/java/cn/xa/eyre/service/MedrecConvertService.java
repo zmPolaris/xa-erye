@@ -11,6 +11,7 @@ import cn.xa.eyre.common.core.domain.R;
 import cn.xa.eyre.common.core.kafka.DBMessage;
 import cn.xa.eyre.common.utils.DateUtils;
 import cn.xa.eyre.common.utils.StringUtils;
+import cn.xa.eyre.common.utils.bean.BeanUtils;
 import cn.xa.eyre.hisapi.CommFeignClient;
 import cn.xa.eyre.hisapi.InpadmFeignClient;
 import cn.xa.eyre.hisapi.MedrecFeignClient;
@@ -29,6 +30,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.InvocationTargetException;
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -75,13 +80,17 @@ public class MedrecConvertService {
             httpMethod = Constants.HTTP_METHOD_POST;
             data = dbMessage.getAfterData();
         }
-        patMasterIndex = BeanUtil.toBeanIgnoreError(data, PatMasterIndex.class);
-        patMasterIndex.setDateOfBirth(DateUtils.getLongDate(data.get("dateOfBirth")));
-        patMasterIndex.setLastVisitDate(DateUtils.getLongDate(data.get("lastVisitDate")));
-        patMasterIndex.setCreateDate(DateUtils.getLongDate(data.get("createDate")));
-        patMasterIndex.setModifyTime(DateUtils.getLongDate(data.get("modifyTime")));
-        patMasterIndex.setIdentityExpireDate(DateUtils.getLongDate(data.get("identityExpireDate")));
-
+//        patMasterIndex = BeanUtil.toBeanIgnoreError(data, PatMasterIndex.class);
+//        patMasterIndex.setDateOfBirth(DateUtils.getLongDate(data.get("dateOfBirth")));
+//        patMasterIndex.setLastVisitDate(DateUtils.getLongDate(data.get("lastVisitDate")));
+//        patMasterIndex.setCreateDate(DateUtils.getLongDate(data.get("createDate")));
+//        patMasterIndex.setModifyTime(DateUtils.getLongDate(data.get("modifyTime")));
+//        patMasterIndex.setIdentityExpireDate(DateUtils.getLongDate(data.get("identityExpireDate")));
+        try {
+            patMasterIndex = BeanUtils.mapToObject(data, PatMasterIndex.class);
+        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
         logger.debug("构造emrPatientInfo接口数据...");
         // 构造请求参数
         emrPatientInfo.setId(patMasterIndex.getPatientId());
@@ -125,20 +134,28 @@ public class MedrecConvertService {
         if (ddNation != null){
             emrPatientInfo.setNationCode(ddNation.getCode());
             emrPatientInfo.setNationName(ddNation.getName());
-        }else {
-            emrPatientInfo.setNationCode(HubCodeEnum.NATION_CODE.getCode());
-            emrPatientInfo.setNationName(HubCodeEnum.NATION_CODE.getName());
         }
+//        else {
+//            emrPatientInfo.setNationCode(HubCodeEnum.NATION_CODE.getCode());
+//            emrPatientInfo.setNationName(HubCodeEnum.NATION_CODE.getName());
+//        }
         emrPatientInfo.setCurrentAddrCode(patMasterIndex.getMailingAreaCode4());
         emrPatientInfo.setCurrentAddrName(patMasterIndex.getMailingAddress());
         emrPatientInfo.setCurrentAddrDetail(patMasterIndex.getNextOfKinAddr());
         emrPatientInfo.setWorkunit(patMasterIndex.getWorkunit());
-        if(patMasterIndex.getNextOfKin() != null){
-            emrPatientInfo.setContacts(patMasterIndex.getNextOfKin());
-            emrPatientInfo.setContactsTel(patMasterIndex.getNextOfKinPhone());
-        }else {
-            emrPatientInfo.setContacts(patMasterIndex.getGuardianName());
-            emrPatientInfo.setContactsTel(patMasterIndex.getGuardianPhone());
+        Date birthDate = patMasterIndex.getDateOfBirth();
+        if (null != birthDate) {
+            LocalDate localDate = DateUtils.convertDateToLocalDate(birthDate);
+            Period period = Period.between(localDate, LocalDate.now());
+            if (period.getYears() <= 14) {
+                if(patMasterIndex.getNextOfKin() != null){
+                    emrPatientInfo.setContacts(patMasterIndex.getNextOfKin());
+                    emrPatientInfo.setContactsTel(patMasterIndex.getNextOfKinPhone());
+                }else {
+                    emrPatientInfo.setContacts(patMasterIndex.getGuardianName());
+                    emrPatientInfo.setContactsTel(patMasterIndex.getGuardianPhone());
+                }
+            }
         }
         emrPatientInfo.setOrgCode(HubCodeEnum.ORG_CODE.getCode());
         emrPatientInfo.setOrgName(HubCodeEnum.ORG_CODE.getName());
@@ -167,8 +184,13 @@ public class MedrecConvertService {
             httpMethod = Constants.HTTP_METHOD_POST;
             data = dbMessage.getAfterData();
         }
-        diagnosis = BeanUtil.toBeanIgnoreError(data, Diagnosis.class);
-        diagnosis.setDiagnosisDate(DateUtils.getLongDate(data.get("diagnosisDate")));
+//        diagnosis = BeanUtil.toBeanIgnoreError(data, Diagnosis.class);
+//        diagnosis.setDiagnosisDate(DateUtils.getLongDate(data.get("diagnosisDate")));
+        try {
+            diagnosis = BeanUtils.mapToObject(data, Diagnosis.class);
+        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
 
         R<PatMasterIndex> medrecResult = medrecFeignClient.getPatMasterIndex(diagnosis.getPatientId());
         DiagnosticCategoryKey diagnosticCategoryKey = new DiagnosticCategoryKey();
@@ -383,10 +405,15 @@ public class MedrecConvertService {
             httpMethod = Constants.HTTP_METHOD_POST;
             data = dbMessage.getAfterData();
         }
-        patVisit = BeanUtil.toBeanIgnoreError(data, PatVisit.class);
-        patVisit.setAdmissionDateTime(DateUtils.getLongDate(data.get("admissionDateTime")));
-        patVisit.setDischargeDateTime(DateUtils.getLongDate(data.get("dischargeDateTime")));
-        patVisit.setConsultingDate(DateUtils.getLongDate(data.get("consultingDate")));
+//        patVisit = BeanUtil.toBeanIgnoreError(data, PatVisit.class);
+//        patVisit.setAdmissionDateTime(DateUtils.getLongDate(data.get("admissionDateTime")));
+//        patVisit.setDischargeDateTime(DateUtils.getLongDate(data.get("dischargeDateTime")));
+//        patVisit.setConsultingDate(DateUtils.getLongDate(data.get("consultingDate")));
+        try {
+            patVisit = BeanUtils.mapToObject(data, PatVisit.class);
+        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
 
         // 军队医改不推送
         if (patVisit.getChargeType().equals(Constants.CHARGE_TYPE_JDYG)){

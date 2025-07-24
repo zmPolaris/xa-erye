@@ -7,10 +7,12 @@ import cn.xa.eyre.comm.domain.Users;
 import cn.xa.eyre.common.constant.Constants;
 import cn.xa.eyre.common.core.kafka.DBMessage;
 import cn.xa.eyre.common.utils.DateUtils;
+import cn.xa.eyre.common.utils.bean.BeanUtils;
 import cn.xa.eyre.hub.domain.base.BaseDept;
 import cn.xa.eyre.hub.domain.base.BaseUser;
 import cn.xa.eyre.hub.service.SynchroBaseService;
 import cn.xa.eyre.hub.staticvalue.HubCodeEnum;
+import cn.xa.eyre.inpadm.domain.PatsInHospital;
 import cn.xa.eyre.system.dict.domain.DictDisDept;
 import cn.xa.eyre.system.dict.mapper.DictDisDeptMapper;
 import org.slf4j.Logger;
@@ -18,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -125,9 +128,14 @@ public class CommConvertService {
             httpMethod = Constants.HTTP_METHOD_POST;
             data = dbMessage.getAfterData();
         }
-        users = BeanUtil.toBeanIgnoreError(data, Users.class);
-        users.setCreateDate(DateUtils.getLongDate(data.get("createDate")));
-        users.setLeaveDate(DateUtils.getLongDate(data.get("leaveDate")));
+//        users = BeanUtil.toBeanIgnoreError(data, Users.class);
+//        users.setCreateDate(DateUtils.getLongDate(data.get("createDate")));
+//        users.setLeaveDate(DateUtils.getLongDate(data.get("leaveDate")));
+        try {
+            users = BeanUtils.mapToObject(data, Users.class);
+        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
         String deptCode = users.getUserDept();
         if(deptCode != null && !deptCode.equals("")){
             DictDisDept deptParam = new DictDisDept();

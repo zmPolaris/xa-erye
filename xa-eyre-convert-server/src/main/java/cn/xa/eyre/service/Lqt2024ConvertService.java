@@ -8,6 +8,7 @@ import cn.xa.eyre.common.core.domain.R;
 import cn.xa.eyre.common.core.kafka.DBMessage;
 import cn.xa.eyre.common.utils.DateUtils;
 import cn.xa.eyre.common.utils.StringUtils;
+import cn.xa.eyre.common.utils.bean.BeanUtils;
 import cn.xa.eyre.hisapi.CommFeignClient;
 import cn.xa.eyre.hisapi.InpadmFeignClient;
 import cn.xa.eyre.hisapi.MedrecFeignClient;
@@ -27,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 @Service
@@ -57,9 +59,14 @@ public class Lqt2024ConvertService {
             httpMethod = Constants.HTTP_METHOD_POST;
             data = dbMessage.getAfterData();
         }
-        lqtCrbZd = BeanUtil.toBeanIgnoreError(data, LqtCrbZd.class);
-        lqtCrbZd.setActivityTime(DateUtils.getLongDate(data.get("activityTime")));
-        lqtCrbZd.setCreateTime(DateUtils.getLongDate(data.get("createTime")));
+//        lqtCrbZd = BeanUtil.toBeanIgnoreError(data, LqtCrbZd.class);
+//        lqtCrbZd.setActivityTime(DateUtils.getLongDate(data.get("activityTime")));
+//        lqtCrbZd.setCreateTime(DateUtils.getLongDate(data.get("createTime")));
+        try {
+            lqtCrbZd = BeanUtils.mapToObject(data, LqtCrbZd.class);
+        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
 
         R<PatMasterIndex> medrecResult = medrecFeignClient.getPatMasterIndex(lqtCrbZd.getPatientId());
         PatVisitKey patVisitKey = new PatVisitKey();

@@ -9,6 +9,7 @@ import cn.xa.eyre.common.core.domain.R;
 import cn.xa.eyre.common.core.kafka.DBMessage;
 import cn.xa.eyre.common.utils.DateUtils;
 import cn.xa.eyre.common.utils.StringUtils;
+import cn.xa.eyre.common.utils.bean.BeanUtils;
 import cn.xa.eyre.exam.domain.ExamMaster;
 import cn.xa.eyre.exam.domain.ExamReport;
 import cn.xa.eyre.hisapi.*;
@@ -30,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 @Service
@@ -69,7 +71,12 @@ public class ExamConvertService {
             httpMethod = Constants.HTTP_METHOD_POST;
             data = dbMessage.getAfterData();
         }
-        examReport = BeanUtil.toBeanIgnoreError(data, ExamReport.class);
+//        examReport = BeanUtil.toBeanIgnoreError(data, ExamReport.class);
+        try {
+            examReport = BeanUtils.mapToObject(data, ExamReport.class);
+        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
 
         R<ExamMaster> examMasterResult = examFeignClient.getExamMaster(examReport.getExamNo());
         if (R.SUCCESS == examMasterResult.getCode() && examMasterResult.getData() != null){

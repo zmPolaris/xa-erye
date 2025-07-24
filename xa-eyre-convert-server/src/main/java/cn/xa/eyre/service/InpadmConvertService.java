@@ -10,6 +10,7 @@ import cn.xa.eyre.common.core.domain.R;
 import cn.xa.eyre.common.core.kafka.DBMessage;
 import cn.xa.eyre.common.utils.DateUtils;
 import cn.xa.eyre.common.utils.StringUtils;
+import cn.xa.eyre.common.utils.bean.BeanUtils;
 import cn.xa.eyre.hisapi.CommFeignClient;
 import cn.xa.eyre.hisapi.MedrecFeignClient;
 import cn.xa.eyre.hisapi.OutpdoctFeignClient;
@@ -32,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -73,13 +75,19 @@ public class InpadmConvertService {
             httpMethod = Constants.HTTP_METHOD_POST;
             data = dbMessage.getAfterData();
         }
-        patsInHospital = BeanUtil.toBeanIgnoreError(data, PatsInHospital.class);
-        patsInHospital.setAdmissionDateTime(DateUtils.getLongDate(data.get("admissionDateTime")));
-        patsInHospital.setAdmWardDateTime(DateUtils.getLongDate(data.get("admWardDateTime")));
-        patsInHospital.setOperatingDate(DateUtils.getLongDate(data.get("operatingDate")));
-        patsInHospital.setBillingDateTime(DateUtils.getLongDate(data.get("billingDateTime")));
-        patsInHospital.setBillCheckedDateTime(DateUtils.getLongDate(data.get("billCheckedDateTime")));
-        patsInHospital.setStartDateTime(DateUtils.getLongDate(data.get("startDateTime")));
+//        patsInHospital = BeanUtil.toBeanIgnoreError(data, PatsInHospital.class);
+//        patsInHospital.setAdmissionDateTime(DateUtils.getLongDate(data.get("admissionDateTime")));
+//        patsInHospital.setAdmWardDateTime(DateUtils.getLongDate(data.get("admWardDateTime")));
+//        patsInHospital.setOperatingDate(DateUtils.getLongDate(data.get("operatingDate")));
+//        patsInHospital.setBillingDateTime(DateUtils.getLongDate(data.get("billingDateTime")));
+//        patsInHospital.setBillCheckedDateTime(DateUtils.getLongDate(data.get("billCheckedDateTime")));
+//        patsInHospital.setStartDateTime(DateUtils.getLongDate(data.get("startDateTime")));
+        try {
+            patsInHospital = BeanUtils.mapToObject(data, PatsInHospital.class);
+        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+
 
         logger.debug("构造emrAdmissionInfo接口数据...");
         R<PatMasterIndex> medrecResult = medrecFeignClient.getPatMasterIndex(patsInHospital.getPatientId());

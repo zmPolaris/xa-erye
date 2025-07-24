@@ -12,6 +12,7 @@ import cn.xa.eyre.common.core.domain.R;
 import cn.xa.eyre.common.core.kafka.DBMessage;
 import cn.xa.eyre.common.utils.DateUtils;
 import cn.xa.eyre.common.utils.StringUtils;
+import cn.xa.eyre.common.utils.bean.BeanUtils;
 import cn.xa.eyre.exam.domain.ExamReport;
 import cn.xa.eyre.hisapi.CommFeignClient;
 import cn.xa.eyre.hisapi.InpadmFeignClient;
@@ -36,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 
@@ -74,8 +76,13 @@ public class LabConvertService {
             httpMethod = Constants.HTTP_METHOD_POST;
             data = dbMessage.getAfterData();
         }
-        labResult = BeanUtil.toBeanIgnoreError(data, LabResult.class);
-        labResult.setResultDateTime(DateUtils.getLongDate(data.get("resultDateTime")));
+//        labResult = BeanUtil.toBeanIgnoreError(data, LabResult.class);
+//        labResult.setResultDateTime(DateUtils.getLongDate(data.get("resultDateTime")));
+        try {
+            labResult = BeanUtils.mapToObject(data, LabResult.class);
+        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
 
         R<LabTestMaster> labTestMasterResult = labFeignClient.getLabTestMaster(labResult.getTestNo());
         if (labTestMasterResult.getCode() == R.SUCCESS && labTestMasterResult.getData() != null){

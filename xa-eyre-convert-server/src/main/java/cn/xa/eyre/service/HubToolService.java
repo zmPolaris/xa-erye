@@ -88,10 +88,11 @@ public class HubToolService {
                 if (ddNation != null){
                     emrPatientInfo.setNationCode(ddNation.getCode());
                     emrPatientInfo.setNationName(ddNation.getName());
-                }else {
-                    emrPatientInfo.setNationCode(HubCodeEnum.NATION_CODE.getCode());
-                    emrPatientInfo.setNationName(HubCodeEnum.NATION_CODE.getName());
                 }
+//                else {
+//                    emrPatientInfo.setNationCode(HubCodeEnum.NATION_CODE.getCode());
+//                    emrPatientInfo.setNationName(HubCodeEnum.NATION_CODE.getName());
+//                }
                 emrPatientInfo.setCurrentAddrCode(patMasterIndex.getMailingAreaCode4());
                 emrPatientInfo.setCurrentAddrName(patMasterIndex.getMailingAddress());
                 emrPatientInfo.setCurrentAddrDetail(patMasterIndex.getNextOfKinAddr());
@@ -376,10 +377,11 @@ public class HubToolService {
         if (ddNation != null){
             emrPatientInfo.setNationCode(ddNation.getCode());
             emrPatientInfo.setNationName(ddNation.getName());
-        }else {
-            emrPatientInfo.setNationCode(HubCodeEnum.NATION_CODE.getCode());
-            emrPatientInfo.setNationName(HubCodeEnum.NATION_CODE.getName());
         }
+//        else {
+//            emrPatientInfo.setNationCode(HubCodeEnum.NATION_CODE.getCode());
+//            emrPatientInfo.setNationName(HubCodeEnum.NATION_CODE.getName());
+//        }
         emrPatientInfo.setCurrentAddrCode(patMasterIndex.getMailingAreaCode4());
         emrPatientInfo.setCurrentAddrName(patMasterIndex.getMailingAddress());
         emrPatientInfo.setCurrentAddrDetail(patMasterIndex.getNextOfKinAddr());

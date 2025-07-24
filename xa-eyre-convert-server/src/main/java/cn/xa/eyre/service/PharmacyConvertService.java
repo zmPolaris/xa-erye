@@ -8,6 +8,7 @@ import cn.xa.eyre.common.core.domain.R;
 import cn.xa.eyre.common.core.kafka.DBMessage;
 import cn.xa.eyre.common.utils.DateUtils;
 import cn.xa.eyre.common.utils.StringUtils;
+import cn.xa.eyre.common.utils.bean.BeanUtils;
 import cn.xa.eyre.hisapi.*;
 import cn.xa.eyre.hub.domain.emrmonitor.EmrOrder;
 import cn.xa.eyre.hub.domain.emrmonitor.EmrOrderItem;
@@ -32,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 
@@ -74,9 +76,15 @@ public class PharmacyConvertService {
             httpMethod = Constants.HTTP_METHOD_POST;
             data = dbMessage.getAfterData();
         }
-        drugPrescMaster = BeanUtil.toBeanIgnoreError(data, DrugPrescMaster.class);
+//        drugPrescMaster = BeanUtil.toBeanIgnoreError(data, DrugPrescMaster.class);
+//        drugPrescMaster.setPrescDate(DateUtils.getLongDate(data.get("prescDate")));
+        try {
+            drugPrescMaster = BeanUtils.mapToObject(data, DrugPrescMaster.class);
+        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+
         EmrOrder emrOrder = new EmrOrder();
-        drugPrescMaster.setPrescDate(DateUtils.getLongDate(data.get("prescDate")));
         String id = DigestUtil.md5Hex(DateUtils.dateTime(drugPrescMaster.getPrescDate()) + drugPrescMaster.getPrescNo());
         emrOrder.setId(id);
         String patientId = drugPrescMaster.getPatientId();

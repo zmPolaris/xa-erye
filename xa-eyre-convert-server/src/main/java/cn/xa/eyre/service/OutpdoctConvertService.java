@@ -9,6 +9,7 @@ import cn.xa.eyre.common.core.domain.R;
 import cn.xa.eyre.common.core.kafka.DBMessage;
 import cn.xa.eyre.common.utils.DateUtils;
 import cn.xa.eyre.common.utils.StringUtils;
+import cn.xa.eyre.common.utils.bean.BeanUtils;
 import cn.xa.eyre.hisapi.CommFeignClient;
 import cn.xa.eyre.hisapi.MedrecFeignClient;
 import cn.xa.eyre.hisapi.OutpadmFeignClient;
@@ -34,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 @Service
@@ -72,8 +74,14 @@ public class OutpdoctConvertService {
             httpMethod = Constants.HTTP_METHOD_POST;
             data = dbMessage.getAfterData();
         }
-        outpMr = BeanUtil.toBeanIgnoreError(data, OutpMr.class);
-        outpMr.setVisitDate(DateUtils.getLongDate(data.get("visitDate")));
+//        outpMr = BeanUtil.toBeanIgnoreError(data, OutpMr.class);
+//        outpMr.setVisitDate(DateUtils.getLongDate(data.get("visitDate")));
+
+        try {
+            outpMr = BeanUtils.mapToObject(data, OutpMr.class);
+        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
 
         if (StringUtils.isNotBlank(outpMr.getPatientId())){
             logger.debug("构造emrOutpatientRecord接口数据...");
