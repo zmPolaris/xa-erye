@@ -191,7 +191,7 @@
     select
     <include refid="Base_Column_List" />
     from PHARMACY.DRUG_PRESC_DETAIL
-    where VISIT_DATE = #{visitDate,jdbcType=TIMESTAMP}
-    and VISIT_NO = #{visitNo,jdbcType=NUMERIC}
+    where PRESC_DATE = #{prescDate,jdbcType=TIMESTAMP}
+    and PRESC_NO = #{prescNo,jdbcType=NUMERIC}
   </select>
 </mapper>

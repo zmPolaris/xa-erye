@@ -4,6 +4,7 @@ package cn.xa.eyre.hisapi;
 import cn.xa.eyre.common.constant.Constants;
 import cn.xa.eyre.common.core.domain.R;
 import cn.xa.eyre.medrec.domain.*;
+import cn.xa.eyre.pharmacy.domain.DrugPrescMaster;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
@@ -31,5 +32,8 @@ public interface MedrecFeignClient {
 
     @PostMapping("/medrec/getPatVisit")
     public R<PatVisit> getPatVisit(@RequestBody PatVisitKey patVisitKey);
+
+    @PostMapping("/medrec/getDrugPrescMaster")
+    public R<DrugPrescMaster> getDrugPrescMaster(@RequestBody DrugPrescMaster drugPrescMaster);
 
 }
