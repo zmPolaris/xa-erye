@@ -117,6 +117,7 @@ public class OutpdoctConvertService {
                 BeanUtil.copyProperties(outpMr, outpMrYbKey);
                 outpMrYbKey.setVisitDateStr(DateUtils.dateTime(outpMr.getVisitDate()));
                 R<OutpMrYb> outpMrYbResult = medrecFeignClient.getOutpMrYb(outpMrYbKey);
+                Users doctor = null;
                 if(outpMrYbResult.getCode() == R.SUCCESS && outpMrYbResult.getData() != null){
                     if (StringUtils.isNotBlank(outpMrYbResult.getData().getIcdCode01())){
                         DictDiseaseIcd10 dictDiseaseIcd10 = dictDiseaseIcd10Mapper.selectByEmrCode(outpMrYbResult.getData().getIcdCode01());
@@ -141,7 +142,8 @@ public class OutpdoctConvertService {
                     if (StringUtils.isNotBlank(outpMrYbResult.getData().getDoctor())){
                         R<Users> user = commFeignClient.getUserByName(outpMrYbResult.getData().getDoctor());
                         if (R.SUCCESS == user.getCode() && user.getData() != null){
-                            emrOutpatientRecord.setOperatorId(user.getData().getUserId());
+                            doctor = user.getData();
+                            emrOutpatientRecord.setOperatorId(doctor.getUserId());
                         }
                     }
                 }else {
@@ -187,7 +189,8 @@ public class OutpdoctConvertService {
                 if (StringUtils.isBlank(emrOutpatientRecord.getOperatorId())){
                     R<Users> user = commFeignClient.getUserByName(outpMr.getDoctor());
                     if (R.SUCCESS == user.getCode() && user.getData() != null){
-                        emrOutpatientRecord.setOperatorId(user.getData().getUserId());
+                        doctor = user.getData();
+                        emrOutpatientRecord.setOperatorId(doctor.getUserId());
                     }
                 }
                 if(StringUtils.isBlank(emrOutpatientRecord.getOperatorId())){
@@ -198,7 +201,8 @@ public class OutpdoctConvertService {
                     if (outpWaitQueueResult.getCode() == R.SUCCESS && outpWaitQueueResult.getData() != null){
                         R<Users> user = commFeignClient.getUserByName(outpWaitQueueResult.getData().getDoctor());
                         if (R.SUCCESS == user.getCode() && user.getData() != null){
-                            emrOutpatientRecord.setOperatorId(user.getData().getUserId());
+                            doctor = user.getData();
+                            emrOutpatientRecord.setOperatorId(doctor.getUserId());
                         }
                     }
                 }
@@ -255,7 +259,7 @@ public class OutpdoctConvertService {
                     emrActivityInfo.setWmDiseaseName(HubCodeEnum.DISEASE_ICD10_CODE.getName());
                 }
 
-                emrActivityInfo.setFillDoctor(patMasterIndex.getOperator());
+                emrActivityInfo.setFillDoctor(doctor.getUserName());
 
                 emrActivityInfo.setDeptCode(dictDisDept.getHubCode());
                 emrActivityInfo.setDeptName(dictDisDept.getHubName());
