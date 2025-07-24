@@ -1,8 +1,15 @@
 package cn.xa.eyre.common.utils.bean;
 
+import cn.xa.eyre.common.utils.DateUtils;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -107,4 +114,84 @@ public class BeanUtils extends org.springframework.beans.BeanUtils
     {
         return m1.substring(BEAN_METHOD_PROP_INDEX).equals(m2.substring(BEAN_METHOD_PROP_INDEX));
     }
+
+
+    public static <T> T mapToObject(Map<String, String> map, Class<T> clazz) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        T obj = clazz.getDeclaredConstructor().newInstance();
+        for (Field field : clazz.getDeclaredFields()) {
+            String key = field.getName();
+            if (map.containsKey(key)) {
+                field.setAccessible(true);
+                String value = map.get(key);
+                Object convertedValue = convertValue(value, field.getType());
+                field.set(obj, convertedValue);
+            }
+        }
+        return obj;
+    }
+
+
+    private static Object convertValue(String value, Class<?> targetType) {
+        if ("NULL".equalsIgnoreCase(value)) {
+            if (targetType == String.class) {
+                // String 类型赋空字符串
+                return "";
+            } else {
+                // 其他类型赋 null
+                return null;
+            }
+        }
+
+        if (targetType == String.class) {
+            return value;
+        }
+        else if (targetType == Integer.class || targetType == int.class) {
+            return Integer.parseInt(value);
+        }
+        else if (targetType == Short.class || targetType == short.class) {
+            return Short.parseShort(value);
+        }
+        else if (targetType == Boolean.class || targetType == boolean.class) {
+            return Boolean.parseBoolean(value);
+        }
+        else if (targetType == Double.class || targetType == double.class) {
+            return Double.parseDouble(value);
+        }
+        else if (targetType == Long.class || targetType == long.class) {
+            return Long.parseLong(value);
+        }
+        else if (targetType == Float.class || targetType == float.class) {
+            return Float.parseFloat(value);
+        }
+        else if (targetType == Byte.class || targetType == byte.class) {
+            return Byte.parseByte(value);
+        }
+        else if (targetType == Character.class || targetType == char.class) {
+            return value.isEmpty() ? null : value.charAt(0);
+        }
+        else if (targetType == BigDecimal.class) {
+            return new BigDecimal(value);
+        }
+        else if (targetType == LocalDate.class) {
+            return LocalDate.parse(value);
+        }
+        else if (targetType == LocalDateTime.class) {
+            return LocalDateTime.parse(value);
+        }
+        else if (targetType == LocalTime.class) {
+            return LocalTime.parse(value);
+        }
+        else if (targetType == Date.class) {
+            return DateUtils.getLongDate(value);
+        }
+        else if (targetType == UUID.class) {
+            return UUID.fromString(value);
+        }
+        else {
+            // 默认返回字符串（适用于某些自定义类型或枚举）
+            return value;
+        }
+    }
+
+
 }

@@ -252,4 +252,12 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
             return new Date(Long.valueOf(datetime) - 28800000);
         }else return null;
     }
+
+    public static LocalDate convertDateToLocalDate(Date date) {
+        if (date == null) {
+            return null; // 处理 null 值
+        }
+        // 使用系统默认时区
+        return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+    }
 }
