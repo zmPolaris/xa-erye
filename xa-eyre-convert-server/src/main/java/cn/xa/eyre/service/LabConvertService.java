@@ -270,14 +270,6 @@ public class LabConvertService {
             return;
         }
 
-        if("1".equals(labTestMaster.getPatientSource()) || labTestMaster.getVisitNo() != null ){
-            logger.error("门诊");
-            return;
-        }else if("2".equals(labTestMaster.getPatientSource()) || labTestMaster.getVisitId() != null ){
-            logger.error("住院");
-            return;
-        }
-
         R<List<LabResultVo>> resultItemsResult = labFeignClient.getResultItemsByTestNo(labTestMaster.getTestNo());
         R<PatMasterIndex> medrecResult = medrecFeignClient.getPatMasterIndex(labTestMaster.getPatientId());
         if (R.SUCCESS == medrecResult.getCode() && medrecResult.getData() != null
