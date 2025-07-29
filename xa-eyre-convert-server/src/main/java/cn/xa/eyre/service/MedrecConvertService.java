@@ -214,7 +214,7 @@ public class MedrecConvertService {
             // ID使用DIAGNOSIS表patientId、visitId、diagnosisDate拼接计算MD5
             String id = DigestUtil.md5Hex(diagnosis.getPatientId() + diagnosis.getVisitId() + DateUtils.dateTime(diagnosis.getDiagnosisDate()));
 
-            if (diagnosis.getDiagnosisType().equals(Constants.DIAGNOSIS_TYPE_CODE_RYCZ)){
+            if (diagnosis.getDiagnosisType().equals(Constants.DIAGNOSIS_TYPE_CODE_RYCZ) || diagnosis.getDiagnosisType().equals(Constants.DIAGNOSIS_TYPE_CODE_MZZD)){
                 logger.debug("构造emrFirstCourse接口数据...");
                 emrFirstCourse.setId(id);
                 emrFirstCourse.setPatientId(diagnosis.getPatientId());
