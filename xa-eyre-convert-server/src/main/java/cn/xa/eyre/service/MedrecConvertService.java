@@ -314,7 +314,9 @@ public class MedrecConvertService {
                 synchroEmrRealService.syncEmrActivityInfo(emrActivityInfo, httpMethod);
 
 
-            }else if (diagnosis.getDiagnosisType().equals(Constants.DIAGNOSIS_TYPE_CODE_QT) && diagnosis.getVisitId() != null){
+            }else
+//                if (diagnosis.getDiagnosisType().equals(Constants.DIAGNOSIS_TYPE_CODE_QT) && diagnosis.getVisitId() != null)
+                {
                 logger.debug("构造emrDailyCourse接口数据...");
                 emrDailyCourse.setId(id);
                 emrDailyCourse.setPatientId(diagnosis.getPatientId());
