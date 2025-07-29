@@ -156,33 +156,33 @@ public class PharmacyConvertService {
                 emrOrder.setOrgCode(HubCodeEnum.ORG_CODE.getCode());
                 emrOrder.setOrgName(HubCodeEnum.ORG_CODE.getName());
 
-                emrOrder.setOperationTime(drugPrescMaster.getPrescDate());
+                emrOrder.setOperationTime(DateUtils.getNowDate());
                 emrOrder.setOperatorId(emrOrder.getPrescriptionIssuanceId());
                 synchroEmrMonitorService.syncEmrOrder(emrOrder, httpMethod);
 
-                logger.debug("构造emrActivityInfo(首次病程)接口数据...");
-                EmrActivityInfo emrActivityInfo = new EmrActivityInfo();
-                emrActivityInfo.setId(id);
-                emrActivityInfo.setPatientId(emrOrder.getPatientId());
-                emrActivityInfo.setActivityTypeCode(HubCodeEnum.DIAGNOSIS_ACTIVITIES_FIRST_COURSE.getCode());
-                emrActivityInfo.setActivityTypeName(HubCodeEnum.DIAGNOSIS_ACTIVITIES_FIRST_COURSE.getName());
-                emrActivityInfo.setSerialNumber(emrOrder.getSerialNumber());
-                emrActivityInfo.setActivityTime(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD, drugPrescMaster.getPrescDate()));
-                emrActivityInfo.setIdCardTypeCode(emrOrder.getIdCardTypeCode());
-                emrActivityInfo.setIdCardTypeName(emrOrder.getIdCardTypeName());
-                emrActivityInfo.setIdCard(emrOrder.getIdCard());
-                emrActivityInfo.setPatientName(emrOrder.getPatientName());
-                emrActivityInfo.setDiagnoseTime(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD, drugPrescMaster.getPrescDate()));
-                emrActivityInfo.setWmDiseaseCode("-");
-                emrActivityInfo.setWmDiseaseName("-");
-                emrActivityInfo.setFillDoctor(drugPrescMaster.getPrescribedBy());
-                emrActivityInfo.setOperatorId(emrOrder.getOperatorId());
-                emrActivityInfo.setDeptCode(emrOrder.getDeptCode());
-                emrActivityInfo.setDeptName(emrOrder.getDeptName());
-                emrActivityInfo.setOrgCode(emrOrder.getOrgCode());
-                emrActivityInfo.setOrgName(emrOrder.getOrgName());
-                emrActivityInfo.setOperationTime(HubCodeEnum.DIAGNOSIS_ACTIVITIES_FIRST_COURSE.getCode());
-                synchroEmrRealService.syncEmrActivityInfo(emrActivityInfo, httpMethod);
+//                logger.debug("构造emrActivityInfo(首次病程)接口数据...");
+//                EmrActivityInfo emrActivityInfo = new EmrActivityInfo();
+//                emrActivityInfo.setId(id);
+//                emrActivityInfo.setPatientId(emrOrder.getPatientId());
+//                emrActivityInfo.setActivityTypeCode(HubCodeEnum.DIAGNOSIS_ACTIVITIES_FIRST_COURSE.getCode());
+//                emrActivityInfo.setActivityTypeName(HubCodeEnum.DIAGNOSIS_ACTIVITIES_FIRST_COURSE.getName());
+//                emrActivityInfo.setSerialNumber(emrOrder.getSerialNumber());
+//                emrActivityInfo.setActivityTime(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD, drugPrescMaster.getPrescDate()));
+//                emrActivityInfo.setIdCardTypeCode(emrOrder.getIdCardTypeCode());
+//                emrActivityInfo.setIdCardTypeName(emrOrder.getIdCardTypeName());
+//                emrActivityInfo.setIdCard(emrOrder.getIdCard());
+//                emrActivityInfo.setPatientName(emrOrder.getPatientName());
+//                emrActivityInfo.setDiagnoseTime(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD, drugPrescMaster.getPrescDate()));
+//                emrActivityInfo.setWmDiseaseCode("-");
+//                emrActivityInfo.setWmDiseaseName("-");
+//                emrActivityInfo.setFillDoctor(drugPrescMaster.getPrescribedBy());
+//                emrActivityInfo.setOperatorId(emrOrder.getOperatorId());
+//                emrActivityInfo.setDeptCode(emrOrder.getDeptCode());
+//                emrActivityInfo.setDeptName(emrOrder.getDeptName());
+//                emrActivityInfo.setOrgCode(emrOrder.getOrgCode());
+//                emrActivityInfo.setOrgName(emrOrder.getOrgName());
+//                emrActivityInfo.setOperationTime(HubCodeEnum.DIAGNOSIS_ACTIVITIES_FIRST_COURSE.getCode());
+//                synchroEmrRealService.syncEmrActivityInfo(emrActivityInfo, httpMethod);
 
                 logger.debug("构造emrOrderItem接口数据...");
                 DrugPrescDetail drugPrescDetail = new DrugPrescDetail();
@@ -198,7 +198,7 @@ public class PharmacyConvertService {
                         emrOrderItem.setOrderId(emrOrder.getId());
                         emrOrderItem.setDrugSpecifications(prescDetail.getDrugSpec());
                         emrOrderItem.setOperatorId(emrOrder.getOperatorId());
-                        emrOrderItem.setOperationTime(emrOrder.getOperationTime());
+                        emrOrderItem.setOperationTime(DateUtils.getNowDate());
                         DictDrugType drugType = dictDrugTypeMapper.selectByEmrCode(drugCode);
                         if (StringUtils.isNotBlank(drugType.getHubCode())) {
                             emrOrderItem.setDrugCode(drugType.getHubCode());

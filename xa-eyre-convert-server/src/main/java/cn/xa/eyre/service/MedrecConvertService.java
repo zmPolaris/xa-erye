@@ -310,7 +310,7 @@ public class MedrecConvertService {
                 emrActivityInfo.setDeptName(emrFirstCourse.getDeptName());
                 emrActivityInfo.setOrgCode(emrFirstCourse.getOrgCode());
                 emrActivityInfo.setOrgName(emrFirstCourse.getOrgName());
-                emrActivityInfo.setOperationTime(emrFirstCourse.getOperationTime());
+                emrActivityInfo.setOperationTime(DateUtils.getTime());
                 synchroEmrRealService.syncEmrActivityInfo(emrActivityInfo, httpMethod);
 
 
@@ -383,7 +383,7 @@ public class MedrecConvertService {
                 emrActivityInfo.setDeptName(emrDailyCourse.getDeptName());
                 emrActivityInfo.setOrgCode(emrDailyCourse.getOrgCode());
                 emrActivityInfo.setOrgName(emrDailyCourse.getOrgName());
-                emrActivityInfo.setOperationTime(emrDailyCourse.getOperationTime());
+                emrActivityInfo.setOperationTime(DateUtils.getTime());
                 synchroEmrRealService.syncEmrActivityInfo(emrActivityInfo, httpMethod);
             }
 
@@ -619,7 +619,7 @@ public class MedrecConvertService {
                 emrActivityInfo.setDeptName(emrDischargeInfo.getDeptName());
                 emrActivityInfo.setOrgCode(emrDischargeInfo.getOrgCode());
                 emrActivityInfo.setOrgName(emrDischargeInfo.getOrgName());
-                emrActivityInfo.setOperationTime(emrDischargeInfo.getOperationTime());
+                emrActivityInfo.setOperationTime(DateUtils.getTime());
                 synchroEmrRealService.syncEmrActivityInfo(emrActivityInfo, httpMethod);
 
                 if ("3".equalsIgnoreCase(patVisit.getDischargeDisposition())) {
@@ -666,7 +666,7 @@ public class MedrecConvertService {
                             emrDeathInfo.setDeptCode(emrDischargeInfo.getDeptCode());
                             emrDeathInfo.setDeptName(emrDischargeInfo.getDeptName());
                             emrDeathInfo.setOperatorId(emrDischargeInfo.getOperatorId());
-                            emrDeathInfo.setOperationTime(emrDischargeInfo.getOperationTime());
+                            emrDeathInfo.setOperationTime(DateUtils.getTime());
 
                             synchroEmrMonitorService.syncEmrDeathInfo(emrDeathInfo, httpMethod);
 

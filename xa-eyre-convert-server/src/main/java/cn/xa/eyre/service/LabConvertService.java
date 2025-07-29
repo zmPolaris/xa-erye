@@ -231,7 +231,7 @@ public class LabConvertService {
                     }
                 }
                 emrExLabItem.setOperatorId(emrExLab.getOperatorId());
-                emrExLabItem.setOperationTime(emrExLab.getOperationTime());
+                emrExLabItem.setOperationTime(DateUtils.getTime());
                 synchroEmrMonitorService.syncEmrExLabItem(emrExLabItem, httpMethod);
             }else {
                 logger.error("{}对应PatMasterIndex信息为空，无法同步", labTestMaster.getPatientId());
@@ -457,7 +457,7 @@ public class LabConvertService {
                 }
 
                 emrExLabItem.setOperatorId(emrExLab.getOperatorId());
-                emrExLabItem.setOperationTime(emrExLab.getOperationTime());
+                emrExLabItem.setOperationTime(DateUtils.getTime());
                 synchroEmrMonitorService.syncEmrExLabItem(emrExLabItem, httpMethod);
             }
         }else {

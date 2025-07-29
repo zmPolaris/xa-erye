@@ -246,7 +246,7 @@ public class InpadmConvertService {
             emrActivityInfo.setDeptName(emrAdmissionInfo.getDeptName());
             emrActivityInfo.setOrgCode(emrAdmissionInfo.getOrgCode());
             emrActivityInfo.setOrgName(emrAdmissionInfo.getOrgName());
-            emrActivityInfo.setOperationTime(emrAdmissionInfo.getOperationTime());
+            emrActivityInfo.setOperationTime(DateUtils.getTime());
             synchroEmrRealService.syncEmrActivityInfo(emrActivityInfo, httpMethod);
 
         }else {

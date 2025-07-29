@@ -1,10 +1,12 @@
 package cn.xa.eyre.medrec.controller;
 
 import cn.xa.eyre.common.core.domain.AjaxResult;
+import cn.xa.eyre.common.core.domain.R;
 import cn.xa.eyre.convertapi.ConvertFeignClient;
 import cn.xa.eyre.medrec.domain.*;
 import cn.xa.eyre.medrec.mapper.PatVisitMapper;
 import cn.xa.eyre.medrec.service.MedrecService;
+import cn.xa.eyre.pharmacy.domain.DrugPrescMaster;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -53,4 +55,9 @@ public class MedrecController {
     public AjaxResult getCofig(){
         return convertFeignClient.getCofig();
     }
+
+    @PostMapping("/getDrugPrescMaster")
+    public AjaxResult getDrugPrescMaster(@RequestBody DrugPrescMaster drugPrescMaster){
+        return AjaxResult.success("接口调用成功", medrecService.selectDrugPrescMaster(drugPrescMaster));
+    };
 }

@@ -42,6 +42,22 @@
     <result column="BATCH_PROVIDE_NO" jdbcType="VARCHAR" property="batchProvideNo" />
     <result column="DISPENSE_DATE_TIME" jdbcType="TIMESTAMP" property="dispenseDateTime" />
   </resultMap>
+  <sql id="Base_Column_List">
+      PRESC_DATE, PRESC_NO, DISPENSARY,
+      PATIENT_ID, NAME, NAME_PHONETIC,
+      IDENTITY, CHARGE_TYPE, UNIT_IN_CONTRACT,
+      PRESC_TYPE, PRESC_ATTR, PRESC_SOURCE,
+      REPETITION, COSTS, PAYMENTS,
+      ORDERED_BY, PRESCRIBED_BY, ENTERED_BY,
+      DISPENSING_PROVIDER, COUNT_PER_REPETITION,
+      ENTERED_DATETIME, DISPENSING_DATETIME,
+      MEMO, SUB_STORAGE, FLAG,
+      DOCTOR_USER, VERIFY_BY, DISCHARGE_TAKING_INDICATOR,
+      CLINIC_NO, VISIT_ID, DECOCTION,
+      VERIFIED_DATETIME, RCPT_NO, ORIGINAL_PRESC_DATE,
+      ORIGINAL_PRESC_NO, RETURN_VISIT_NO, RETURN_VISIT_DATE,
+      BATCH_PROVIDE_NO, DISPENSE_DATE_TIME
+  </sql>
   <insert id="insert" parameterType="cn.xa.eyre.pharmacy.domain.DrugPrescMaster">
     insert into DRUG_PRESC_MASTER (PRESC_DATE, PRESC_NO, DISPENSARY, 
       PATIENT_ID, NAME, NAME_PHONETIC, 
@@ -313,4 +329,11 @@
       </if>
     </trim>
   </insert>
+    <select id="selectDrugByPrescNoAndPrescDate" resultMap="BaseResultMap">
+      select
+      <include refid="Base_Column_List" />
+      from DRUG_PRESC_MASTER
+      where PRESC_NO = #{prescNo}
+      AND PRESC_DATE = TO_DATE(#{prescDateStr,jdbcType=VARCHAR}, 'YYYY/MM/DD')
+    </select>
 </mapper>

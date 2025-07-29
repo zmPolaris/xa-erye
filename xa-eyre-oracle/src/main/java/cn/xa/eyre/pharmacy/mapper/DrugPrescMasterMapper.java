@@ -6,4 +6,6 @@ public interface DrugPrescMasterMapper {
     int insert(DrugPrescMaster record);
 
     int insertSelective(DrugPrescMaster record);
+
+    DrugPrescMaster selectDrugByPrescNoAndPrescDate(Short prescNo, String prescDateStr);
 }

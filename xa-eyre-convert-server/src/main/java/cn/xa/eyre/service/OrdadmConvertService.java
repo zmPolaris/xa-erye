@@ -196,7 +196,7 @@ private void sendSynchroEmrInfo(Orders order, String key, EmrVitalSignsRecord re
         emrActivityInfo.setDeptName(recordAfter.getDeptName());
         emrActivityInfo.setOrgCode(recordAfter.getOrgCode());
         emrActivityInfo.setOrgName(recordAfter.getOrgName());
-        emrActivityInfo.setOperationTime(recordAfter.getOperationTime());
+        emrActivityInfo.setOperationTime(DateUtils.getTime());
         synchroEmrRealService.syncEmrActivityInfo(emrActivityInfo, Constants.HTTP_METHOD_POST);
     }
 }

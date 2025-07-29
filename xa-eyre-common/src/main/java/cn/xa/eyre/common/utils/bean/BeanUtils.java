@@ -116,9 +116,22 @@ public class BeanUtils extends org.springframework.beans.BeanUtils
     }
 
 
+
+    /**
+     * 获取类及其所有父类的字段
+     */
+    private static List<Field> getAllFields(Class<?> clazz) {
+        List<Field> fields = new ArrayList<>();
+        while (clazz != null && clazz != Object.class) {
+            fields.addAll(Arrays.asList(clazz.getDeclaredFields()));
+            clazz = clazz.getSuperclass();
+        }
+        return fields;
+    }
+
     public static <T> T mapToObject(Map<String, String> map, Class<T> clazz) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         T obj = clazz.getDeclaredConstructor().newInstance();
-        for (Field field : clazz.getDeclaredFields()) {
+        for (Field field : getAllFields(clazz)) {
             String key = field.getName();
             if (map.containsKey(key)) {
                 field.setAccessible(true);
@@ -129,6 +142,7 @@ public class BeanUtils extends org.springframework.beans.BeanUtils
         }
         return obj;
     }
+
 
 
     private static Object convertValue(String value, Class<?> targetType) {
