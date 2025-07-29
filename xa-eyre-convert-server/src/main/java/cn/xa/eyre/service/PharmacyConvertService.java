@@ -156,7 +156,7 @@ public class PharmacyConvertService {
                 emrOrder.setOrgCode(HubCodeEnum.ORG_CODE.getCode());
                 emrOrder.setOrgName(HubCodeEnum.ORG_CODE.getName());
 
-                emrOrder.setOperationTime(DateUtils.getNowDate());
+                emrOrder.setOperationTime(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD, DateUtils.getNowDate()));
                 emrOrder.setOperatorId(emrOrder.getPrescriptionIssuanceId());
                 synchroEmrMonitorService.syncEmrOrder(emrOrder, httpMethod);
 
@@ -198,7 +198,7 @@ public class PharmacyConvertService {
                         emrOrderItem.setOrderId(emrOrder.getId());
                         emrOrderItem.setDrugSpecifications(prescDetail.getDrugSpec());
                         emrOrderItem.setOperatorId(emrOrder.getOperatorId());
-                        emrOrderItem.setOperationTime(DateUtils.getNowDate());
+                        emrOrderItem.setOperationTime(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD, DateUtils.getNowDate()));
                         DictDrugType drugType = dictDrugTypeMapper.selectByEmrCode(drugCode);
                         if (StringUtils.isNotBlank(drugType.getHubCode())) {
                             emrOrderItem.setDrugCode(drugType.getHubCode());
