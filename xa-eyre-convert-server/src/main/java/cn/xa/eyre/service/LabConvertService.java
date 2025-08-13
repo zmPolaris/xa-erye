@@ -380,8 +380,8 @@ public class LabConvertService {
                 emrExLabItem.setId(id);
                 emrExLabItem.setExLabId(id);
 
-                emrExLabItem.setItemCode(labResult.getItemCode());
-                emrExLabItem.setItemName(labResult.getItemName());
+                emrExLabItem.setItemCode(labResult.getReportItemCode());
+                emrExLabItem.setItemName(labResult.getReportItemName());
 
                 if(StringUtils.isNotBlank(labResult.getResult())){
                     if (Validator.hasChinese(labResult.getResult())){
