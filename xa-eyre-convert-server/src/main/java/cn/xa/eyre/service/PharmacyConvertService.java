@@ -34,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -62,6 +63,14 @@ public class PharmacyConvertService {
     @Autowired
     private HubToolService hubToolService;
 
+    public static void main(String[] args) {
+        long epochMilli = 1755613113000L;
+        Date date = new Date(epochMilli);
+        System.out.println(date);
+        String prescDateStr = DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD, date);
+        System.out.println("prescDateStr:{}" + prescDateStr);
+    }
+
     public void drugPrescMaster(DBMessage dbMessage) {
         logger.debug("药品处方主记录DRUG_PRESC_MASTER变更接口");
         logger.debug("DRUG_PRESC_MASTER变更需调用emrOrder, emrOrderItem同步接口");
@@ -84,7 +93,8 @@ public class PharmacyConvertService {
             throw new RuntimeException(e);
         }
         // 反查数据
-        R<DrugPrescMaster> prescMaster = medrecFeignClient.getDrugPrescMaster(drugPrescMaster);
+//        R<DrugPrescMaster> prescMaster = medrecFeignClient.getDrugPrescMaster(drugPrescMaster);
+        R<DrugPrescMaster> prescMaster = medrecFeignClient.selectDrugPrescMasterByPatientId(drugPrescMaster);
         if (R.SUCCESS == prescMaster.getCode() && prescMaster.getData() != null) {
             drugPrescMaster = prescMaster.getData();
             EmrOrder emrOrder = new EmrOrder();
@@ -188,7 +198,8 @@ public class PharmacyConvertService {
                 DrugPrescDetail drugPrescDetail = new DrugPrescDetail();
                 drugPrescDetail.setPrescNo(drugPrescMaster.getPrescNo());
                 drugPrescDetail.setPrescDate(drugPrescMaster.getPrescDate());
-                R<List<DrugPrescDetail>> details = pharmacyFeignClient.getDrugPrescDetailByVisitInfo(drugPrescDetail);
+//                R<List<DrugPrescDetail>> details = pharmacyFeignClient.getDrugPrescDetailByVisitInfo(drugPrescDetail);
+                R<List<DrugPrescDetail>> details = pharmacyFeignClient.getDrugPrescDetailByPrescNo(drugPrescDetail);
                 if (details.getCode() == R.SUCCESS && details.getData() != null) {
                     for (DrugPrescDetail prescDetail : details.getData()) {
                         String drugCode = prescDetail.getDrugCode();

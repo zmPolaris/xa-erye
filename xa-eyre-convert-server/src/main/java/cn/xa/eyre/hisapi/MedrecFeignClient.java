@@ -36,4 +36,6 @@ public interface MedrecFeignClient {
     @PostMapping("/medrec/getDrugPrescMaster")
     public R<DrugPrescMaster> getDrugPrescMaster(@RequestBody DrugPrescMaster drugPrescMaster);
 
+    @PostMapping("/medrec/selectDrugPrescMasterByPatientId")
+    public R<DrugPrescMaster> selectDrugPrescMasterByPatientId(@RequestBody DrugPrescMaster drugPrescMaster);
 }

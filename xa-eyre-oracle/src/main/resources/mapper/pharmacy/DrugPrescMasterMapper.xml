@@ -329,11 +329,24 @@
       </if>
     </trim>
   </insert>
-    <select id="selectDrugByPrescNoAndPrescDate" resultMap="BaseResultMap">
+  <select id="selectDrugByPrescNoAndPrescDate" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from DRUG_PRESC_MASTER
+    where PRESC_NO = #{prescNo}
+    AND PRESC_DATE = TO_DATE(#{prescDateStr,jdbcType=VARCHAR}, 'YYYY/MM/DD')
+  </select>
+  <select id="selectDrugByPrescNoAndPatientId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from (
       select
       <include refid="Base_Column_List" />
       from DRUG_PRESC_MASTER
-      where PRESC_NO = #{prescNo}
-      AND PRESC_DATE = TO_DATE(#{prescDateStr,jdbcType=VARCHAR}, 'YYYY/MM/DD')
-    </select>
+      where PRESC_NO = #{prescNo} and patient_Id = #{patientId}
+      and  PRESC_DATE <![CDATA[>=]]> TRUNC(SYSDATE)  AND PRESC_DATE <![CDATA[<]]>TRUNC(SYSDATE) +1
+      order by PRESC_DATE desc
+    )
+    WHERE ROWNUM = 1;
+  </select>
 </mapper>

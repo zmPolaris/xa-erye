@@ -10,4 +10,6 @@ public interface DrugPrescDetailMapper {
     int insertSelective(DrugPrescDetail record);
 
     List<DrugPrescDetail> getDrugPrescDetailByVisitInfo(DrugPrescDetail drugPrescDetail);
+
+    List<DrugPrescDetail> getDrugPrescDetailByPrescNo(DrugPrescDetail drugPrescDetail);
 }

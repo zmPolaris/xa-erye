@@ -60,4 +60,9 @@ public class MedrecController {
     public AjaxResult getDrugPrescMaster(@RequestBody DrugPrescMaster drugPrescMaster){
         return AjaxResult.success("接口调用成功", medrecService.selectDrugPrescMaster(drugPrescMaster));
     };
+
+    @PostMapping("/selectDrugPrescMasterByPatientId")
+    public AjaxResult selectDrugPrescMasterByPatientId(@RequestBody DrugPrescMaster drugPrescMaster){
+        return AjaxResult.success("接口调用成功", medrecService.selectDrugPrescMasterByPatientId(drugPrescMaster));
+    };
 }

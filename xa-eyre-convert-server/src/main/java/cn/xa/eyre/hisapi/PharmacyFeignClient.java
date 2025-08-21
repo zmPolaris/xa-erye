@@ -22,4 +22,6 @@ public interface PharmacyFeignClient {
     @PostMapping("/pharmacy/getDrugPrescDetailByVisitInfo")
     public R<List<DrugPrescDetail>> getDrugPrescDetailByVisitInfo(@RequestBody DrugPrescDetail drugPrescDetail);
 
+    @PostMapping("/pharmacy/getDrugPrescDetailByPrescNo")
+    public R<List<DrugPrescDetail>> getDrugPrescDetailByPrescNo(@RequestBody DrugPrescDetail drugPrescDetail);
 }

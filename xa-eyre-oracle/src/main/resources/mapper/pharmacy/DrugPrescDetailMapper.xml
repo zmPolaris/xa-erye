@@ -194,4 +194,11 @@
     where PRESC_DATE = #{prescDate,jdbcType=TIMESTAMP}
     and PRESC_NO = #{prescNo,jdbcType=NUMERIC}
   </select>
+  <select id="getDrugPrescDetailByPrescNo" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from PHARMACY.DRUG_PRESC_DETAIL
+    where PRESC_NO = #{prescNo,jdbcType=NUMERIC}
+      and  PRESC_DATE <![CDATA[>=]]> TRUNC(SYSDATE) AND PRESC_DATE <![CDATA[<]]> TRUNC(SYSDATE) + 1
+  </select>
 </mapper>

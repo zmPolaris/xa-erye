@@ -20,4 +20,9 @@ public class PharmacyController {
     public AjaxResult getDrugPrescDetailByVisitInfo(@RequestBody DrugPrescDetail drugPrescDetail) {
         return AjaxResult.success("接口调用成功", drugPrescDetailMapper.getDrugPrescDetailByVisitInfo(drugPrescDetail));
     }
+
+    @PostMapping("/getDrugPrescDetailByPrescNo")
+    public AjaxResult getDrugPrescDetailByPrescNo(@RequestBody DrugPrescDetail drugPrescDetail) {
+        return AjaxResult.success("接口调用成功", drugPrescDetailMapper.getDrugPrescDetailByVisitInfo(drugPrescDetail));
+    }
 }

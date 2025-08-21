@@ -3,7 +3,7 @@ package cn.xa.eyre.pharmacy.domain;
 import java.math.BigDecimal;
 import java.util.Date;
 
-public class DrugPrescMaster {
+public class    DrugPrescMaster {
     private Date prescDate;
 
     private Short prescNo;

@@ -6,6 +6,8 @@ import cn.xa.eyre.medrec.domain.*;
 import cn.xa.eyre.medrec.mapper.*;
 import cn.xa.eyre.pharmacy.domain.DrugPrescMaster;
 import cn.xa.eyre.pharmacy.mapper.DrugPrescMasterMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,9 @@ import java.util.List;
 
 @Service
 public class MedrecService {
+
+    Logger logger = LoggerFactory.getLogger(getClass());
+
     @Autowired
     private PatMasterIndexMapper patMasterIndexMapper;
     @Autowired
@@ -54,6 +59,11 @@ public class MedrecService {
     public DrugPrescMaster selectDrugPrescMaster(DrugPrescMaster drugPrescMaster) {
         Date prescDate = drugPrescMaster.getPrescDate();
         String prescDateStr = DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD, prescDate);
+        logger.debug("prescDateStr:{}", prescDateStr);
         return drugPrescMasterMapper.selectDrugByPrescNoAndPrescDate(drugPrescMaster.getPrescNo(), prescDateStr);
+    }
+
+    public DrugPrescMaster selectDrugPrescMasterByPatientId(DrugPrescMaster drugPrescMaster) {
+        return drugPrescMasterMapper.selectDrugByPrescNoAndPatientId(drugPrescMaster.getPrescNo(), drugPrescMaster.getPatientId());
     }
 }
