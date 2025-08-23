@@ -263,6 +263,9 @@ public class MedrecConvertService {
                         emrFirstCourse.setWmInitalDiagnosisCode(dictDiseaseIcd10.getHubCode());
                         emrFirstCourse.setWmInitalDiagnosisName(dictDiseaseIcd10.getHubName());
                     }
+                }else {
+                    logger.error("{}诊断编码为空，无法同步", diagnosis.getPatientId());
+                    return;
                 }
 
                 if(StringUtils.isNotBlank(diagnosis.getTreatResult())){
@@ -374,8 +377,19 @@ public class MedrecConvertService {
                 emrActivityInfo.setIdCard(emrDailyCourse.getIdCard());
                 emrActivityInfo.setPatientName(emrDailyCourse.getPatientName());
                 emrActivityInfo.setDiagnoseTime(emrDailyCourse.getCreateDate());
-                emrActivityInfo.setWmDiseaseCode(HubCodeEnum.DISEASE_ICD10_CODE.getCode());
-                emrActivityInfo.setWmDiseaseName(HubCodeEnum.DISEASE_ICD10_CODE.getName());
+                if (diagnosticCatResult.getCode() == R.SUCCESS && diagnosticCatResult.getData() != null){
+                    DictDiseaseIcd10 dictDiseaseIcd10 = dictDiseaseIcd10Mapper.selectByEmrCode(diagnosticCatResult.getData().getDiagnosisCode());
+                    if(dictDiseaseIcd10 == null || dictDiseaseIcd10.getHubCode().equals(HubCodeEnum.DISEASE_ICD10_CODE.getCode())){
+                        emrActivityInfo.setWmDiseaseCode(diagnosticCatResult.getData().getDiagnosisCode());
+                        emrActivityInfo.setWmDiseaseName(diagnosis.getDiagnosisDesc());
+                    }else {
+                        emrActivityInfo.setWmDiseaseCode(dictDiseaseIcd10.getHubCode());
+                        emrActivityInfo.setWmDiseaseName(dictDiseaseIcd10.getHubName());
+                    }
+                }else {
+                    logger.error("{}诊断编码为空，无法同步", diagnosis.getPatientId());
+                    return;
+                }
                 emrActivityInfo.setFillDoctor(patVisitResult.getData().getDoctorInCharge());
                 emrActivityInfo.setOperatorId(emrDailyCourse.getOperatorId());
                 if (StringUtils.isBlank(emrDailyCourse.getOperatorId())){
@@ -433,6 +447,9 @@ public class MedrecConvertService {
         if ( R.SUCCESS == medrecResult.getCode() && medrecResult.getData() != null
                 && R.SUCCESS == diagnosisInResult.getCode() && diagnosisInResult.getData() != null
                 && R.SUCCESS == diagnosticInCatResult.getCode() && diagnosticInCatResult.getData() != null){
+            // 更新推送患者信息
+            hubToolService.syncPatInfo(medrecResult.getData());
+
             EmrAdmissionRecord emrAdmissionRecord = new EmrAdmissionRecord();
             EmrDischargeInfo emrDischargeInfo = new EmrDischargeInfo();
             // ID使用PAT_VISIT表patientId、visitId拼接计算MD5
@@ -597,8 +614,6 @@ public class MedrecConvertService {
                 synchroEmrMonitorService.syncEmrDischargeInfo(emrDischargeInfo, httpMethod);
 
                 logger.debug("构造emrActivityInfo(出院)接口数据...");
-                // 更新推送患者信息
-                hubToolService.syncPatInfo(medrecResult.getData());
                 EmrActivityInfo emrActivityInfo = new EmrActivityInfo();
                 emrActivityInfo.setId(id);
                 emrActivityInfo.setPatientId(emrDischargeInfo.getPatientId());
@@ -673,8 +688,6 @@ public class MedrecConvertService {
                             synchroEmrMonitorService.syncEmrDeathInfo(emrDeathInfo, httpMethod);
 
                             logger.debug("构造emrActivityInfo(出院)接口数据...");
-                            // 更新推送患者信息
-                            hubToolService.syncPatInfo(medrecResult.getData());
                             emrActivityInfo.setWmDiseaseCode(emrDeathInfo.getDeathDiagnosisCode());
                             emrActivityInfo.setWmDiseaseName(emrDeathInfo.getDeathDiagnosisName());
                             synchroEmrRealService.syncEmrActivityInfo(emrActivityInfo, httpMethod);
