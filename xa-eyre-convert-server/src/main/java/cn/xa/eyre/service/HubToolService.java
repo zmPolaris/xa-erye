@@ -36,6 +36,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.Date;
 import java.util.List;
 
@@ -386,12 +388,19 @@ public class HubToolService {
         emrPatientInfo.setCurrentAddrName(patMasterIndex.getMailingAddress());
         emrPatientInfo.setCurrentAddrDetail(patMasterIndex.getNextOfKinAddr());
         emrPatientInfo.setWorkunit(patMasterIndex.getWorkunit());
-        if(patMasterIndex.getNextOfKin() != null){
-            emrPatientInfo.setContacts(patMasterIndex.getNextOfKin());
-            emrPatientInfo.setContactsTel(patMasterIndex.getNextOfKinPhone());
-        }else {
-            emrPatientInfo.setContacts(patMasterIndex.getGuardianName());
-            emrPatientInfo.setContactsTel(patMasterIndex.getGuardianPhone());
+        Date birthDate = patMasterIndex.getDateOfBirth();
+        if (null != birthDate) {
+            LocalDate localDate = DateUtils.convertDateToLocalDate(birthDate);
+            Period period = Period.between(localDate, LocalDate.now());
+            if (period.getYears() <= 14) {
+                if(patMasterIndex.getNextOfKin() != null){
+                    emrPatientInfo.setContacts(patMasterIndex.getNextOfKin());
+                    emrPatientInfo.setContactsTel(patMasterIndex.getNextOfKinPhone());
+                }else {
+                    emrPatientInfo.setContacts(patMasterIndex.getGuardianName());
+                    emrPatientInfo.setContactsTel(patMasterIndex.getGuardianPhone());
+                }
+            }
         }
         emrPatientInfo.setOrgCode(HubCodeEnum.ORG_CODE.getCode());
         emrPatientInfo.setOrgName(HubCodeEnum.ORG_CODE.getName());
