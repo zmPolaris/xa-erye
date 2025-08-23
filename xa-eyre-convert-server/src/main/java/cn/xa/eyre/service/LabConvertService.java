@@ -436,8 +436,13 @@ public class LabConvertService {
                             }else {
                                 String between = StrUtil.removeAll(labResult.getResultRange(), "");
                                 String[] betweens = between.split("-");
-                                emrExLabItem.setExaminationQuantificationLower(betweens[0]);
-                                emrExLabItem.setExaminationQuantificationUpper(betweens[1]);
+                                if (betweens.length == 1){
+                                    emrExLabItem.setExaminationQuantificationLower(betweens[0]);
+                                    emrExLabItem.setExaminationQuantificationUpper(betweens[0]);
+                                } else {
+                                    emrExLabItem.setExaminationQuantificationLower(betweens[0]);
+                                    emrExLabItem.setExaminationQuantificationUpper(betweens[1]);
+                                }
                             }
                         }
                     }
