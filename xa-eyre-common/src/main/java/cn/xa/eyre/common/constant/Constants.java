@@ -101,4 +101,8 @@ public class Constants
 
     public static final String CHARGE_TYPE_JDYG = "军队医改";
 
+    public static final String[] IDENTIFY_LIST = {"军以上干部", "师职干部", "团以下干部", "军以上干部", "战士", "士兵"};
+
+    public static final String[] SECURITY_TYPE_CODE_LIST = {"15", "16", "17", "18", "19", "20", "1801", "1802", "1803", "1901", "2001", "0103", "0203", "0502", "0503"};
+
 }

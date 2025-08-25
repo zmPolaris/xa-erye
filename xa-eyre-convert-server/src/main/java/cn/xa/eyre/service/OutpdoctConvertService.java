@@ -1,6 +1,7 @@
 package cn.xa.eyre.service;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import cn.xa.eyre.comm.domain.Users;
@@ -89,11 +90,16 @@ public class OutpdoctConvertService {
             R<ClinicMaster> outpadmResult = outpadmFeignClient.getClinicMaster(outpMr.getPatientId(), outpMr.getVisitNo(), DateUtils.dateTime(outpMr.getVisitDate()));
             if (R.SUCCESS == medrecResult.getCode() && medrecResult.getData() != null
                     && R.SUCCESS == outpadmResult.getCode() && outpadmResult.getData() != null){
-                // 军队医改不推送
-                if (outpadmResult.getData().getChargeType().equals(Constants.CHARGE_TYPE_JDYG)){
-                    logger.error("费别为军队医改，不推送数据");
+                // 军人+文职不推送
+                if (StringUtils.isNotBlank(outpadmResult.getData().getIdentity()) && ArrayUtil.contains(Constants.IDENTIFY_LIST, outpadmResult.getData().getIdentity())){
+                    logger.error("身份为军人，不推送数据");
                     return;
                 }
+                if (StringUtils.isNotBlank(outpadmResult.getData().getSecurityTypeCode()) && ArrayUtil.contains(Constants.SECURITY_TYPE_CODE_LIST, outpadmResult.getData().getSecurityTypeCode())){
+                    logger.error("身份为文职，不推送数据");
+                    return;
+                }
+
                 // 更新推送患者信息
                 hubToolService.syncPatInfo(medrecResult.getData());
                 EmrOutpatientRecord emrOutpatientRecord = new EmrOutpatientRecord();
