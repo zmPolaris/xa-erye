@@ -10,6 +10,7 @@ public enum HubCodeEnum {
     NATIONALITY_CODE("156", "中国"),
     NATION_CODE("97", "其他"),
     DISEASE_ICD10_CODE("143", "其他"),
+    DISEASE_ICD10_CODE_DEFAULT("J42.x00", "慢性支气管炎"),
     PAY_TYPE_OTHER("99", "其他"),
     EXAM_RESULT_ABNORMAL("01", "阳性"),
     EXAM_RESULT_OTHER("07", "未检出"),
