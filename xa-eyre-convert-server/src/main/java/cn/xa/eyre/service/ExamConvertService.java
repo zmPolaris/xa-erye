@@ -344,7 +344,7 @@ public class ExamConvertService {
             logger.debug("构造emrExClinicalItem接口数据...");
             emrExClinicalItem.setId(no);
             emrExClinicalItem.setExClinicalId(examMaster.getExamNo());
-            DictExamItem dictExamItem = dictExamItemMapper.selectByEmrName(examMaster.getExamSubClass());
+            DictExamItem dictExamItem = dictExamItemMapper.selectByEmrName(examMaster.getExamClass());
             if (dictExamItem == null){
                 emrExClinicalItem.setItemCode(HubCodeEnum.PAY_TYPE_OTHER.getCode());
                 emrExClinicalItem.setItemName(HubCodeEnum.PAY_TYPE_OTHER.getName());
