@@ -94,9 +94,9 @@ public class PharmacyConvertService {
         }
         // 反查数据
 //        R<DrugPrescMaster> prescMaster = medrecFeignClient.getDrugPrescMaster(drugPrescMaster);
-        R<DrugPrescMaster> prescMaster = medrecFeignClient.selectDrugPrescMasterByPatientId(drugPrescMaster);
-        if (R.SUCCESS == prescMaster.getCode() && prescMaster.getData() != null) {
-            drugPrescMaster = prescMaster.getData();
+//        R<DrugPrescMaster> prescMaster = medrecFeignClient.selectDrugPrescMasterByPatientId(drugPrescMaster);
+//        if (R.SUCCESS == prescMaster.getCode() && prescMaster.getData() != null) {
+//            drugPrescMaster = prescMaster.getData();
             EmrOrder emrOrder = new EmrOrder();
             String id = DigestUtil.md5Hex(DateUtils.dateTime(drugPrescMaster.getPrescDate()) + drugPrescMaster.getPrescNo());
             emrOrder.setId(id);
@@ -226,9 +226,9 @@ public class PharmacyConvertService {
             } else {
                 logger.error("{}对应PatMasterIndex信息信息为空，无法同步", patientId);
             }
-        } else {
-            logger.error("未找到DRUG_PRESC_MASTER数据");
-            logger.error("查询条件： PrescDate：{}， PrescNo：{}",drugPrescMaster.getPrescDate(), drugPrescMaster.getPrescNo());
-        }
+//        } else {
+//            logger.error("未找到DRUG_PRESC_MASTER数据");
+//            logger.error("查询条件： PrescDate：{}， PrescNo：{}",drugPrescMaster.getPrescDate(), drugPrescMaster.getPrescNo());
+//        }
     }
 }
