@@ -55,7 +55,7 @@
       from OUTPDOCT.OUTP_MR
       <where>
         <if test="visitDateStr != null">
-          and VISIT_DATE = TO_DATE(#{visitDateStr,jdbcType=VARCHAR}, 'YYYY-MM-DD')
+          and VISIT_DATE = TO_DATE(#{visitDateStr,jdbcType=VARCHAR}, 'YYYY/MM/DD')
         </if>
         <if test="visitNo != null">
           and VISIT_NO = #{visitNo,jdbcType=NUMERIC}
@@ -70,8 +70,8 @@
           and VISIT_DATE = #{doctor,jdbcType=VARCHAR}
         </if>
         <if test="beginVisitDate != null and endVisitDate != null">
-          and VISIT_DATE BETWEEN TO_DATE(#{beginVisitDate,jdbcType=TIMESTAMP}, 'YYYY-MM-DD')
-          AND TO_DATE(#{endVisitDate,jdbcType=TIMESTAMP}, 'YYYY-MM-DD')
+          and VISIT_DATE BETWEEN TO_DATE(#{beginVisitDate,jdbcType=TIMESTAMP}, 'YYYY/MM/DD')
+          AND TO_DATE(#{endVisitDate,jdbcType=TIMESTAMP}, 'YYYY/MM/DD')
         </if>
         order by visit_date desc
       </where>

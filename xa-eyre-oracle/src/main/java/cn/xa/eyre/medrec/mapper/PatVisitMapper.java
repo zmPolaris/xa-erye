@@ -15,4 +15,6 @@ public interface PatVisitMapper {
     int updateByPrimaryKeySelective(PatVisit record);
 
     int updateByPrimaryKey(PatVisit record);
+
+    PatVisit selectByPatientIdOrderByVisitIdLimit1(String patientId);
 }
