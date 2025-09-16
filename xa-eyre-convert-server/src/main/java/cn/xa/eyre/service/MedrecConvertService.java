@@ -546,7 +546,7 @@ public class MedrecConvertService {
                 DiagnosisKey diagnosisKeyOut = new DiagnosisKey(patVisit.getPatientId(), patVisit.getVisitId(), Constants.DIAGNOSIS_TYPE_CODE_ZYZD);
                 R<Diagnosis> diagnosisOutResult = medrecFeignClient.getDiagnosis(diagnosisKeyOut);
                 DiagnosticCategoryKey diagnosticCategoryKeyout = new DiagnosticCategoryKey();
-                BeanUtil.copyProperties(diagnosisInResult.getData(), diagnosticCategoryKeyout);
+                BeanUtil.copyProperties(diagnosisOutResult.getData(), diagnosticCategoryKeyout);
                 R<DiagnosticCategory> diagnosticOutCatResult = medrecFeignClient.getDiagnosticCategory(diagnosticCategoryKeyout);
                 DictDiseaseIcd10 outDictDiseaseIcd10 = dictDiseaseIcd10Mapper.selectByEmrCode(diagnosticOutCatResult.getData().getDiagnosisCode());
                 if(outDictDiseaseIcd10 == null || outDictDiseaseIcd10.getHubCode().equals(HubCodeEnum.DISEASE_ICD10_CODE.getCode())){
