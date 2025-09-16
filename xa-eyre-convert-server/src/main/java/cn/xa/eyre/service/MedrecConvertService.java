@@ -201,19 +201,18 @@ public class MedrecConvertService {
         BeanUtil.copyProperties(diagnosis, patVisitKey);
         R<PatVisit> patVisitResult = medrecFeignClient.getPatVisit(patVisitKey);
 //        R<PatsInHospital> hospitalResult = inpadmFeignClient.getPatsInHospital(diagnosis.getPatientId(), diagnosis.getVisitId());
-        if (R.SUCCESS == medrecResult.getCode() && medrecResult.getData() != null){
+        if (R.SUCCESS == medrecResult.getCode() && medrecResult.getData() != null
+            && R.SUCCESS == patVisitResult.getCode() && patVisitResult.getData() != null){
             // 更新推送患者信息
             hubToolService.syncPatInfo(medrecResult.getData());
-            if (R.SUCCESS == patVisitResult.getCode() && patVisitResult.getData() != null){
-                // 军人+文职不推送
-                if (StringUtils.isNotBlank(patVisitResult.getData().getIdentity()) && ArrayUtil.contains(Constants.IDENTIFY_LIST, patVisitResult.getData().getIdentity())){
-                    logger.error("身份为军人，不推送数据");
-                    return;
-                }
-                if (StringUtils.isNotBlank(patVisitResult.getData().getSecurityTypeCode()) && ArrayUtil.contains(Constants.SECURITY_TYPE_CODE_LIST, patVisitResult.getData().getSecurityTypeCode())){
-                    logger.error("身份为文职，不推送数据");
-                    return;
-                }
+            // 军人+文职不推送
+            if (StringUtils.isNotBlank(patVisitResult.getData().getIdentity()) && ArrayUtil.contains(Constants.IDENTIFY_LIST, patVisitResult.getData().getIdentity())){
+                logger.error("身份为军人，不推送数据");
+                return;
+            }
+            if (StringUtils.isNotBlank(patVisitResult.getData().getSecurityTypeCode()) && ArrayUtil.contains(Constants.SECURITY_TYPE_CODE_LIST, patVisitResult.getData().getSecurityTypeCode())){
+                logger.error("身份为文职，不推送数据");
+                return;
             }
 
             EmrFirstCourse emrFirstCourse = new EmrFirstCourse();
@@ -287,7 +286,7 @@ public class MedrecConvertService {
                     }
                 }
 
-                DictDisDept dictDisDept = hubToolService.getDept(hospitalResult.getData().getDeptCode());
+                DictDisDept dictDisDept = hubToolService.getDept(patVisitResult.getData().getDeptAdmissionTo());
 
                 emrFirstCourse.setDeptCode(dictDisDept.getHubCode());
                 emrFirstCourse.setDeptName(dictDisDept.getHubName());
