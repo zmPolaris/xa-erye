@@ -14,11 +14,13 @@
     <result column="DIAGNOSIS_CODE" jdbcType="VARCHAR" property="diagnosisCode" />
     <result column="INSERT_INDICATOR" jdbcType="VARCHAR" property="insertIndicator" />
     <result column="CODE_VERSION" jdbcType="VARCHAR" property="codeVersion" />
+    <result column="RYDJ_ZD" jdbcType="VARCHAR" property="rydjZd" />
+    <result column="RYDJ_ZDBM" jdbcType="VARCHAR" property="rydjZdbm" />
   </resultMap>
   <sql id="Base_Column_List">
     PATIENT_ID, VISIT_ID, DIAGNOSIS_TYPE, DIAGNOSIS_NO, DIAGNOSIS_DESC, DIAGNOSIS_DATE, 
     TREAT_DAYS, TREAT_RESULT, OPER_TREAT_INDICATOR, DIAGNOSIS_CODE, INSERT_INDICATOR, 
-    CODE_VERSION
+    CODE_VERSION, RYDJ_ZD, RYDJ_ZDBM
   </sql>
   <select id="selectByPrimaryKey" parameterType="cn.xa.eyre.medrec.domain.DiagnosisKey" resultMap="BaseResultMap">
     select 
@@ -42,12 +44,13 @@
     insert into DIAGNOSIS (PATIENT_ID, VISIT_ID, DIAGNOSIS_TYPE, 
       DIAGNOSIS_NO, DIAGNOSIS_DESC, DIAGNOSIS_DATE, 
       TREAT_DAYS, TREAT_RESULT, OPER_TREAT_INDICATOR, 
-      DIAGNOSIS_CODE, INSERT_INDICATOR, CODE_VERSION
+      DIAGNOSIS_CODE, INSERT_INDICATOR, CODE_VERSION, RYDJ_ZD, RYDJ_ZDBM
       )
     values (#{patientId,jdbcType=VARCHAR}, #{visitId,jdbcType=NUMERIC}, #{diagnosisType,jdbcType=VARCHAR}, 
       #{diagnosisNo,jdbcType=NUMERIC}, #{diagnosisDesc,jdbcType=VARCHAR}, #{diagnosisDate,jdbcType=TIMESTAMP}, 
       #{treatDays,jdbcType=NUMERIC}, #{treatResult,jdbcType=VARCHAR}, #{operTreatIndicator,jdbcType=NUMERIC}, 
-      #{diagnosisCode,jdbcType=VARCHAR}, #{insertIndicator,jdbcType=VARCHAR}, #{codeVersion,jdbcType=VARCHAR}
+      #{diagnosisCode,jdbcType=VARCHAR}, #{insertIndicator,jdbcType=VARCHAR}, #{codeVersion,jdbcType=VARCHAR},
+      #{rydjZd,jdbcType=VARCHAR}, #{rydjZdbm,jdbcType=VARCHAR}
       )
   </insert>
   <insert id="insertSelective" parameterType="cn.xa.eyre.medrec.domain.Diagnosis">
@@ -89,6 +92,12 @@
       <if test="codeVersion != null">
         CODE_VERSION,
       </if>
+      <if test="rydjZd != null">
+        RYDJ_ZD,
+      </if>
+      <if test="rydjZdbm != null">
+        RYDJ_ZDBM,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="patientId != null">
@@ -127,6 +136,12 @@
       <if test="codeVersion != null">
         #{codeVersion,jdbcType=VARCHAR},
       </if>
+      <if test="rydjZd != null">
+        #{rydjZd,jdbcType=VARCHAR},
+      </if>
+      <if test="rydjZdbm != null">
+        #{rydjZdbm,jdbcType=VARCHAR},
+      </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="cn.xa.eyre.medrec.domain.Diagnosis">
@@ -156,6 +171,12 @@
       <if test="codeVersion != null">
         CODE_VERSION = #{codeVersion,jdbcType=VARCHAR},
       </if>
+      <if test="rydjZd != null">
+        RYDJ_ZD = #{rydjZd,jdbcType=VARCHAR},
+      </if>
+      <if test="rydjZdbm != null">
+        RYDJ_ZDBM = #{rydjZdbm,jdbcType=VARCHAR},
+      </if>
     </set>
     where PATIENT_ID = #{patientId,jdbcType=VARCHAR}
       and VISIT_ID = #{visitId,jdbcType=NUMERIC}
@@ -171,7 +192,9 @@
       OPER_TREAT_INDICATOR = #{operTreatIndicator,jdbcType=NUMERIC},
       DIAGNOSIS_CODE = #{diagnosisCode,jdbcType=VARCHAR},
       INSERT_INDICATOR = #{insertIndicator,jdbcType=VARCHAR},
-      CODE_VERSION = #{codeVersion,jdbcType=VARCHAR}
+      CODE_VERSION = #{codeVersion,jdbcType=VARCHAR},
+      RYDJ_ZD = #{rydjZd,jdbcType=VARCHAR},
+      RYDJ_ZDBM = #{rydjZdbm,jdbcType=VARCHAR}
     where PATIENT_ID = #{patientId,jdbcType=VARCHAR}
       and VISIT_ID = #{visitId,jdbcType=NUMERIC}
       and DIAGNOSIS_TYPE = #{diagnosisType,jdbcType=VARCHAR}

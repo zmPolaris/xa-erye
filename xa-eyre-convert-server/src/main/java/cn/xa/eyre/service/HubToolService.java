@@ -436,4 +436,12 @@ public class HubToolService {
         return dictDisDept;
     }
 
+    public DictDiseaseIcd10 getDiseaseIcd10(String code, String name){
+        DictDiseaseIcd10 dictDiseaseIcd10 = dictDiseaseIcd10Mapper.selectByEmrCode(code);
+        if(dictDiseaseIcd10 == null || dictDiseaseIcd10.getHubCode().equals(HubCodeEnum.DISEASE_ICD10_CODE.getCode())){
+            dictDiseaseIcd10 = new DictDiseaseIcd10(code, name);
+        }
+        return dictDiseaseIcd10;
+    }
+
 }

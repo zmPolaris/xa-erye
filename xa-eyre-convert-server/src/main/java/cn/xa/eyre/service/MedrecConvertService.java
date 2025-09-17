@@ -196,7 +196,20 @@ public class MedrecConvertService {
         R<PatMasterIndex> medrecResult = medrecFeignClient.getPatMasterIndex(diagnosis.getPatientId());
         DiagnosticCategoryKey diagnosticCategoryKey = new DiagnosticCategoryKey();
         BeanUtil.copyProperties(diagnosis, diagnosticCategoryKey);
-        R<DiagnosticCategory> diagnosticCatResult = medrecFeignClient.getDiagnosticCategory(diagnosticCategoryKey);
+        // 诊断编码，先取diagnosis表，没有则取DiagnosticCategory表，还是没有就默认为支气管炎
+        DictDiseaseIcd10 dictDiseaseIcd10 = null;
+        if (StringUtils.isNotBlank(diagnosis.getRydjZd()) && StringUtils.isNotBlank(diagnosis.getRydjZdbm())){
+            dictDiseaseIcd10 = hubToolService.getDiseaseIcd10(diagnosis.getRydjZdbm(), diagnosis.getRydjZd());
+        }else {
+            R<DiagnosticCategory> diagnosticCatResult = medrecFeignClient.getDiagnosticCategory(diagnosticCategoryKey);
+            if (diagnosticCatResult.getCode() == R.SUCCESS && diagnosticCatResult.getData() != null){
+                dictDiseaseIcd10 = hubToolService.getDiseaseIcd10(diagnosticCatResult.getData().getDiagnosisCode(), diagnosis.getDiagnosisDesc());
+            }else {
+                logger.info("{}诊断编码为空，默认诊断为支气管炎", medrecResult.getData().getPatientId());
+                dictDiseaseIcd10 = new DictDiseaseIcd10(HubCodeEnum.DISEASE_ICD10_CODE_DEFAULT.getCode(), HubCodeEnum.DISEASE_ICD10_CODE_DEFAULT.getName());
+            }
+        }
+
         PatVisitKey patVisitKey = new PatVisitKey();
         BeanUtil.copyProperties(diagnosis, patVisitKey);
         R<PatVisit> patVisitResult = medrecFeignClient.getPatVisit(patVisitKey);
@@ -259,21 +272,8 @@ public class MedrecConvertService {
                         emrFirstCourse.setOperatorId(user.getData().getUserId());
                     }
                 }
-
-                if (diagnosticCatResult.getCode() == R.SUCCESS && diagnosticCatResult.getData() != null){
-                    DictDiseaseIcd10 dictDiseaseIcd10 = dictDiseaseIcd10Mapper.selectByEmrCode(diagnosticCatResult.getData().getDiagnosisCode());
-                    if(dictDiseaseIcd10 == null || dictDiseaseIcd10.getHubCode().equals(HubCodeEnum.DISEASE_ICD10_CODE.getCode())){
-                        emrFirstCourse.setWmInitalDiagnosisCode(diagnosticCatResult.getData().getDiagnosisCode());
-                        emrFirstCourse.setWmInitalDiagnosisName(diagnosis.getDiagnosisDesc());
-                    }else {
-                        emrFirstCourse.setWmInitalDiagnosisCode(dictDiseaseIcd10.getHubCode());
-                        emrFirstCourse.setWmInitalDiagnosisName(dictDiseaseIcd10.getHubName());
-                    }
-                }else {
-                    logger.info("{}诊断编码为空，默认诊断为支气管炎", medrecResult.getData().getPatientId());
-                    emrFirstCourse.setWmInitalDiagnosisCode(HubCodeEnum.DISEASE_ICD10_CODE_DEFAULT.getCode());
-                    emrFirstCourse.setWmInitalDiagnosisName(HubCodeEnum.DISEASE_ICD10_CODE_DEFAULT.getName());
-                }
+                emrFirstCourse.setWmInitalDiagnosisCode(dictDiseaseIcd10.getHubCode());
+                emrFirstCourse.setWmInitalDiagnosisName(dictDiseaseIcd10.getHubName());
 
                 if(StringUtils.isNotBlank(diagnosis.getTreatResult())){
                     DictTreatResult dictTreatResult = dictTreatResultMapper.selectByEmrName(diagnosis.getTreatResult());
@@ -388,20 +388,8 @@ public class MedrecConvertService {
                 emrActivityInfo.setIdCard(emrDailyCourse.getIdCard());
                 emrActivityInfo.setPatientName(emrDailyCourse.getPatientName());
                 emrActivityInfo.setDiagnoseTime(emrDailyCourse.getCreateDate());
-                if (diagnosticCatResult.getCode() == R.SUCCESS && diagnosticCatResult.getData() != null){
-                    DictDiseaseIcd10 dictDiseaseIcd10 = dictDiseaseIcd10Mapper.selectByEmrCode(diagnosticCatResult.getData().getDiagnosisCode());
-                    if(dictDiseaseIcd10 == null || dictDiseaseIcd10.getHubCode().equals(HubCodeEnum.DISEASE_ICD10_CODE.getCode())){
-                        emrActivityInfo.setWmDiseaseCode(diagnosticCatResult.getData().getDiagnosisCode());
-                        emrActivityInfo.setWmDiseaseName(diagnosis.getDiagnosisDesc());
-                    }else {
-                        emrActivityInfo.setWmDiseaseCode(dictDiseaseIcd10.getHubCode());
-                        emrActivityInfo.setWmDiseaseName(dictDiseaseIcd10.getHubName());
-                    }
-                }else {
-                    logger.info("{}诊断编码为空，默认诊断为支气管炎", medrecResult.getData().getPatientId());
-                    emrActivityInfo.setWmDiseaseCode(HubCodeEnum.DISEASE_ICD10_CODE_DEFAULT.getCode());
-                    emrActivityInfo.setWmDiseaseName(HubCodeEnum.DISEASE_ICD10_CODE_DEFAULT.getName());
-                }
+                emrActivityInfo.setWmDiseaseCode(dictDiseaseIcd10.getHubCode());
+                emrActivityInfo.setWmDiseaseName(dictDiseaseIcd10.getHubName());
                 emrActivityInfo.setFillDoctor(patVisitResult.getData().getDoctorInCharge());
                 emrActivityInfo.setOperatorId(emrDailyCourse.getOperatorId());
                 if (StringUtils.isBlank(emrActivityInfo.getFillDoctor()))
@@ -462,8 +450,7 @@ public class MedrecConvertService {
         BeanUtil.copyProperties(diagnosisInResult.getData(), diagnosticCategoryKey);
         R<DiagnosticCategory> diagnosticInCatResult = medrecFeignClient.getDiagnosticCategory(diagnosticCategoryKey);
         if ( R.SUCCESS == medrecResult.getCode() && medrecResult.getData() != null
-                && R.SUCCESS == diagnosisInResult.getCode() && diagnosisInResult.getData() != null
-                && R.SUCCESS == diagnosticInCatResult.getCode() && diagnosticInCatResult.getData() != null){
+                && R.SUCCESS == diagnosisInResult.getCode() && diagnosisInResult.getData() != null){
             // 更新推送患者信息
             hubToolService.syncPatInfo(medrecResult.getData());
 
@@ -517,18 +504,21 @@ public class MedrecConvertService {
                 emrAdmissionRecord.setAutopsyCode(String.valueOf(patVisit.getAutopsyIndicator()));
             }
 
-            DictDiseaseIcd10 inDictDiseaseIcd10 = dictDiseaseIcd10Mapper.selectByEmrCode(diagnosticInCatResult.getData().getDiagnosisCode());
-            if(inDictDiseaseIcd10 == null || inDictDiseaseIcd10.getHubCode().equals(HubCodeEnum.DISEASE_ICD10_CODE.getCode())){
-                emrAdmissionRecord.setWmOutpatientDiagnosisCode(diagnosticInCatResult.getData().getDiagnosisCode());
-                emrAdmissionRecord.setWmOutpatientDiagnosisName(diagnosisInResult.getData().getDiagnosisDesc());
-                emrDischargeInfo.setAdmissionDiagnosisCode(diagnosticInCatResult.getData().getDiagnosisCode());
-                emrDischargeInfo.setAdmissionDiagnosisName(diagnosisInResult.getData().getDiagnosisDesc());
+            DictDiseaseIcd10 inDictDiseaseIcd10 = null;
+            if (StringUtils.isNotBlank(diagnosisInResult.getData().getRydjZd()) && StringUtils.isNotBlank(diagnosisInResult.getData().getRydjZdbm())){
+                inDictDiseaseIcd10 = hubToolService.getDiseaseIcd10(diagnosisInResult.getData().getRydjZdbm(), diagnosisInResult.getData().getRydjZd());
             }else {
-                emrAdmissionRecord.setWmOutpatientDiagnosisCode(inDictDiseaseIcd10.getHubCode());
-                emrAdmissionRecord.setWmOutpatientDiagnosisName(inDictDiseaseIcd10.getHubName());
-                emrDischargeInfo.setAdmissionDiagnosisCode(inDictDiseaseIcd10.getHubCode());
-                emrDischargeInfo.setAdmissionDiagnosisName(inDictDiseaseIcd10.getHubName());
+                if (diagnosticInCatResult.getCode() == R.SUCCESS && diagnosticInCatResult.getData() != null){
+                    inDictDiseaseIcd10 = hubToolService.getDiseaseIcd10(diagnosticInCatResult.getData().getDiagnosisCode(), diagnosisInResult.getData().getDiagnosisDesc());
+                }else {
+                    logger.info("{}诊断编码为空，默认诊断为支气管炎", medrecResult.getData().getPatientId());
+                    inDictDiseaseIcd10 = new DictDiseaseIcd10(HubCodeEnum.DISEASE_ICD10_CODE_DEFAULT.getCode(), HubCodeEnum.DISEASE_ICD10_CODE_DEFAULT.getName());
+                }
             }
+            emrAdmissionRecord.setWmOutpatientDiagnosisCode(inDictDiseaseIcd10.getHubCode());
+            emrAdmissionRecord.setWmOutpatientDiagnosisName(inDictDiseaseIcd10.getHubName());
+            emrDischargeInfo.setAdmissionDiagnosisCode(inDictDiseaseIcd10.getHubCode());
+            emrDischargeInfo.setAdmissionDiagnosisName(inDictDiseaseIcd10.getHubName());
 
             emrAdmissionRecord.setPatientName(medrecResult.getData().getName());
             if (StringUtils.isBlank(medrecResult.getData().getIdNo())){
@@ -548,18 +538,18 @@ public class MedrecConvertService {
                 DiagnosticCategoryKey diagnosticCategoryKeyout = new DiagnosticCategoryKey();
                 BeanUtil.copyProperties(diagnosisOutResult.getData(), diagnosticCategoryKeyout);
                 R<DiagnosticCategory> diagnosticOutCatResult = medrecFeignClient.getDiagnosticCategory(diagnosticCategoryKeyout);
-                DictDiseaseIcd10 outDictDiseaseIcd10 = dictDiseaseIcd10Mapper.selectByEmrCode(diagnosticOutCatResult.getData().getDiagnosisCode());
-                if(outDictDiseaseIcd10 == null || outDictDiseaseIcd10.getHubCode().equals(HubCodeEnum.DISEASE_ICD10_CODE.getCode())){
-                    emrAdmissionRecord.setDischargeDiagnosisCode(diagnosticOutCatResult.getData().getDiagnosisCode());
-                    emrAdmissionRecord.setDischargeDiagnosisName(diagnosisOutResult.getData().getDiagnosisDesc());
-                    emrDischargeInfo.setDischargeDiagnosisCode(diagnosticOutCatResult.getData().getDiagnosisCode());
-                    emrDischargeInfo.setDischargeDiagnosisName(diagnosisOutResult.getData().getDiagnosisDesc());
+                DictDiseaseIcd10 outDictDiseaseIcd10 = null;
+                if (diagnosticOutCatResult.getCode() == R.SUCCESS && diagnosticOutCatResult.getData() != null){
+                    outDictDiseaseIcd10 = hubToolService.getDiseaseIcd10(diagnosticOutCatResult.getData().getDiagnosisCode(), diagnosisOutResult.getData().getDiagnosisDesc());
                 }else {
-                    emrAdmissionRecord.setDischargeDiagnosisCode(outDictDiseaseIcd10.getHubCode());
-                    emrAdmissionRecord.setDischargeDiagnosisName(outDictDiseaseIcd10.getHubName());
-                    emrDischargeInfo.setDischargeDiagnosisCode(outDictDiseaseIcd10.getHubCode());
-                    emrDischargeInfo.setDischargeDiagnosisName(outDictDiseaseIcd10.getHubName());
+                    logger.info("{}诊断编码为空，默认诊断为支气管炎", medrecResult.getData().getPatientId());
+                    outDictDiseaseIcd10 = new DictDiseaseIcd10(HubCodeEnum.DISEASE_ICD10_CODE_DEFAULT.getCode(), HubCodeEnum.DISEASE_ICD10_CODE_DEFAULT.getName());
                 }
+                emrAdmissionRecord.setDischargeDiagnosisCode(outDictDiseaseIcd10.getHubCode());
+                emrAdmissionRecord.setDischargeDiagnosisName(outDictDiseaseIcd10.getHubName());
+                emrDischargeInfo.setDischargeDiagnosisCode(outDictDiseaseIcd10.getHubCode());
+                emrDischargeInfo.setDischargeDiagnosisName(outDictDiseaseIcd10.getHubName());
+
                 if(StringUtils.isNotBlank(diagnosisOutResult.getData().getTreatResult())){
                     DictTreatResult dictTreatResult = dictTreatResultMapper.selectByEmrName(diagnosisOutResult.getData().getTreatResult());
                     if(dictTreatResult == null || dictTreatResult.getHubCode().equals(HubCodeEnum.TREAT_RESULT_OTHER.getCode())){

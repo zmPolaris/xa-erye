@@ -19,6 +19,10 @@ public class Diagnosis extends DiagnosisKey {
 
     private String codeVersion;
 
+    private String rydjZd;
+
+    private String rydjZdbm;
+
     public String getDiagnosisDesc() {
         return diagnosisDesc;
     }
@@ -81,5 +85,21 @@ public class Diagnosis extends DiagnosisKey {
 
     public void setCodeVersion(String codeVersion) {
         this.codeVersion = codeVersion == null ? null : codeVersion.trim();
+    }
+
+    public String getRydjZd() {
+        return rydjZd;
+    }
+
+    public void setRydjZd(String rydjZd) {
+        this.rydjZd = rydjZd;
+    }
+
+    public String getRydjZdbm() {
+        return rydjZdbm;
+    }
+
+    public void setRydjZdbm(String rydjZdbm) {
+        this.rydjZdbm = rydjZdbm;
     }
 }
