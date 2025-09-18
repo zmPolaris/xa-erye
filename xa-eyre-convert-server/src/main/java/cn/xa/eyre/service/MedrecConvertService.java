@@ -231,7 +231,7 @@ public class MedrecConvertService {
             EmrFirstCourse emrFirstCourse = new EmrFirstCourse();
             EmrDailyCourse emrDailyCourse = new EmrDailyCourse();
             // ID使用DIAGNOSIS表patientId、visitId、diagnosisDate拼接计算MD5
-            String id = DigestUtil.md5Hex(diagnosis.getPatientId() + diagnosis.getVisitId() + DateUtils.dateTime(diagnosis.getDiagnosisDate()));
+            String id = DigestUtil.md5Hex(diagnosis.getPatientId() + diagnosis.getVisitId() + diagnosis.getDiagnosisType() + diagnosis.getDiagnosisNo());
 
             if (diagnosis.getDiagnosisType().equals(Constants.DIAGNOSIS_TYPE_CODE_RYCZ) || diagnosis.getDiagnosisType().equals(Constants.DIAGNOSIS_TYPE_CODE_MZZD)){
                 logger.debug("构造emrFirstCourse接口数据...");
