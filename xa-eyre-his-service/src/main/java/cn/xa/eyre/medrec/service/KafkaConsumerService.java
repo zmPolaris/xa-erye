@@ -32,6 +32,14 @@ public class KafkaConsumerService {
             containerFactory = "kafkaListenerContainerFactory"
     )
     public void consume(ConsumerRecord<GenericRecord, GenericRecord> record, Acknowledgment ack) {
+        // 脏数据被置空
+        if (record == null) {
+            logger.warn("跳过一条脏数据");
+            // 必须提交，否则会死循环
+            ack.acknowledge();
+            return;
+        }
+
         try {
             DBMessage msg = processDebeziumRecord(record);
             if ("INSERT".equalsIgnoreCase(msg.getOperation()) ||

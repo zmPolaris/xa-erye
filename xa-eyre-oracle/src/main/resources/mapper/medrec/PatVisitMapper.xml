@@ -142,7 +142,7 @@
         from PAT_VISIT
         where PATIENT_ID = #{patientId,jdbcType=VARCHAR}
         order by VISIT_ID desc
-    ) WHERE ROWNUM = 1;
+    ) WHERE ROWNUM = 1
   </select>
   <delete id="deleteByPrimaryKey" parameterType="cn.xa.eyre.medrec.domain.PatVisitKey">
     delete from PAT_VISIT
