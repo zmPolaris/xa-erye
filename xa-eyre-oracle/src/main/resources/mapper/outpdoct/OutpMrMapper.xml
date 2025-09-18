@@ -64,7 +64,7 @@
           and ORDINAL = #{ordinal,jdbcType=NUMERIC}
         </if>
         <if test="patientId != null">
-          and VISIT_DATE = #{patientId,jdbcType=VARCHAR}
+          and PATIENT_ID = #{patientId,jdbcType=VARCHAR}
         </if>
         <if test="doctor != null">
           and VISIT_DATE = #{doctor,jdbcType=VARCHAR}
