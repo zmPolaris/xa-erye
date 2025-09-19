@@ -189,6 +189,9 @@ public class MedrecConvertService {
 //        diagnosis.setDiagnosisDate(DateUtils.getLongDate(data.get("diagnosisDate")));
         try {
             diagnosis = BeanUtils.mapToObject(data, Diagnosis.class);
+            if (diagnosis.getDiagnosisDate() == null){
+                diagnosis.setDiagnosisDate(DateUtils.getNowDate());
+            }
         } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
