@@ -65,6 +65,10 @@ spring:
     consumer:
       group-id: xa-eyre-his-service
       auto-offset-reset: earliest
+      max-poll-records: 15
+      session-timeout-ms: 30000         # 调大至 30 秒（默认 10 秒）
+      max-poll-interval-ms: 600000      # 调大至 10 分钟（默认 5 分钟）
+      heartbeat-interval-ms: 3000       # 保持默认 3 秒（或调小至 1 秒，更频繁发送心跳）
       key-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
     properties:
