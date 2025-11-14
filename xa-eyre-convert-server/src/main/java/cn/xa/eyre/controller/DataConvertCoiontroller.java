@@ -3,6 +3,10 @@ package cn.xa.eyre.controller;
 import cn.hutool.json.JSONUtil;
 import cn.xa.eyre.common.core.domain.AjaxResult;
 import cn.xa.eyre.common.core.kafka.DBMessage;
+import cn.xa.eyre.medrec.domain.DiagnosisKey;
+import cn.xa.eyre.medrec.domain.PatMasterIndex;
+import cn.xa.eyre.outpdoct.domain.OutpMr;
+import cn.xa.eyre.outpdoct.domain.OutpMrKey;
 import cn.xa.eyre.service.*;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -119,5 +123,20 @@ public class DataConvertCoiontroller {
 
         }
         return AjaxResult.success("转码成功");
+    }
+
+    @PostMapping("/pushPatMasterIndex")
+    public AjaxResult pushPatMasterIndex(@RequestBody PatMasterIndex patMasterIndex, HttpServletRequest request){
+        return AjaxResult.success("患者数据获取成功", dataConvertService.pushPatMasterIndex(patMasterIndex));
+    }
+
+    @PostMapping("/pushOutpMr")
+    public AjaxResult pushOutpMr(@RequestBody OutpMr outpMrKey, HttpServletRequest request){
+        return AjaxResult.success("门诊数据获取成功", dataConvertService.pushOutpMr(outpMrKey));
+    }
+
+    @PostMapping("/pushDiagnosis")
+    public AjaxResult pushDiagnosis(@RequestBody DiagnosisKey diagnosisKey, HttpServletRequest request){
+        return AjaxResult.success("住院数据获取成功", dataConvertService.pushDiagnosis(diagnosisKey));
     }
 }
