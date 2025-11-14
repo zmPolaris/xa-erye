@@ -67,13 +67,9 @@ public class OutpdoctConvertService {
     @Autowired
     private RedisCache redisCache;
 
-    private String getCacheKey(String... configKey)
+    private String getCacheKey(String configKey)
     {
-        String cacheKey = CacheConstants.SYS_CONFIG_KEY;
-        for (String key : configKey) {
-            cacheKey += ":" + key;
-        }
-        return cacheKey;
+        return CacheConstants.TABLE_DATE_KEY + configKey;
     }
 
     public void outpMr(DBMessage dbMessage) {
@@ -315,6 +311,7 @@ public class OutpdoctConvertService {
         }else {
             logger.error("{}对应PatMasterIndex信息或ClinicMaster信息为空，无法同步", outpMr.getPatientId());
         }
+        sendRedisMsg(outpMr);
         return false;
     }
 
@@ -330,7 +327,8 @@ public class OutpdoctConvertService {
             List<OutpMr> data = mrResult.getData();
 
             for (OutpMr outpMr : data) {
-                String outpMrUserKey = outpMr.getVisitDate() + "-" + outpMr.getVisitNo() + "-" + outpMr.getOrdinal();
+                String visitDate = DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_XG, outpMr.getVisitDate());
+                String outpMrUserKey = visitDate + "-" + outpMr.getVisitNo() + "-" + outpMr.getOrdinal();
                 boolean contains = cacheList.contains(outpMrUserKey);
                 if (contains) {
                     continue;
@@ -353,7 +351,8 @@ public class OutpdoctConvertService {
     private void sendRedisMsg(OutpMr outpMr) {
         // VISIT_DATE, VISIT_NO, ORDINAL
         String outpMrKey = OUTPDOCT_OUTP_MR_KEY + DateUtils.dateTimeNow(DateUtils.YYYY_MM_DD_XG);
-        String outpMrUserKey = outpMr.getVisitDate() + "-" + outpMr.getVisitNo() + "-" + outpMr.getOrdinal();
+        String visitDate = DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_XG, outpMr.getVisitDate());
+        String outpMrUserKey = visitDate + "-" + outpMr.getVisitNo() + "-" + outpMr.getOrdinal();
         String cacheKey = getCacheKey(outpMrKey);
 
         redisCache.appendString(cacheKey, outpMrUserKey);
