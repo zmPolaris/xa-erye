@@ -25,6 +25,11 @@ public class CacheConstants
     /**
      * 参数管理 cache key
      */
+    public static final String TABLE_DATE_KEY = "his_oracle:";
+
+    /**
+     * 参数管理 cache key
+     */
     public static final String SYS_CA_CHANNEL_CONFIG_KEY = "sys_ca_chanel:";
 
     /**

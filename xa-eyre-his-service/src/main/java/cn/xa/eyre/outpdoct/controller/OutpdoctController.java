@@ -34,6 +34,16 @@ public class OutpdoctController {
         return AjaxResult.success("接口调用成功", outpMrMapper.selectOutpMrByCondition(outpMr));
     }
 
+    @PostMapping("/getOutpMrByVisitDate")
+    public AjaxResult getOutpMrByVisitDate(@RequestBody String visitDate){
+        return AjaxResult.success("接口调用成功", outpMrMapper.selectOutpMrByVisitDate(visitDate));
+    }
+
+    @PostMapping("/selectByPrimaryKey")
+    public AjaxResult selectByPrimaryKey(@RequestBody OutpMr outpMr){
+        return AjaxResult.success("接口调用成功", outpMrMapper.selectByPrimaryKey(outpMr));
+    }
+
     @PostMapping("/getOutpWaitQueueByCondition")
     public AjaxResult getOutpWaitQueueByCondition(@RequestBody OutpWaitQueue outpWaitQueue){
         List<OutpWaitQueue> outpWaitQueues = outpWaitQueueMapper.selectOutpWaitQueueByCondition(outpWaitQueue);

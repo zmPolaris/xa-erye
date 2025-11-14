@@ -253,6 +253,17 @@ public class RedisCache
         return redisTemplate.opsForHash().delete(key, hKey) > 0;
     }
 
+    // 追加字符串到列表尾部
+    public void appendString(String key, String value) {
+        redisTemplate.opsForList().rightPush(key, value);
+        expire(key, 8, TimeUnit.HOURS);
+    }
+
+    // 读取全部字符串
+    public List<String> getAllStrings(String key) {
+        return redisTemplate.opsForList().range(key, 0, -1);
+    }
+
     /**
      * 获得缓存的基本对象列表
      *
