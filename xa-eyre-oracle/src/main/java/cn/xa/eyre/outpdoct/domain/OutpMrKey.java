@@ -1,6 +1,7 @@
 package cn.xa.eyre.outpdoct.domain;
 
 import java.util.Date;
+import java.util.StringJoiner;
 
 public class OutpMrKey {
     private Date visitDate;
@@ -31,5 +32,14 @@ public class OutpMrKey {
 
     public void setOrdinal(Short ordinal) {
         this.ordinal = ordinal;
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", OutpMrKey.class.getSimpleName() + "[", "]")
+                .add("visitDate=" + visitDate)
+                .add("visitNo=" + visitNo)
+                .add("ordinal=" + ordinal)
+                .toString();
     }
 }

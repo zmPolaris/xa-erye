@@ -1,6 +1,7 @@
 package cn.xa.eyre.outpdoct.domain;
 
 import java.util.Date;
+import java.util.StringJoiner;
 
 public class OutpMr extends OutpMrKey {
     private String patientId;
@@ -231,5 +232,34 @@ public class OutpMr extends OutpMrKey {
 
     public void setVisitDateStr(String visitDateStr) {
         this.visitDateStr = visitDateStr;
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", OutpMr.class.getSimpleName() + "[", "]")
+                .add("patientId='" + patientId + "'")
+                .add("illnessDesc='" + illnessDesc + "'")
+                .add("anamnesis='" + anamnesis + "'")
+                .add("familyIll='" + familyIll + "'")
+                .add("marrital='" + marrital + "'")
+                .add("individual='" + individual + "'")
+                .add("menses='" + menses + "'")
+                .add("medHistory='" + medHistory + "'")
+                .add("bodyExam='" + bodyExam + "'")
+                .add("diagDesc='" + diagDesc + "'")
+                .add("advice='" + advice + "'")
+                .add("doctor='" + doctor + "'")
+                .add("operationRecord='" + operationRecord + "'")
+                .add("medicalRecord='" + medicalRecord + "'")
+                .add("assistExam='" + assistExam + "'")
+                .add("specialty='" + specialty + "'")
+                .add("diagnosisMz1='" + diagnosisMz1 + "'")
+                .add("diagnosisCodeMz1='" + diagnosisCodeMz1 + "'")
+                .add("diagnosisMz2='" + diagnosisMz2 + "'")
+                .add("diagnosisCodeMz2='" + diagnosisCodeMz2 + "'")
+                .add("beginVisitDate=" + beginVisitDate)
+                .add("endVisitDate=" + endVisitDate)
+                .add("visitDateStr='" + visitDateStr + "'")
+                .toString();
     }
 }

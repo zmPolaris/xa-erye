@@ -2,6 +2,7 @@ package cn.xa.eyre.lab.domain;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.StringJoiner;
 
 public class LabTestMaster {
     private String testNo;
@@ -342,5 +343,45 @@ public class LabTestMaster {
 
     public void setVisitNo(Short visitNo) {
         this.visitNo = visitNo;
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", LabTestMaster.class.getSimpleName() + "[", "]")
+                .add("testNo='" + testNo + "'")
+                .add("priorityIndicator=" + priorityIndicator)
+                .add("patientId='" + patientId + "'")
+                .add("visitId=" + visitId)
+                .add("workingId='" + workingId + "'")
+                .add("executeDate=" + executeDate)
+                .add("name='" + name + "'")
+                .add("namePhonetic='" + namePhonetic + "'")
+                .add("chargeType='" + chargeType + "'")
+                .add("sex='" + sex + "'")
+                .add("age=" + age)
+                .add("testCause='" + testCause + "'")
+                .add("relevantClinicDiag='" + relevantClinicDiag + "'")
+                .add("specimen='" + specimen + "'")
+                .add("notesForSpcm='" + notesForSpcm + "'")
+                .add("spcmReceivedDateTime=" + spcmReceivedDateTime)
+                .add("spcmSampleDateTime=" + spcmSampleDateTime)
+                .add("requestedDateTime=" + requestedDateTime)
+                .add("orderingDept='" + orderingDept + "'")
+                .add("orderingProvider='" + orderingProvider + "'")
+                .add("performedBy='" + performedBy + "'")
+                .add("resultStatus='" + resultStatus + "'")
+                .add("resultsRptDateTime=" + resultsRptDateTime)
+                .add("transcriptionist='" + transcriptionist + "'")
+                .add("verifiedBy='" + verifiedBy + "'")
+                .add("costs=" + costs)
+                .add("charges=" + charges)
+                .add("billingIndicator=" + billingIndicator)
+                .add("printIndicator=" + printIndicator)
+                .add("subject='" + subject + "'")
+                .add("dateOfBirth=" + dateOfBirth)
+                .add("patientSource='" + patientSource + "'")
+                .add("visitDate=" + visitDate)
+                .add("visitNo=" + visitNo)
+                .toString();
     }
 }

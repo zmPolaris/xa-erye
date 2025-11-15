@@ -22,4 +22,6 @@ public interface OutpMrMapper {
     List<OutpMr> selectOutpMrList(@Param("num") Integer num);
 
     List<OutpMr> selectOutpMrByCondition(OutpMr outpMr);
+
+    List<OutpMr> selectOutpMrByVisitDate(@Param("visitDate") String visitDate);
 }

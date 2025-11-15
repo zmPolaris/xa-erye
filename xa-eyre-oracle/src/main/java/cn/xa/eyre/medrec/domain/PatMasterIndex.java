@@ -1,6 +1,7 @@
 package cn.xa.eyre.medrec.domain;
 
 import java.util.Date;
+import java.util.StringJoiner;
 
 public class PatMasterIndex {
     private String patientId;
@@ -481,5 +482,59 @@ public class PatMasterIndex {
 
     public void setGuardianOccupation(String guardianOccupation) {
         this.guardianOccupation = guardianOccupation == null ? null : guardianOccupation.trim();
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", PatMasterIndex.class.getSimpleName() + "[", "]")
+                .add("patientId='" + patientId + "'")
+                .add("inpNo='" + inpNo + "'")
+                .add("name='" + name + "'")
+                .add("namePhonetic='" + namePhonetic + "'")
+                .add("sex='" + sex + "'")
+                .add("dateOfBirth=" + dateOfBirth)
+                .add("birthPlace='" + birthPlace + "'")
+                .add("citizenship='" + citizenship + "'")
+                .add("nation='" + nation + "'")
+                .add("idNo='" + idNo + "'")
+                .add("identity='" + identity + "'")
+                .add("chargeType='" + chargeType + "'")
+                .add("unitInContract='" + unitInContract + "'")
+                .add("mailingAddress='" + mailingAddress + "'")
+                .add("zipCode='" + zipCode + "'")
+                .add("phoneNumberHome='" + phoneNumberHome + "'")
+                .add("phoneNumberBusiness='" + phoneNumberBusiness + "'")
+                .add("nextOfKin='" + nextOfKin + "'")
+                .add("relationship='" + relationship + "'")
+                .add("nextOfKinAddr='" + nextOfKinAddr + "'")
+                .add("nextOfKinZipCode='" + nextOfKinZipCode + "'")
+                .add("nextOfKinPhone='" + nextOfKinPhone + "'")
+                .add("lastVisitDate=" + lastVisitDate)
+                .add("vipIndicator=" + vipIndicator)
+                .add("createDate=" + createDate)
+                .add("operator='" + operator + "'")
+                .add("secretLevel=" + secretLevel)
+                .add("tag='" + tag + "'")
+                .add("cardNo='" + cardNo + "'")
+                .add("workunit='" + workunit + "'")
+                .add("modifyStaffId='" + modifyStaffId + "'")
+                .add("modifyTime=" + modifyTime)
+                .add("occupation='" + occupation + "'")
+                .add("identityExpireDate=" + identityExpireDate)
+                .add("mailingAreaCode4='" + mailingAreaCode4 + "'")
+                .add("sexCode='" + sexCode + "'")
+                .add("mpi='" + mpi + "'")
+                .add("orgAreaId='" + orgAreaId + "'")
+                .add("orgId='" + orgId + "'")
+                .add("mentalPrintFlag='" + mentalPrintFlag + "'")
+                .add("stopFlag='" + stopFlag + "'")
+                .add("idCardShowed='" + idCardShowed + "'")
+                .add("mailingAreaCode1='" + mailingAreaCode1 + "'")
+                .add("mailingAreaCode2='" + mailingAreaCode2 + "'")
+                .add("mailingAreaCode3='" + mailingAreaCode3 + "'")
+                .add("guardianName='" + guardianName + "'")
+                .add("guardianPhone='" + guardianPhone + "'")
+                .add("guardianOccupation='" + guardianOccupation + "'")
+                .toString();
     }
 }

@@ -1,6 +1,7 @@
 package cn.xa.eyre.service;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import cn.xa.eyre.comm.domain.Users;
@@ -9,6 +10,7 @@ import cn.xa.eyre.common.constant.Constants;
 import cn.xa.eyre.common.core.domain.R;
 import cn.xa.eyre.common.core.kafka.DBMessage;
 import cn.xa.eyre.common.core.redis.RedisCache;
+import cn.xa.eyre.common.utils.CaffeineCacheUtils;
 import cn.xa.eyre.common.utils.DateUtils;
 import cn.xa.eyre.common.utils.StringUtils;
 import cn.xa.eyre.common.utils.bean.BeanUtils;
@@ -36,10 +38,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class OutpdoctConvertService {
@@ -66,6 +72,8 @@ public class OutpdoctConvertService {
 
     @Autowired
     private RedisCache redisCache;
+
+    CaffeineCacheUtils<String, HashSet<String>> localCache = CaffeineCacheUtils.createExpireAfterAccess(25, TimeUnit.HOURS);
 
     private String getCacheKey(String configKey)
     {
@@ -320,41 +328,68 @@ public class OutpdoctConvertService {
         logger.info("定时对比ouptMr表数据");
         String date = DateUtils.dateTimeNow(DateUtils.YYYY_MM_DD_XG);
         String outpMrKey = OUTPDOCT_OUTP_MR_KEY + date;
-        List<String> cacheList  = redisCache.getAllStrings(outpMrKey);
-        logger.info("缓存中当日患者数量：{}", cacheList.size());
+//        List<String> cacheList  = redisCache.getAllStrings(outpMrKey);
+        HashSet<String> cachedb = redisCache.getCacheObject(outpMrKey);
+        HashSet<String> cacheLocal = localCache.get(outpMrKey);
+        // 判断cachedb是否包含cacheLocal的所有元素
+        if (null != cachedb && cachedb.size() > 0) {
+            logger.info("redis缓存中当日患者数量：{}", cachedb.size());
+        } else {
+            cachedb = new HashSet<>();
+        }
+        if (null != cacheLocal && cacheLocal.size() > 0) {
+            logger.info("本地缓存中当日患者数量：{}", cacheLocal.size());
+        } else {
+            cacheLocal = new HashSet<>();
+        }
+        if (null != cachedb && null != cacheLocal && cachedb.size() > cacheLocal.size()) {
+            cacheLocal = cachedb;
+            localCache.put(outpMrKey, cacheLocal);
+        }
+
         R<List<OutpMr>> mrResult = outpdoctFeignClient.getOutpMrByVisitDate(date);
         if (R.SUCCESS == mrResult.getCode() && mrResult.getData() != null){
             List<OutpMr> data = mrResult.getData();
 
             for (OutpMr outpMr : data) {
                 String visitDate = DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_XG, outpMr.getVisitDate());
-                String outpMrUserKey = visitDate + "-" + outpMr.getVisitNo() + "-" + outpMr.getOrdinal();
-                boolean contains = cacheList.contains(outpMrUserKey);
+                String outpMrUserKey = outpMr.getPatientId() + "-" + visitDate + "-" + outpMr.getVisitNo() + "-" + outpMr.getOrdinal();
+                boolean contains = cacheLocal.contains(outpMrUserKey);
                 if (contains) {
                     continue;
                 }
-                logger.warn("缓存中未包含此数据：{}", outpMrUserKey);
+                logger.warn("本地缓存中未包含此数据：{}", outpMrUserKey);
                 R<OutpMr> outpMrR = outpdoctFeignClient.selectByPrimaryKey(outpMr);
                 if (R.SUCCESS == mrResult.getCode() && mrResult.getData() != null){
                     OutpMr mr = outpMrR.getData();
                     logger.debug("重新推送{}", outpMrUserKey);
                     extracted(mr, Constants.HTTP_METHOD_POST);
+                    cacheLocal.add(outpMrUserKey);
                 } else {
                     logger.error("查询{}失败!", outpMrUserKey);
                 }
+                localCache.put(outpMrKey, cacheLocal);
             }
         } else {
             logger.error("查询失败，检查服务");
         }
+        redisCache.setCacheObject(outpMrKey, cacheLocal, 24, TimeUnit.HOURS);
+
     }
 
     private void sendRedisMsg(OutpMr outpMr) {
         // VISIT_DATE, VISIT_NO, ORDINAL
         String outpMrKey = OUTPDOCT_OUTP_MR_KEY + DateUtils.dateTimeNow(DateUtils.YYYY_MM_DD_XG);
         String visitDate = DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_XG, outpMr.getVisitDate());
-        String outpMrUserKey = visitDate + "-" + outpMr.getVisitNo() + "-" + outpMr.getOrdinal();
+        String outpMrUserKey = outpMr.getPatientId() + "-" + visitDate + "-" + outpMr.getVisitNo() + "-" + outpMr.getOrdinal();
         String cacheKey = getCacheKey(outpMrKey);
+        HashSet<String> cacheSet = localCache.get(cacheKey);
+        if (null == cacheSet || cacheSet.isEmpty()) {
+            cacheSet = new HashSet<>();
+        }
+        cacheSet.add(outpMrUserKey);
 
-        redisCache.appendString(cacheKey, outpMrUserKey);
+        localCache.put(cacheKey, cacheSet);
+        logger.debug("缓存添加数据：{}", outpMrUserKey);
     }
 }

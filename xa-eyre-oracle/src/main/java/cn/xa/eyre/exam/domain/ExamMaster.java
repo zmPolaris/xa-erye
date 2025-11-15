@@ -2,6 +2,7 @@ package cn.xa.eyre.exam.domain;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.StringJoiner;
 
 public class ExamMaster {
     private String examNo;
@@ -572,5 +573,68 @@ public class ExamMaster {
 
     public void setAccessionNo(String accessionNo) {
         this.accessionNo = accessionNo == null ? null : accessionNo.trim();
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", ExamMaster.class.getSimpleName() + "[", "]")
+                .add("examNo='" + examNo + "'")
+                .add("localIdClass='" + localIdClass + "'")
+                .add("patientLocalId='" + patientLocalId + "'")
+                .add("patientId='" + patientId + "'")
+                .add("visitId=" + visitId)
+                .add("name='" + name + "'")
+                .add("sex='" + sex + "'")
+                .add("dateOfBirth=" + dateOfBirth)
+                .add("examClass='" + examClass + "'")
+                .add("examSubClass='" + examSubClass + "'")
+                .add("spmRecvedDate=" + spmRecvedDate)
+                .add("clinSymp='" + clinSymp + "'")
+                .add("physSign='" + physSign + "'")
+                .add("relevantLabTest='" + relevantLabTest + "'")
+                .add("relevantDiag='" + relevantDiag + "'")
+                .add("clinDiag='" + clinDiag + "'")
+                .add("examMode='" + examMode + "'")
+                .add("examGroup='" + examGroup + "'")
+                .add("device='" + device + "'")
+                .add("performedBy='" + performedBy + "'")
+                .add("patientSource='" + patientSource + "'")
+                .add("facility='" + facility + "'")
+                .add("reqDateTime=" + reqDateTime)
+                .add("reqDept='" + reqDept + "'")
+                .add("reqPhysician='" + reqPhysician + "'")
+                .add("reqMemo='" + reqMemo + "'")
+                .add("scheduledDateTime=" + scheduledDateTime)
+                .add("notice='" + notice + "'")
+                .add("examDateTime=" + examDateTime)
+                .add("reportDateTime=" + reportDateTime)
+                .add("technician='" + technician + "'")
+                .add("reporter='" + reporter + "'")
+                .add("resultStatus='" + resultStatus + "'")
+                .add("costs=" + costs)
+                .add("charges=" + charges)
+                .add("chargeIndicator=" + chargeIndicator)
+                .add("identity='" + identity + "'")
+                .add("chargeType='" + chargeType + "'")
+                .add("rptstatus='" + rptstatus + "'")
+                .add("printStatus='" + printStatus + "'")
+                .add("examSubdept='" + examSubdept + "'")
+                .add("confirmDoct='" + confirmDoct + "'")
+                .add("studyUid='" + studyUid + "'")
+                .add("verifier='" + verifier + "'")
+                .add("examReason='" + examReason + "'")
+                .add("confirmDateTime=" + confirmDateTime)
+                .add("photoStatus='" + photoStatus + "'")
+                .add("auditingDoct='" + auditingDoct + "'")
+                .add("auditingDateTime=" + auditingDateTime)
+                .add("artificer='" + artificer + "'")
+                .add("errorComment='" + errorComment + "'")
+                .add("priorityIndicator=" + priorityIndicator)
+                .add("treatProcess='" + treatProcess + "'")
+                .add("visitDate=" + visitDate)
+                .add("visitNo=" + visitNo)
+                .add("bedNo=" + bedNo)
+                .add("accessionNo='" + accessionNo + "'")
+                .toString();
     }
 }

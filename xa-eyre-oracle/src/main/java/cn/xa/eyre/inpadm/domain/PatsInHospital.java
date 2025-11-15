@@ -1,7 +1,10 @@
 package cn.xa.eyre.inpadm.domain;
 
+import cn.xa.eyre.common.utils.DateUtils;
+
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.StringJoiner;
 
 public class PatsInHospital {
     private String patientId;
@@ -362,5 +365,47 @@ public class PatsInHospital {
 
     public void setNurseInCharge(String nurseInCharge) {
         this.nurseInCharge = nurseInCharge == null ? null : nurseInCharge.trim();
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", PatsInHospital.class.getSimpleName() + "[", "]")
+                .add("patientId='" + patientId + "'")
+                .add("visitId=" + visitId)
+                .add("wardCode='" + wardCode + "'")
+                .add("deptCode='" + deptCode + "'")
+                .add("bedNo=" + bedNo)
+                .add("admissionDateTime=" + admissionDateTime)
+                .add("admWardDateTime=" + admWardDateTime)
+                .add("diagnosis='" + diagnosis + "'")
+                .add("patientCondition='" + patientCondition + "'")
+                .add("nursingClass='" + nursingClass + "'")
+                .add("doctorInCharge='" + doctorInCharge + "'")
+                .add("operatingDate=" + operatingDate)
+                .add("billingDateTime=" + DateUtils.getYyyyMMddHHmmssString(billingDateTime))
+                .add("prepayments=" + prepayments)
+                .add("totalCosts=" + totalCosts)
+                .add("totalCharges=" + totalCharges)
+                .add("guarantor='" + guarantor + "'")
+                .add("guarantorOrg='" + guarantorOrg + "'")
+                .add("guarantorPhoneNum='" + guarantorPhoneNum + "'")
+                .add("billCheckedDateTime=" + billCheckedDateTime)
+                .add("settledIndicator=" + settledIndicator)
+                .add("lendBedNo=" + lendBedNo)
+                .add("bedDeptCode='" + bedDeptCode + "'")
+                .add("bedWardCode='" + bedWardCode + "'")
+                .add("deptCodeLend='" + deptCodeLend + "'")
+                .add("lendIndicator=" + lendIndicator)
+                .add("isNewborn=" + isNewborn)
+                .add("payFromAccount=" + payFromAccount)
+                .add("payFromFund=" + payFromFund)
+                .add("payFromInsured=" + payFromInsured)
+                .add("payWay=" + payWay)
+                .add("deptInCharge='" + deptInCharge + "'")
+                .add("startDateTime=" + startDateTime)
+                .add("frequencyNurse=" + frequencyNurse)
+                .add("bedLabel='" + bedLabel + "'")
+                .add("nurseInCharge='" + nurseInCharge + "'")
+                .toString();
     }
 }
