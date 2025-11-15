@@ -350,23 +350,32 @@ public class OutpdoctConvertService {
         R<List<OutpMr>> mrResult = outpdoctFeignClient.getOutpMrByVisitDate(date);
         if (R.SUCCESS == mrResult.getCode() && mrResult.getData() != null){
             List<OutpMr> data = mrResult.getData();
-
-            for (OutpMr outpMr : data) {
+            logger.debug("当前今日OUTP_MR总数：{}", data.size());
+//            for (OutpMr outpMr : data) {
+            for (int i = 0; i < data.size(); i++) {
+                OutpMr outpMr = data.get(i);
                 String visitDate = DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_XG, outpMr.getVisitDate());
                 String outpMrUserKey = outpMr.getPatientId() + "-" + visitDate + "-" + outpMr.getVisitNo() + "-" + outpMr.getOrdinal();
                 boolean contains = cacheLocal.contains(outpMrUserKey);
                 if (contains) {
                     continue;
                 }
-                logger.warn("本地缓存中未包含此数据：{}", outpMrUserKey);
+                logger.warn("本地缓存中未包含此数据：{}:{}", i, outpMrUserKey);
                 R<OutpMr> outpMrR = outpdoctFeignClient.selectByPrimaryKey(outpMr);
-                if (R.SUCCESS == mrResult.getCode() && mrResult.getData() != null){
-                    OutpMr mr = outpMrR.getData();
-                    logger.debug("重新推送{}", outpMrUserKey);
-                    extracted(mr, Constants.HTTP_METHOD_POST);
-                    cacheLocal.add(outpMrUserKey);
-                } else {
-                    logger.error("查询{}失败!", outpMrUserKey);
+                try {
+                    if (R.SUCCESS == mrResult.getCode() && mrResult.getData() != null){
+                        OutpMr mr = outpMrR.getData();
+                        logger.debug("重新推送{}", outpMrUserKey);
+                        extracted(mr, Constants.HTTP_METHOD_POST);
+                        cacheLocal.add(outpMrUserKey);
+                    } else {
+                        logger.error("查询{}失败!", outpMrUserKey);
+                    }
+                } catch (Exception e) {
+                    logger.error("推送{}失败", outpMrUserKey);
+                    logger.error(e.getMessage());
+                    logger.error("详细错误信息", e);
+                    continue;
                 }
                 localCache.put(outpMrKey, cacheLocal);
             }
