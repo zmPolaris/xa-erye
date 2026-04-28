@@ -334,6 +334,7 @@ public class MedrecConvertService {
                 emrActivityInfo.setOrgCode(emrFirstCourse.getOrgCode());
                 emrActivityInfo.setOrgName(emrFirstCourse.getOrgName());
                 emrActivityInfo.setOperationTime(DateUtils.getTime());
+                emrActivityInfo.setPhysicalExamination("-");
                 synchroEmrRealService.syncEmrActivityInfo(emrActivityInfo, httpMethod);
 
 
@@ -410,6 +411,7 @@ public class MedrecConvertService {
                 emrActivityInfo.setOrgCode(emrDailyCourse.getOrgCode());
                 emrActivityInfo.setOrgName(emrDailyCourse.getOrgName());
                 emrActivityInfo.setOperationTime(DateUtils.getTime());
+                emrActivityInfo.setPhysicalExamination("-");
                 synchroEmrRealService.syncEmrActivityInfo(emrActivityInfo, httpMethod);
             }
 
@@ -653,6 +655,7 @@ public class MedrecConvertService {
                 emrActivityInfo.setOrgCode(emrDischargeInfo.getOrgCode());
                 emrActivityInfo.setOrgName(emrDischargeInfo.getOrgName());
                 emrActivityInfo.setOperationTime(DateUtils.getTime());
+                emrActivityInfo.setPhysicalExamination("-");
                 synchroEmrRealService.syncEmrActivityInfo(emrActivityInfo, httpMethod);
 
                 if ("3".equalsIgnoreCase(patVisit.getDischargeDisposition())) {

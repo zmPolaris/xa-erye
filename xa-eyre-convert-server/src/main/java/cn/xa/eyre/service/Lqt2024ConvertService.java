@@ -137,6 +137,7 @@ public class Lqt2024ConvertService {
             emrActivityInfo.setOrgCode(emrDailyCourse.getOrgCode());
             emrActivityInfo.setOrgName(emrDailyCourse.getOrgName());
             emrActivityInfo.setOperationTime(DateUtils.getTime());
+            emrActivityInfo.setPhysicalExamination("-");
             synchroEmrRealService.syncEmrActivityInfo(emrActivityInfo, httpMethod);
         }else {
             logger.error("{}对应PatMasterIndex或PatVisit信息为空，无法同步", lqtCrbZd.getPatientId());

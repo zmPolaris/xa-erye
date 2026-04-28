@@ -293,7 +293,6 @@ public class OutpdoctConvertService {
             emrActivityInfo.setPhysicalExamination(outpMr.getBodyExam());
             emrActivityInfo.setStudiesSummaryResult(outpMr.getAssistExam());
             emrActivityInfo.setDiagnoseTime(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, outpMr.getVisitDate()));
-
             // 诊断代码
             if (StringUtils.isNotBlank(emrOutpatientRecord.getWmDiagnosisCode())){
                 emrActivityInfo.setWmDiseaseCode(emrOutpatientRecord.getWmDiagnosisCode());

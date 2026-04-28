@@ -114,6 +114,7 @@ public class InpadmConvertService {
             emrAdmissionInfo.setWardNo(patsInHospital.getWardCode());
             emrAdmissionInfo.setBedNo(String.valueOf(patsInHospital.getBedNo()));
             emrAdmissionInfo.setAdmissionDate(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, patsInHospital.getAdmissionDateTime()));
+            emrAdmissionInfo.setPhysicalExamination("-");
             // 治疗医生
             if (StringUtils.isNotBlank(patsInHospital.getDoctorInCharge())){
                 R<Users> user = commFeignClient.getUserByName(patsInHospital.getDoctorInCharge());
@@ -247,6 +248,7 @@ public class InpadmConvertService {
             emrActivityInfo.setOrgCode(emrAdmissionInfo.getOrgCode());
             emrActivityInfo.setOrgName(emrAdmissionInfo.getOrgName());
             emrActivityInfo.setOperationTime(DateUtils.getTime());
+            emrActivityInfo.setPhysicalExamination(emrAdmissionInfo.getPhysicalExamination());
             synchroEmrRealService.syncEmrActivityInfo(emrActivityInfo, httpMethod);
 
         }else {
