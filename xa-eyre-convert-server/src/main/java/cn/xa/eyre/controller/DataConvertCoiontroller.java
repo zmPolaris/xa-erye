@@ -3,6 +3,7 @@ package cn.xa.eyre.controller;
 import cn.hutool.json.JSONUtil;
 import cn.xa.eyre.common.core.domain.AjaxResult;
 import cn.xa.eyre.common.core.kafka.DBMessage;
+import cn.xa.eyre.lab.domain.LabTestMaster;
 import cn.xa.eyre.medrec.domain.DiagnosisKey;
 import cn.xa.eyre.medrec.domain.PatMasterIndex;
 import cn.xa.eyre.outpdoct.domain.OutpMr;
@@ -138,5 +139,10 @@ public class DataConvertCoiontroller {
     @PostMapping("/pushDiagnosis")
     public AjaxResult pushDiagnosis(@RequestBody DiagnosisKey diagnosisKey, HttpServletRequest request){
         return AjaxResult.success("住院数据获取成功", dataConvertService.pushDiagnosis(diagnosisKey));
+    }
+
+    @PostMapping("/pushLabTestMaster")
+    public AjaxResult pushLabTestMaster(@RequestBody LabTestMaster labTestMaster, HttpServletRequest request){
+        return AjaxResult.success(labTestMaster.getTestNo() + "检验数据推送成功", dataConvertService.pushLabTestMaster(labTestMaster));
     }
 }
