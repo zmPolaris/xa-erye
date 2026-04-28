@@ -135,15 +135,21 @@ public class MedrecConvertService {
         if (ddNation != null){
             emrPatientInfo.setNationCode(ddNation.getCode());
             emrPatientInfo.setNationName(ddNation.getName());
+        } else {
+            emrPatientInfo.setNationCode(HubCodeEnum.NATION_CODE.getCode());
+            emrPatientInfo.setNationName(HubCodeEnum.NATION_CODE.getName());
         }
-//        else {
-//            emrPatientInfo.setNationCode(HubCodeEnum.NATION_CODE.getCode());
-//            emrPatientInfo.setNationName(HubCodeEnum.NATION_CODE.getName());
-//        }
         emrPatientInfo.setCurrentAddrCode(patMasterIndex.getMailingAreaCode4());
         emrPatientInfo.setCurrentAddrName(patMasterIndex.getMailingAddress());
         emrPatientInfo.setCurrentAddrDetail(patMasterIndex.getNextOfKinAddr());
         emrPatientInfo.setWorkunit(patMasterIndex.getWorkunit());
+        if (StringUtils.isNotBlank(patMasterIndex.getPhoneNumberHome())){
+            emrPatientInfo.setTel(patMasterIndex.getPhoneNumberHome());
+        } else if (StringUtils.isNotBlank(patMasterIndex.getNextOfKinPhone())){
+            emrPatientInfo.setTel(patMasterIndex.getNextOfKinPhone());
+        } else {
+            emrPatientInfo.setTel("-");
+        }
         Date birthDate = patMasterIndex.getDateOfBirth();
         if (null != birthDate) {
             LocalDate localDate = DateUtils.convertDateToLocalDate(birthDate);
