@@ -115,6 +115,11 @@ public class InpadmConvertService {
             emrAdmissionInfo.setBedNo(String.valueOf(patsInHospital.getBedNo()));
             emrAdmissionInfo.setAdmissionDate(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, patsInHospital.getAdmissionDateTime()));
             emrAdmissionInfo.setPhysicalExamination("-");
+            emrAdmissionInfo.setWardName("-");
+            String wardCode = patsInHospital.getWardCode();
+            if (StringUtils.isNotBlank(wardCode)) {
+                emrAdmissionInfo.setWardName(wardCode);
+            }
             // 治疗医生
             if (StringUtils.isNotBlank(patsInHospital.getDoctorInCharge())){
                 R<Users> user = commFeignClient.getUserByName(patsInHospital.getDoctorInCharge());
@@ -141,17 +146,25 @@ public class InpadmConvertService {
             emrAdmissionInfo.setDeptCode(dictDisDept.getHubCode());
             emrAdmissionInfo.setDeptName(dictDisDept.getHubName());
 
-            /*// 查询7天内门诊信息补充病情
+            // 查询7天内门诊信息补充病情
             OutpMr outpMr = new OutpMr();
             outpMr.setPatientId(patsInHospital.getPatientId());
             outpMr.setBeginVisitDate(DateUtils.addDays(patsInHospital.getAdmissionDateTime(), -7));
             outpMr.setEndVisitDate(patsInHospital.getAdmissionDateTime());
             R<List<OutpMr>> mrResult = outpdoctFeignClient.getOutpMrByCondition(outpMr);
-            if (R.SUCCESS == mrResult.getCode() &&mrResult.getData() != null){
+            if (R.SUCCESS == mrResult.getCode() &&mrResult.getData() != null) {
                 outpMr = mrResult.getData().get(0);
                 emrAdmissionInfo.setChiefComplaint(outpMr.getIllnessDesc());
                 emrAdmissionInfo.setPresentIllnessHis(outpMr.getMedHistory());
-                emrAdmissionInfo.setPastIllnessHis(outpMr.getAnamnesis());
+                emrAdmissionInfo.setPhysicalExamination(outpMr.getBodyExam());
+                emrAdmissionInfo.setStudiesSummaryResult(outpMr.getAssistExam());
+            } else {
+                emrAdmissionInfo.setChiefComplaint("-");
+                emrAdmissionInfo.setPresentIllnessHis("-");
+                emrAdmissionInfo.setPhysicalExamination("-");
+                emrAdmissionInfo.setStudiesSummaryResult("-");
+            }
+                /*emrAdmissionInfo.setPastIllnessHis(outpMr.getAnamnesis());
                 emrAdmissionInfo.setOperationHis(outpMr.getMedicalRecord());
                 emrAdmissionInfo.setMaritalHis(outpMr.getMarrital());
                 if(StringUtils.isNotBlank(outpMr.getIndividual())){
@@ -159,8 +172,6 @@ public class InpadmConvertService {
                 }
                 emrAdmissionInfo.setMenstrualHis(outpMr.getMenses());
                 emrAdmissionInfo.setFamilyHis(outpMr.getFamilyIll());
-                emrAdmissionInfo.setPhysicalExamination(outpMr.getBodyExam());
-                emrAdmissionInfo.setStudiesSummaryResult(outpMr.getAssistExam());
                 // 诊断代码
                 List<String> diseases = new ArrayList<>();
                 if (StringUtils.isNotBlank(outpMr.getDiagnosisCodeMz1())){
