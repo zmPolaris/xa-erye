@@ -23,9 +23,11 @@ import cn.xa.eyre.inpadm.domain.PatsInHospital;
 import cn.xa.eyre.medrec.domain.*;
 import cn.xa.eyre.outpdoct.domain.OutpMr;
 import cn.xa.eyre.system.dict.domain.DatasetDiseaseData;
+import cn.xa.eyre.system.dict.domain.DdDiseaseIcd;
 import cn.xa.eyre.system.dict.domain.DictDisDept;
 import cn.xa.eyre.system.dict.domain.DictDiseaseIcd10;
 import cn.xa.eyre.system.dict.mapper.DatasetDiseaseDataMapper;
+import cn.xa.eyre.system.dict.mapper.DdDiseaseIcdMapper;
 import cn.xa.eyre.system.dict.mapper.DictDisDeptMapper;
 import cn.xa.eyre.system.dict.mapper.DictDiseaseIcd10Mapper;
 import org.slf4j.Logger;
@@ -60,6 +62,8 @@ public class InpadmConvertService {
     SynchroEmrRealService synchroEmrRealService;
     @Autowired
     private HubToolService hubToolService;
+    @Autowired
+    private DdDiseaseIcdMapper ddDiseaseIcdMapper;
 
     public void patsInHospital(DBMessage dbMessage) {
         logger.debug("PATS_IN_HOSPITAL表变更接口");
@@ -249,6 +253,15 @@ public class InpadmConvertService {
             emrActivityInfo.setDiagnoseTime(emrAdmissionInfo.getConfirmedDiagnosisDate());
             emrActivityInfo.setWmDiseaseCode(emrAdmissionInfo.getWmConfirmedDiagnosisCode());
             emrActivityInfo.setWmDiseaseName(emrAdmissionInfo.getWmConfirmedDiagnosisName());
+            // 2026-05-06新增传染病诊断条件必填
+            String[] codes = emrActivityInfo.getWmDiseaseCode().split("||");
+            for (String code: codes) {
+                DdDiseaseIcd icd10 = ddDiseaseIcdMapper.selectByCode(emrActivityInfo.getWmDiseaseCode());
+                if(icd10 != null){
+                    emrActivityInfo.setDiseaseCode(StringUtils.isBlank(emrActivityInfo.getDiseaseCode()) ? code : "||" + code);
+                    emrActivityInfo.setDiseaseName(StringUtils.isBlank(emrActivityInfo.getDiseaseName()) ? icd10.getName() : "||" + icd10.getName());
+                }
+            }
             emrActivityInfo.setFillDoctor(patsInHospital.getDoctorInCharge());
             emrActivityInfo.setOperatorId(emrAdmissionInfo.getOperatorId());
             if (StringUtils.isBlank(emrAdmissionInfo.getOperatorId())){

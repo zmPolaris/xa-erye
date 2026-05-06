@@ -8,14 +8,15 @@ public enum HubCodeEnum {
     ID_CARD_TYPE_OTHER("99", "其他法定有效证件"),
     ORG_CODE("520111021", "中国人民解放军联勤保障部队第九二五医院"),
     NATIONALITY_CODE("156", "中国"),
-    NATION_CODE("97", "其他"),
-    DISEASE_ICD10_CODE("143", "其他"),
+    NATION_CODE("01", "汉族"),
+    DISEASE_ICD10_CODE("D49.9", "其它"),
     DISEASE_ICD10_CODE_DEFAULT("J42.x00", "慢性支气管炎"),
     PAY_TYPE_OTHER("99", "其他"),
     EXAM_RESULT_ABNORMAL("01", "阳性"),
     EXAM_RESULT_OTHER("07", "未检出"),
     SEX_OTHER("0", "未知的性别"),
     TREAT_RESULT_OTHER("9", "其他"),
+    DEPT_CODE("D99", "其他科室"),
 
 
     DIAGNOSIS_ACTIVITIES_OUTPATIENT("1", "门诊"),

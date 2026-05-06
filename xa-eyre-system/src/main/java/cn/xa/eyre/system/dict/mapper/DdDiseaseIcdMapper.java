@@ -1,6 +1,7 @@
 package cn.xa.eyre.system.dict.mapper;
 
 import cn.xa.eyre.system.dict.domain.DdDiseaseIcd;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -18,4 +19,6 @@ public interface DdDiseaseIcdMapper {
     int updateByPrimaryKey(DdDiseaseIcd record);
 
     List<DdDiseaseIcd> selectAll();
+
+    DdDiseaseIcd selectByCode(@Param("code") String code);
 }

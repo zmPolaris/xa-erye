@@ -28,8 +28,10 @@ import cn.xa.eyre.medrec.domain.PatMasterIndex;
 import cn.xa.eyre.outpadm.domain.ClinicMaster;
 import cn.xa.eyre.outpdoct.domain.OutpMr;
 import cn.xa.eyre.outpdoct.domain.OutpWaitQueue;
+import cn.xa.eyre.system.dict.domain.DdDiseaseIcd;
 import cn.xa.eyre.system.dict.domain.DictDisDept;
 import cn.xa.eyre.system.dict.domain.DictDiseaseIcd10;
+import cn.xa.eyre.system.dict.mapper.DdDiseaseIcdMapper;
 import cn.xa.eyre.system.dict.mapper.DictDisDeptMapper;
 import cn.xa.eyre.system.dict.mapper.DictDiseaseIcd10Mapper;
 
@@ -72,6 +74,8 @@ public class OutpdoctConvertService {
 
     @Autowired
     private RedisCache redisCache;
+    @Autowired
+    private DdDiseaseIcdMapper ddDiseaseIcdMapper;
 
     CaffeineCacheUtils<String, HashSet<String>> localCache = CaffeineCacheUtils.createExpireAfterAccess(25, TimeUnit.HOURS);
 
@@ -297,6 +301,15 @@ public class OutpdoctConvertService {
             if (StringUtils.isNotBlank(emrOutpatientRecord.getWmDiagnosisCode())){
                 emrActivityInfo.setWmDiseaseCode(emrOutpatientRecord.getWmDiagnosisCode());
                 emrActivityInfo.setWmDiseaseName(emrOutpatientRecord.getWmDiagnosisName());
+                // 2026-05-06新增传染病诊断条件必填
+                String[] codes = emrActivityInfo.getWmDiseaseCode().split("||");
+                for (String code: codes) {
+                    DdDiseaseIcd icd10 = ddDiseaseIcdMapper.selectByCode(emrActivityInfo.getWmDiseaseCode());
+                    if(icd10 != null){
+                        emrActivityInfo.setDiseaseCode(StringUtils.isBlank(emrActivityInfo.getDiseaseCode()) ? code : "||" + code);
+                        emrActivityInfo.setDiseaseName(StringUtils.isBlank(emrActivityInfo.getDiseaseName()) ? icd10.getName() : "||" + icd10.getName());
+                    }
+                }
             }else {
                 emrActivityInfo.setWmDiseaseCode(HubCodeEnum.DISEASE_ICD10_CODE.getCode());
                 emrActivityInfo.setWmDiseaseName(HubCodeEnum.DISEASE_ICD10_CODE.getName());

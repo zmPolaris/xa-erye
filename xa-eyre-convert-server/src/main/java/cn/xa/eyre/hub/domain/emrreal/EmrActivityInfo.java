@@ -3,6 +3,7 @@ package cn.xa.eyre.hub.domain.emrreal;
 import java.util.Date;
 
 import cn.xa.eyre.common.core.domain.BaseEntity;
+import cn.xa.eyre.common.utils.StringUtils;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -125,6 +126,13 @@ public class EmrActivityInfo extends BaseEntity
     /** 传报卡补充的病种名称 */
     private String reportDiseaseName;
 
+    public EmrActivityInfo() {
+        this.chiefComplaint = "-";
+        this.presentIllnessHis = "-";
+        this.physicalExamination = "-";
+        this.studiesSummaryResult = "-";
+    }
+
     public void setId(String id)
     {
         this.id = id;
@@ -217,7 +225,7 @@ public class EmrActivityInfo extends BaseEntity
     }
     public void setChiefComplaint(String chiefComplaint)
     {
-        this.chiefComplaint = chiefComplaint;
+        this.chiefComplaint = StringUtils.isBlank(chiefComplaint) ? "-" : chiefComplaint;
     }
 
     public String getChiefComplaint()
@@ -226,7 +234,7 @@ public class EmrActivityInfo extends BaseEntity
     }
     public void setPresentIllnessHis(String presentIllnessHis)
     {
-        this.presentIllnessHis = presentIllnessHis;
+        this.presentIllnessHis = StringUtils.isBlank(presentIllnessHis) ? "-" : presentIllnessHis;
     }
 
     public String getPresentIllnessHis()
@@ -235,7 +243,7 @@ public class EmrActivityInfo extends BaseEntity
     }
     public void setPhysicalExamination(String physicalExamination)
     {
-        this.physicalExamination = physicalExamination;
+        this.physicalExamination = StringUtils.isBlank(physicalExamination) ? "-" : physicalExamination;
     }
 
     public String getPhysicalExamination()
@@ -244,7 +252,7 @@ public class EmrActivityInfo extends BaseEntity
     }
     public void setStudiesSummaryResult(String studiesSummaryResult)
     {
-        this.studiesSummaryResult = studiesSummaryResult;
+        this.studiesSummaryResult = StringUtils.isBlank(studiesSummaryResult) ? "-" : studiesSummaryResult;
     }
 
     public String getStudiesSummaryResult()

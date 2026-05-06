@@ -3,6 +3,7 @@ package cn.xa.eyre.hub.domain.emrreal;
 import java.util.Date;
 
 import cn.xa.eyre.common.core.domain.BaseEntity;
+import cn.xa.eyre.common.utils.StringUtils;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -128,6 +129,20 @@ public class EmrPatientInfo extends BaseEntity
 
     /** 数据处理类型 */
     private String qzrjDataType;
+
+    public EmrPatientInfo() {
+        this.genderCode = "-";
+        this.genderName = "-";
+        this.nationalityCode = "-";
+        this.nationalityName = "-";
+        this.nationCode = "-";
+        this.nationName = "-";
+        this.currentAddrCode = "-";
+        this.currentAddrName = "-";
+        this.currentAddrDetail = "-";
+        this.workunit = "-";
+        this.tel = "-";
+    }
 
     public void setId(String id)
     {
@@ -266,7 +281,7 @@ public class EmrPatientInfo extends BaseEntity
     }
     public void setCurrentAddrCode(String currentAddrCode)
     {
-        this.currentAddrCode = currentAddrCode;
+        this.currentAddrCode = StringUtils.isBlank(currentAddrCode) ? "-" : currentAddrCode;
     }
 
     public String getCurrentAddrCode()
@@ -275,7 +290,7 @@ public class EmrPatientInfo extends BaseEntity
     }
     public void setCurrentAddrName(String currentAddrName)
     {
-        this.currentAddrName = currentAddrName;
+        this.currentAddrName = StringUtils.isBlank(currentAddrName) ? "-" : currentAddrName;
     }
 
     public String getCurrentAddrName()
@@ -284,7 +299,7 @@ public class EmrPatientInfo extends BaseEntity
     }
     public void setCurrentAddrDetail(String currentAddrDetail)
     {
-        this.currentAddrDetail = currentAddrDetail;
+        this.currentAddrDetail = StringUtils.isBlank(currentAddrDetail) ? "-" : currentAddrDetail;
     }
 
     public String getCurrentAddrDetail()
@@ -293,7 +308,7 @@ public class EmrPatientInfo extends BaseEntity
     }
     public void setWorkunit(String workunit)
     {
-        this.workunit = workunit;
+        this.workunit = StringUtils.isBlank(workunit) ? "-" : workunit;
     }
 
     public String getWorkunit()

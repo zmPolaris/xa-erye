@@ -24,9 +24,11 @@ import cn.xa.eyre.hub.staticvalue.HubCodeEnum;
 import cn.xa.eyre.medrec.domain.PatMasterIndex;
 import cn.xa.eyre.outpadm.domain.ClinicMaster;
 import cn.xa.eyre.outpdoct.domain.OutpMr;
+import cn.xa.eyre.system.dict.domain.DdDiseaseIcd;
 import cn.xa.eyre.system.dict.domain.DdNation;
 import cn.xa.eyre.system.dict.domain.DictDisDept;
 import cn.xa.eyre.system.dict.domain.DictDiseaseIcd10;
+import cn.xa.eyre.system.dict.mapper.DdDiseaseIcdMapper;
 import cn.xa.eyre.system.dict.mapper.DdNationMapper;
 import cn.xa.eyre.system.dict.mapper.DictDisDeptMapper;
 import cn.xa.eyre.system.dict.mapper.DictDiseaseIcd10Mapper;
@@ -62,6 +64,8 @@ public class HubToolService {
     private OutpadmFeignClient outpadmFeignClient;
     @Autowired
     private DictDiseaseIcd10Mapper dictDiseaseIcd10Mapper;// ICD10转码表
+    @Autowired
+    private DdDiseaseIcdMapper ddDiseaseIcdMapper;
     public boolean synchroPatient(Integer num) {
         R<List<PatMasterIndex>> patsResult = medrecFeignClient.getPatMasterIndexList(num);
         if (R.SUCCESS == patsResult.getCode() && !patsResult.getData().isEmpty()){
@@ -284,6 +288,7 @@ public class HubToolService {
                             emrActivityInfo.setWmDiseaseCode(dictDiseaseIcd10.getHubCode());
                             emrActivityInfo.setWmDiseaseName(dictDiseaseIcd10.getHubName());
                         }
+
                         if (StringUtils.isNotBlank(outpMr.getDiagnosisCodeMz2())){
                             DictDiseaseIcd10 dictDiseaseIcd102 = dictDiseaseIcd10Mapper.selectByEmrCode(outpMr.getDiagnosisCodeMz2());
                             if(dictDiseaseIcd102 == null){
@@ -297,6 +302,15 @@ public class HubToolService {
                     }else {
                         emrActivityInfo.setWmDiseaseCode(HubCodeEnum.DISEASE_ICD10_CODE.getCode());
                         emrActivityInfo.setWmDiseaseName(HubCodeEnum.DISEASE_ICD10_CODE.getName());
+                    }
+                    // 2026-05-06新增传染病诊断条件必填
+                    String[] codes = emrActivityInfo.getWmDiseaseCode().split("||");
+                    for (String code: codes) {
+                        DdDiseaseIcd icd10 = ddDiseaseIcdMapper.selectByCode(emrActivityInfo.getWmDiseaseCode());
+                        if(icd10 != null){
+                            emrActivityInfo.setDiseaseCode(StringUtils.isBlank(emrActivityInfo.getDiseaseCode()) ? code : "||" + code);
+                            emrActivityInfo.setDiseaseName(StringUtils.isBlank(emrActivityInfo.getDiseaseName()) ? icd10.getName() : "||" + icd10.getName());
+                        }
                     }
 
                     emrActivityInfo.setFillDoctor(patMasterIndex.getOperator());
@@ -371,23 +385,29 @@ public class HubToolService {
         }
         emrPatientInfo.setGenderName(patMasterIndex.getSex());
         emrPatientInfo.setBirthDate(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD, patMasterIndex.getDateOfBirth()));
-        if("CN".equals(patMasterIndex.getCitizenship())){
+//        if("CN".equals(patMasterIndex.getCitizenship())){
             emrPatientInfo.setNationalityCode(HubCodeEnum.NATIONALITY_CODE.getCode());
             emrPatientInfo.setNationalityName(HubCodeEnum.NATIONALITY_CODE.getName());
-        }
+//        }
         DdNation ddNation = ddNationMapper.selectByName(patMasterIndex.getNation());
         if (ddNation != null){
             emrPatientInfo.setNationCode(ddNation.getCode());
             emrPatientInfo.setNationName(ddNation.getName());
+        } else {
+            emrPatientInfo.setNationCode(HubCodeEnum.NATION_CODE.getCode());
+            emrPatientInfo.setNationName(HubCodeEnum.NATION_CODE.getName());
         }
-//        else {
-//            emrPatientInfo.setNationCode(HubCodeEnum.NATION_CODE.getCode());
-//            emrPatientInfo.setNationName(HubCodeEnum.NATION_CODE.getName());
-//        }
         emrPatientInfo.setCurrentAddrCode(patMasterIndex.getMailingAreaCode4());
         emrPatientInfo.setCurrentAddrName(patMasterIndex.getMailingAddress());
         emrPatientInfo.setCurrentAddrDetail(patMasterIndex.getNextOfKinAddr());
         emrPatientInfo.setWorkunit(patMasterIndex.getWorkunit());
+        if (StringUtils.isNotBlank(patMasterIndex.getPhoneNumberHome())){
+            emrPatientInfo.setTel(patMasterIndex.getPhoneNumberHome());
+        } else if (StringUtils.isNotBlank(patMasterIndex.getNextOfKinPhone())){
+            emrPatientInfo.setTel(patMasterIndex.getNextOfKinPhone());
+        } else {
+            emrPatientInfo.setTel("-");
+        }
         Date birthDate = patMasterIndex.getDateOfBirth();
         if (null != birthDate) {
             LocalDate localDate = DateUtils.convertDateToLocalDate(birthDate);

@@ -137,6 +137,15 @@ public class EmrExLab extends BaseEntity
     /** 标本类别名称 */
     private String specimenCategoryName;
 
+    public EmrExLab() {
+        this.applyOrgName = "-";
+        this.applyOrgCode = "-";
+        this.applyDeptName = "-";
+        this.applyDeptCode = "-";
+        this.specimenCategoryCode = "-";
+        this.specimenCategoryName = "-";
+    }
+
     public void setId(String id)
     {
         this.id = id;

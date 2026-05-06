@@ -66,6 +66,8 @@ public class MedrecConvertService {
 
     @Autowired
     InitDiseaseDataService initDiseaseDataService;
+    @Autowired
+    private DdDiseaseIcdMapper ddDiseaseIcdMapper;
 
     public void patMasterIndex(DBMessage dbMessage) {
         logger.debug("病人主索引表PAT_MASTER_INDEX变更接口");
@@ -127,10 +129,10 @@ public class MedrecConvertService {
         }
         emrPatientInfo.setGenderName(patMasterIndex.getSex());
         emrPatientInfo.setBirthDate(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD, patMasterIndex.getDateOfBirth()));
-        if("CN".equals(patMasterIndex.getCitizenship())){
+//        if("CN".equals(patMasterIndex.getCitizenship())){
             emrPatientInfo.setNationalityCode(HubCodeEnum.NATIONALITY_CODE.getCode());
             emrPatientInfo.setNationalityName(HubCodeEnum.NATIONALITY_CODE.getName());
-        }
+//        }
         DdNation ddNation = ddNationMapper.selectByName(patMasterIndex.getNation());
         if (ddNation != null){
             emrPatientInfo.setNationCode(ddNation.getCode());
@@ -323,6 +325,15 @@ public class MedrecConvertService {
                 emrActivityInfo.setDiagnoseTime(emrFirstCourse.getCreateDate());
                 emrActivityInfo.setWmDiseaseCode(emrFirstCourse.getWmInitalDiagnosisCode());
                 emrActivityInfo.setWmDiseaseName(emrFirstCourse.getWmInitalDiagnosisName());
+                // 2026-05-06新增传染病诊断条件必填
+                String[] codes = emrActivityInfo.getWmDiseaseCode().split("||");
+                for (String code: codes) {
+                    DdDiseaseIcd icd10 = ddDiseaseIcdMapper.selectByCode(emrActivityInfo.getWmDiseaseCode());
+                    if(icd10 != null){
+                        emrActivityInfo.setDiseaseCode(StringUtils.isBlank(emrActivityInfo.getDiseaseCode()) ? code : "||" + code);
+                        emrActivityInfo.setDiseaseName(StringUtils.isBlank(emrActivityInfo.getDiseaseName()) ? icd10.getName() : "||" + icd10.getName());
+                    }
+                }
                 emrActivityInfo.setFillDoctor(patVisitResult.getData().getDoctorInCharge());
                 emrActivityInfo.setOperatorId(emrFirstCourse.getOperatorId());
                 if (StringUtils.isBlank(emrActivityInfo.getFillDoctor()))
@@ -400,6 +411,15 @@ public class MedrecConvertService {
                 emrActivityInfo.setDiagnoseTime(emrDailyCourse.getCreateDate());
                 emrActivityInfo.setWmDiseaseCode(dictDiseaseIcd10.getHubCode());
                 emrActivityInfo.setWmDiseaseName(dictDiseaseIcd10.getHubName());
+                // 2026-05-06新增传染病诊断条件必填
+                String[] codes = emrActivityInfo.getWmDiseaseCode().split("||");
+                for (String code: codes) {
+                    DdDiseaseIcd icd10 = ddDiseaseIcdMapper.selectByCode(emrActivityInfo.getWmDiseaseCode());
+                    if(icd10 != null){
+                        emrActivityInfo.setDiseaseCode(StringUtils.isBlank(emrActivityInfo.getDiseaseCode()) ? code : "||" + code);
+                        emrActivityInfo.setDiseaseName(StringUtils.isBlank(emrActivityInfo.getDiseaseName()) ? icd10.getName() : "||" + icd10.getName());
+                    }
+                }
                 emrActivityInfo.setFillDoctor(patVisitResult.getData().getDoctorInCharge());
                 emrActivityInfo.setOperatorId(emrDailyCourse.getOperatorId());
                 if (StringUtils.isBlank(emrActivityInfo.getFillDoctor()))
@@ -648,6 +668,15 @@ public class MedrecConvertService {
                 emrActivityInfo.setDiagnoseTime(emrDischargeInfo.getAdmissionDate());
                 emrActivityInfo.setWmDiseaseCode(emrDischargeInfo.getDischargeDiagnosisCode());
                 emrActivityInfo.setWmDiseaseName(emrDischargeInfo.getDischargeDiagnosisName());
+                // 2026-05-06新增传染病诊断条件必填
+                String[] codes = emrActivityInfo.getWmDiseaseCode().split("||");
+                for (String code: codes) {
+                    DdDiseaseIcd icd10 = ddDiseaseIcdMapper.selectByCode(emrActivityInfo.getWmDiseaseCode());
+                    if(icd10 != null){
+                        emrActivityInfo.setDiseaseCode(StringUtils.isBlank(emrActivityInfo.getDiseaseCode()) ? code : "||" + code);
+                        emrActivityInfo.setDiseaseName(StringUtils.isBlank(emrActivityInfo.getDiseaseName()) ? icd10.getName() : "||" + icd10.getName());
+                    }
+                }
                 emrActivityInfo.setFillDoctor(patVisit.getAttendingDoctor());
                 emrActivityInfo.setOperatorId(emrDischargeInfo.getChiefPhysicianId());
                 emrActivityInfo.setDeptCode(emrDischargeInfo.getDeptCode());
@@ -709,6 +738,15 @@ public class MedrecConvertService {
                             logger.debug("构造emrActivityInfo(出院)接口数据...");
                             emrActivityInfo.setWmDiseaseCode(emrDeathInfo.getDeathDiagnosisCode());
                             emrActivityInfo.setWmDiseaseName(emrDeathInfo.getDeathDiagnosisName());
+                            // 2026-05-06新增传染病诊断条件必填
+                            String[] codess = emrActivityInfo.getWmDiseaseCode().split("||");
+                            for (String codee: codess) {
+                                DdDiseaseIcd icd101 = ddDiseaseIcdMapper.selectByCode(emrActivityInfo.getWmDiseaseCode());
+                                if(icd101 != null){
+                                    emrActivityInfo.setDiseaseCode(StringUtils.isBlank(emrActivityInfo.getDiseaseCode()) ? codee : "||" + codee);
+                                    emrActivityInfo.setDiseaseName(StringUtils.isBlank(emrActivityInfo.getDiseaseName()) ? icd101.getName() : "||" + icd101.getName());
+                                }
+                            }
                             synchroEmrRealService.syncEmrActivityInfo(emrActivityInfo, httpMethod);
                         }
                     }

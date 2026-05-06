@@ -435,6 +435,15 @@ public class DataConvertService {
                 if (StringUtils.isNotBlank(emrOutpatientRecord.getWmDiagnosisCode())){
                     emrActivityInfo.setWmDiseaseCode(emrOutpatientRecord.getWmDiagnosisCode());
                     emrActivityInfo.setWmDiseaseName(emrOutpatientRecord.getWmDiagnosisName());
+                    // 2026-05-06新增传染病诊断条件必填
+                    String[] codes = emrActivityInfo.getWmDiseaseCode().split("||");
+                    for (String code: codes) {
+                        DdDiseaseIcd icd10 = ddDiseaseIcdMapper.selectByCode(emrActivityInfo.getWmDiseaseCode());
+                        if(icd10 != null){
+                            emrActivityInfo.setDiseaseCode(StringUtils.isBlank(emrActivityInfo.getDiseaseCode()) ? code : "||" + code);
+                            emrActivityInfo.setDiseaseName(StringUtils.isBlank(emrActivityInfo.getDiseaseName()) ? icd10.getName() : "||" + icd10.getName());
+                        }
+                    }
                 }else {
                     emrActivityInfo.setWmDiseaseCode(HubCodeEnum.DISEASE_ICD10_CODE.getCode());
                     emrActivityInfo.setWmDiseaseName(HubCodeEnum.DISEASE_ICD10_CODE.getName());
@@ -502,23 +511,29 @@ public class DataConvertService {
         }
         emrPatientInfo.setGenderName(patMasterIndex.getSex());
         emrPatientInfo.setBirthDate(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD, patMasterIndex.getDateOfBirth()));
-        if("CN".equals(patMasterIndex.getCitizenship())){
+//        if("CN".equals(patMasterIndex.getCitizenship())){
             emrPatientInfo.setNationalityCode(HubCodeEnum.NATIONALITY_CODE.getCode());
             emrPatientInfo.setNationalityName(HubCodeEnum.NATIONALITY_CODE.getName());
-        }
+//        }
         DdNation ddNation = ddNationMapper.selectByName(patMasterIndex.getNation());
         if (ddNation != null){
             emrPatientInfo.setNationCode(ddNation.getCode());
             emrPatientInfo.setNationName(ddNation.getName());
+        } else {
+            emrPatientInfo.setNationCode(HubCodeEnum.NATION_CODE.getCode());
+            emrPatientInfo.setNationName(HubCodeEnum.NATION_CODE.getName());
         }
-//        else {
-//            emrPatientInfo.setNationCode(HubCodeEnum.NATION_CODE.getCode());
-//            emrPatientInfo.setNationName(HubCodeEnum.NATION_CODE.getName());
-//        }
         emrPatientInfo.setCurrentAddrCode(patMasterIndex.getMailingAreaCode4());
         emrPatientInfo.setCurrentAddrName(patMasterIndex.getMailingAddress());
         emrPatientInfo.setCurrentAddrDetail(patMasterIndex.getNextOfKinAddr());
         emrPatientInfo.setWorkunit(patMasterIndex.getWorkunit());
+        if (StringUtils.isNotBlank(patMasterIndex.getPhoneNumberHome())){
+            emrPatientInfo.setTel(patMasterIndex.getPhoneNumberHome());
+        } else if (StringUtils.isNotBlank(patMasterIndex.getNextOfKinPhone())){
+            emrPatientInfo.setTel(patMasterIndex.getNextOfKinPhone());
+        } else {
+            emrPatientInfo.setTel("-");
+        }
         Date birthDate = patMasterIndex.getDateOfBirth();
         if (null != birthDate) {
             LocalDate localDate = DateUtils.convertDateToLocalDate(birthDate);
@@ -672,6 +687,11 @@ public class DataConvertService {
                 emrActivityInfo.setDiagnoseTime(emrFirstCourse.getCreateDate());
                 emrActivityInfo.setWmDiseaseCode(emrFirstCourse.getWmInitalDiagnosisCode());
                 emrActivityInfo.setWmDiseaseName(emrFirstCourse.getWmInitalDiagnosisName());
+                // 2026-05-06新增传染病诊断条件必填
+                if(ddDiseaseIcdMapper.selectByCode(emrActivityInfo.getWmDiseaseCode()) != null){
+                    emrActivityInfo.setDiseaseCode(emrActivityInfo.getWmDiseaseCode());
+                    emrActivityInfo.setDiseaseName(emrActivityInfo.getWmDiseaseName());
+                }
                 emrActivityInfo.setFillDoctor(patVisitResult.getData().getDoctorInCharge());
                 emrActivityInfo.setOperatorId(emrFirstCourse.getOperatorId());
                 if (StringUtils.isBlank(emrActivityInfo.getFillDoctor()))
@@ -827,6 +847,9 @@ public class DataConvertService {
                     DictDisDept dictDisDept = hubToolService.getDept(labTestMaster.getOrderingDept());
                     emrExLab.setApplyDeptCode(dictDisDept.getHubCode());
                     emrExLab.setApplyDeptName(dictDisDept.getHubName());
+                }else {
+                    emrExLab.setApplyDeptCode(HubCodeEnum.DEPT_CODE.getCode());
+                    emrExLab.setApplyDeptName(HubCodeEnum.DEPT_CODE.getName());
                 }
                 R<Users> user = commFeignClient.getUserByName(labTestMaster.getOrderingProvider());
                 if (R.SUCCESS == user.getCode() && user.getData() != null){

@@ -21,7 +21,9 @@ import cn.xa.eyre.lqt2024.domain.LqtCrbZd;
 import cn.xa.eyre.medrec.domain.PatMasterIndex;
 import cn.xa.eyre.medrec.domain.PatVisit;
 import cn.xa.eyre.medrec.domain.PatVisitKey;
+import cn.xa.eyre.system.dict.domain.DdDiseaseIcd;
 import cn.xa.eyre.system.dict.domain.DictDisDept;
+import cn.xa.eyre.system.dict.mapper.DdDiseaseIcdMapper;
 import cn.xa.eyre.system.dict.mapper.DictDisDeptMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +46,8 @@ public class Lqt2024ConvertService {
     private HubToolService hubToolService;
     @Autowired
     private SynchroEmrRealService synchroEmrRealService;
+    @Autowired
+    private DdDiseaseIcdMapper ddDiseaseIcdMapper;
 
 
     public void lqtCrbZd(DBMessage dbMessage) {
@@ -127,6 +131,15 @@ public class Lqt2024ConvertService {
             emrActivityInfo.setDiagnoseTime(emrDailyCourse.getCreateDate());
             emrActivityInfo.setWmDiseaseCode(lqtCrbZd.getIcd10());
             emrActivityInfo.setWmDiseaseName(lqtCrbZd.getIcd10name());
+            // 2026-05-06新增传染病诊断条件必填
+            String[] codes = emrActivityInfo.getWmDiseaseCode().split("||");
+            for (String code: codes) {
+                DdDiseaseIcd icd10 = ddDiseaseIcdMapper.selectByCode(emrActivityInfo.getWmDiseaseCode());
+                if(icd10 != null){
+                    emrActivityInfo.setDiseaseCode(StringUtils.isBlank(emrActivityInfo.getDiseaseCode()) ? code : "||" + code);
+                    emrActivityInfo.setDiseaseName(StringUtils.isBlank(emrActivityInfo.getDiseaseName()) ? icd10.getName() : "||" + icd10.getName());
+                }
+            }
             emrActivityInfo.setFillDoctor(lqtCrbZd.getFillDoctor());
             emrActivityInfo.setOperatorId(emrDailyCourse.getOperatorId());
             if (StringUtils.isBlank(emrDailyCourse.getOperatorId())){

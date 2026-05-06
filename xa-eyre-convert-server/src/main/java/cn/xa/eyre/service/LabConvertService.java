@@ -320,6 +320,9 @@ public class LabConvertService {
                     DictDisDept dictDisDept = hubToolService.getDept(labTestMaster.getOrderingDept());
                     emrExLab.setApplyDeptCode(dictDisDept.getHubCode());
                     emrExLab.setApplyDeptName(dictDisDept.getHubName());
+                }else {
+                    emrExLab.setApplyDeptCode(HubCodeEnum.DEPT_CODE.getCode());
+                    emrExLab.setApplyDeptName(HubCodeEnum.DEPT_CODE.getName());
                 }
                 R<Users> user = commFeignClient.getUserByName(labTestMaster.getOrderingProvider());
                 if (R.SUCCESS == user.getCode() && user.getData() != null){
