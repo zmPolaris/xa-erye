@@ -1,6 +1,7 @@
 package cn.xa.eyre.hub.domain.emrmonitor;
 
 import cn.xa.eyre.common.core.domain.BaseEntity;
+import cn.xa.eyre.common.utils.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -133,6 +134,14 @@ public class EmrExClinical extends BaseEntity
 
     /** 检查类别名称 */
     private String examinationTypeName;
+
+    public EmrExClinical() {
+        this.examinationObjectiveDesc = "-";
+        this.examinationSubjectiveDesc = "-";
+        this.examinationReportNo = "-";
+        this.applyDeptCode = "-";
+        this.applyDeptName = "-";
+    }
 
     public void setId(String id)
     {
@@ -271,7 +280,7 @@ public class EmrExClinical extends BaseEntity
     }
     public void setApplyDeptName(String applyDeptName)
     {
-        this.applyDeptName = applyDeptName;
+        this.applyDeptName = StringUtils.isBlank(applyDeptName) ? "-" : applyDeptName;
     }
 
     public String getApplyDeptName()
@@ -280,7 +289,7 @@ public class EmrExClinical extends BaseEntity
     }
     public void setApplyDeptCode(String applyDeptCode)
     {
-        this.applyDeptCode = applyDeptCode;
+        this.applyDeptCode = StringUtils.isBlank(applyDeptCode) ? "-" : applyDeptCode;
     }
 
     public String getApplyDeptCode()
@@ -343,7 +352,7 @@ public class EmrExClinical extends BaseEntity
     }
     public void setExaminationObjectiveDesc(String examinationObjectiveDesc)
     {
-        this.examinationObjectiveDesc = examinationObjectiveDesc;
+        this.examinationObjectiveDesc = StringUtils.isBlank(examinationObjectiveDesc) ? "-" : examinationObjectiveDesc;
     }
 
     public String getExaminationObjectiveDesc()
@@ -352,7 +361,7 @@ public class EmrExClinical extends BaseEntity
     }
     public void setExaminationSubjectiveDesc(String examinationSubjectiveDesc)
     {
-        this.examinationSubjectiveDesc = examinationSubjectiveDesc;
+        this.examinationSubjectiveDesc = StringUtils.isBlank(examinationSubjectiveDesc) ? "-" : examinationSubjectiveDesc;
     }
 
     public String getExaminationSubjectiveDesc()
@@ -370,7 +379,7 @@ public class EmrExClinical extends BaseEntity
     }
     public void setExaminationReportNo(String examinationReportNo)
     {
-        this.examinationReportNo = examinationReportNo;
+        this.examinationReportNo = StringUtils.isBlank(examinationReportNo) ? "-" :examinationReportNo;
     }
 
     public String getExaminationReportNo()

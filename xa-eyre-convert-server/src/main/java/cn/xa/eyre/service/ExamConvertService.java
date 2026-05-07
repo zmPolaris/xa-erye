@@ -152,7 +152,7 @@ public class ExamConvertService {
                 emrExClinical.setExaminationSubjectiveDesc(examReport.getRecommendation());
                 // 检查报告编号使用EXAM_REPORT表EXAM_NO、DESCRIPTION拼接计算MD5
                 String no = DigestUtil.md5Hex(examReport.getExamNo() + examReport.getDescription());
-                emrExClinical.setExaminationReportId(no);
+                emrExClinical.setExaminationReportNo(no);
                 String reportname = examMaster.getReporter();
                 if (StringUtils.isBlank(reportname)){
                     reportname = examMaster.getReqPhysician();
@@ -315,7 +315,7 @@ public class ExamConvertService {
             emrExClinical.setExaminationSubjectiveDesc(examReport.getRecommendation());
             // 检查报告编号使用EXAM_REPORT表EXAM_NO、DESCRIPTION拼接计算MD5
             String no = DigestUtil.md5Hex(examReport.getExamNo() + examReport.getDescription());
-            emrExClinical.setExaminationReportId(no);
+            emrExClinical.setExaminationReportNo(no);
             String reportname = examMaster.getReporter();
             if (StringUtils.isBlank(reportname)){
                 reportname = examMaster.getReqPhysician();
