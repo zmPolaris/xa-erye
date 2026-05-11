@@ -137,7 +137,7 @@ public class EmrPatientInfo extends BaseEntity
         this.nationalityName = "-";
         this.nationCode = "-";
         this.nationName = "-";
-        this.currentAddrCode = "-";
+        this.currentAddrCode = StringUtils.getRandomStr(9);
         this.currentAddrName = "-";
         this.currentAddrDetail = "-";
         this.workunit = "-";
@@ -281,7 +281,7 @@ public class EmrPatientInfo extends BaseEntity
     }
     public void setCurrentAddrCode(String currentAddrCode)
     {
-        this.currentAddrCode = StringUtils.isBlank(currentAddrCode) ? "-" : currentAddrCode;
+        this.currentAddrCode = StringUtils.isBlank(currentAddrCode) ? StringUtils.getRandomStr(9) : currentAddrCode;
     }
 
     public String getCurrentAddrCode()

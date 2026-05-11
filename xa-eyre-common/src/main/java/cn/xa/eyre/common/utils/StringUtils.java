@@ -693,4 +693,11 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils
             return true;
         }else return false;
     }
+
+    public static String truncateStr(String str, int i) {
+        if (str == null) {
+            return "";
+        }
+        return str.length() > 20 ? str.substring(0, 20) : str;
+    }
 }

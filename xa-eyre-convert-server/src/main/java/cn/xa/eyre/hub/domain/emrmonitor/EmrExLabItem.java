@@ -3,6 +3,7 @@ package cn.xa.eyre.hub.domain.emrmonitor;
 import java.util.Date;
 
 import cn.xa.eyre.common.core.domain.BaseEntity;
+import cn.xa.eyre.common.utils.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -117,7 +118,7 @@ public class EmrExLabItem extends BaseEntity
     }
     public void setExaminationResultName(String examinationResultName)
     {
-        this.examinationResultName = examinationResultName;
+        this.examinationResultName = StringUtils.truncateStr(examinationResultName, 20);
     }
 
     public String getExaminationResultName()
