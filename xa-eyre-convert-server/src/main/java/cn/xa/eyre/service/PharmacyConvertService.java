@@ -260,6 +260,14 @@ public class PharmacyConvertService {
 
         // 替换数字和小数点，然后去除首尾空格
         String result = NUMBER_PATTERN.matcher(str).replaceAll("");
+        if (result.contains(":")) {
+            String[] split = result.split(":");
+            if (split.length > 1) {
+                return split[1].trim();
+            } else {
+                return split[0].trim();
+            }
+        }
         return result.trim();
     }
 }
