@@ -967,11 +967,12 @@ public class DataConvertService {
                                 String between = StrUtil.removeAll(labResult.getResultRange(), "");
                                 String[] betweens = between.split("-");
                                 if (betweens.length == 1){
-                                    emrExLabItem.setExaminationQuantificationLower(betweens[0]);
-                                    emrExLabItem.setExaminationQuantificationUpper(betweens[0]);
+                                    String quantificationLower = betweens[0].substring(0, 15);
+                                    emrExLabItem.setExaminationQuantificationLower(quantificationLower);
+                                    emrExLabItem.setExaminationQuantificationUpper(quantificationLower);
                                 } else {
-                                    emrExLabItem.setExaminationQuantificationLower(betweens[0]);
-                                    emrExLabItem.setExaminationQuantificationUpper(betweens[1]);
+                                    emrExLabItem.setExaminationQuantificationLower(betweens[0].substring(0, 15));
+                                    emrExLabItem.setExaminationQuantificationUpper(betweens[1].substring(0, 15));
                                 }
                             }
                         }
