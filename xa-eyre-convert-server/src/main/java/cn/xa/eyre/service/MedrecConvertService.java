@@ -206,8 +206,8 @@ public class MedrecConvertService {
 
         R<PatMasterIndex> medrecResult = medrecFeignClient.getPatMasterIndex(diagnosis.getPatientId());
         DiagnosticCategoryKey diagnosticCategoryKey = new DiagnosticCategoryKey();
-        diagnosticCategoryKey.setDiagnosisCode(null);
         BeanUtil.copyProperties(diagnosis, diagnosticCategoryKey);
+        diagnosticCategoryKey.setDiagnosisCode(null);
         // 诊断编码，先取diagnosis表，没有则取DiagnosticCategory表，还是没有就默认为支气管炎
         DictDiseaseIcd10 dictDiseaseIcd10 = null;
         if (StringUtils.isNotBlank(diagnosis.getRydjZd()) && StringUtils.isNotBlank(diagnosis.getRydjZdbm())){
