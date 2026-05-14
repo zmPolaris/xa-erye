@@ -611,7 +611,7 @@ public class DataConvertService {
                 emrFirstCourse.setId(id);
                 emrFirstCourse.setPatientId(diagnosis.getPatientId());
                 emrFirstCourse.setSerialNumber(DigestUtil.md5Hex(diagnosis.getPatientId() + diagnosis.getVisitId()));
-                emrFirstCourse.setCreateDate(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, diagnosis.getDiagnosisDate()));
+                emrFirstCourse.setCreateTime(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, diagnosis.getDiagnosisDate()));
                 emrFirstCourse.setPresentIllnessHis(diagnosis.getDiagnosisDesc());
 
                 emrFirstCourse.setPatientName(medrecResult.getData().getName());
@@ -713,7 +713,7 @@ public class DataConvertService {
                 emrDailyCourse.setId(id);
                 emrDailyCourse.setPatientId(diagnosis.getPatientId());
                 emrDailyCourse.setSerialNumber(DigestUtil.md5Hex(diagnosis.getPatientId() + diagnosis.getVisitId()));
-                emrDailyCourse.setCreateDate(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, diagnosis.getDiagnosisDate()));
+                emrDailyCourse.setCreateTime(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, diagnosis.getDiagnosisDate()));
                 emrDailyCourse.setCourse(diagnosis.getDiagnosisDesc());
 
                 emrDailyCourse.setPatientName(medrecResult.getData().getName());

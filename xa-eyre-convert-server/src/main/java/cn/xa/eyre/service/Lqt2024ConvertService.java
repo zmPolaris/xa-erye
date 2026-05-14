@@ -87,7 +87,7 @@ public class Lqt2024ConvertService {
             emrDailyCourse.setId(id);
             emrDailyCourse.setPatientId(lqtCrbZd.getPatientId());
             emrDailyCourse.setSerialNumber(DigestUtil.md5Hex(lqtCrbZd.getPatientId() + lqtCrbZd.getVisitId()));
-            emrDailyCourse.setCreateDate(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, lqtCrbZd.getCreateTime()));
+            emrDailyCourse.setCreateTime(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, lqtCrbZd.getCreateTime()));
             emrDailyCourse.setCourse(lqtCrbZd.getIcd10name());
 
             emrDailyCourse.setPatientName(medrecResult.getData().getName());

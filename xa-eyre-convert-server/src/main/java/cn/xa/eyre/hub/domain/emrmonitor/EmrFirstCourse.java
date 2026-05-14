@@ -13,7 +13,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * @author ruoyi
  * @date 2025-06-11
  */
-public class EmrFirstCourse extends BaseEntity
+public class EmrFirstCourse
 {
     private static final long serialVersionUID = 1L;
 
@@ -46,6 +46,9 @@ public class EmrFirstCourse extends BaseEntity
 
     /** 病床号 */
     private String bedNo;
+
+    /** 记录日期时间 */
+    private String createTime;
 
     /** 主诉 */
     private String chiefComplaint;
@@ -496,6 +499,14 @@ public class EmrFirstCourse extends BaseEntity
     public String getDiseaseProgressionName()
     {
         return diseaseProgressionName;
+    }
+
+    public String getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime;
     }
 
     @Override
