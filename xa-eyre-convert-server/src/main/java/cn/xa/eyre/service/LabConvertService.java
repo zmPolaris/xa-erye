@@ -220,8 +220,8 @@ public class LabConvertService {
                     emrExLabItem.setExaminationQuantificationUnit(labResult.getUnits());
                     String between = StrUtil.removeAll(labResult.getResultRange(), "");
                     String[] betweens = between.split("-");
-                    emrExLabItem.setExaminationQuantificationLower(betweens[0].substring(0, 15));
-                    emrExLabItem.setExaminationQuantificationUpper(betweens[1].substring(0, 15));
+                    emrExLabItem.setExaminationQuantificationLower(StringUtils.truncateStr(betweens[0], 15));
+                    emrExLabItem.setExaminationQuantificationUpper(StringUtils.truncateStr(betweens[1], 15));
                     if (labResult.getAbnormalIndicator().equals("H")){
                         emrExLabItem.setExaminationQuantificationRi("2");
                     }else if (labResult.getAbnormalIndicator().equals("L")){
@@ -440,12 +440,12 @@ public class LabConvertService {
                                 String between = StrUtil.removeAll(labResult.getResultRange(), "");
                                 String[] betweens = between.split("-");
                                 if (betweens.length == 1){
-                                    String quantificationLower = betweens[0].substring(0, 15);
+                                    String quantificationLower = StringUtils.truncateStr(betweens[0], 15);
                                     emrExLabItem.setExaminationQuantificationLower(quantificationLower);
                                     emrExLabItem.setExaminationQuantificationUpper(quantificationLower);
                                 } else {
-                                    emrExLabItem.setExaminationQuantificationLower(betweens[0].substring(0, 15));
-                                    emrExLabItem.setExaminationQuantificationUpper(betweens[1].substring(0, 15));
+                                    emrExLabItem.setExaminationQuantificationLower(StringUtils.truncateStr(betweens[0], 15));
+                                    emrExLabItem.setExaminationQuantificationUpper(StringUtils.truncateStr(betweens[1], 15));
                                 }
                             }
                         }

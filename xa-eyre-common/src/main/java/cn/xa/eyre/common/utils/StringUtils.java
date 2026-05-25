@@ -698,6 +698,6 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils
         if (str == null) {
             return "";
         }
-        return str.length() > 20 ? str.substring(0, 20) : str;
+        return str.length() > i ? str.substring(0, i) : str;
     }
 }
