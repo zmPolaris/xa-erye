@@ -51,8 +51,8 @@ public class EmrOrder extends BaseEntity
     private String prescriptionTypeCode;
 
     /** 处方开立日期 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date prescriptionIssuanceDate;
+//    @JsonFormat(pattern = "yyyy-MM-dd")
+    private String prescriptionIssuanceDate;
 
     /** 处方有效天数 */
     private String prescriptionValidityDays;
@@ -198,12 +198,12 @@ public class EmrOrder extends BaseEntity
     {
         return prescriptionTypeCode;
     }
-    public void setPrescriptionIssuanceDate(Date prescriptionIssuanceDate)
+    public void setPrescriptionIssuanceDate(String prescriptionIssuanceDate)
     {
         this.prescriptionIssuanceDate = prescriptionIssuanceDate;
     }
 
-    public Date getPrescriptionIssuanceDate()
+    public String getPrescriptionIssuanceDate()
     {
         return prescriptionIssuanceDate;
     }

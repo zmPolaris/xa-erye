@@ -433,6 +433,9 @@ public class LabConvertService {
                             }else {
                                 emrExLabItem.setExaminationQuantificationRi("0");
                             }
+                            if(StringUtils.isBlank(labResult.getResultRange())){
+                                continue;
+                            }
                             if (labResult.getResultRange().contains("健康非妊娠绝经前女性")){
                                 emrExLabItem.setExaminationQuantificationLower("0");
                                 emrExLabItem.setExaminationQuantificationUpper("7184");

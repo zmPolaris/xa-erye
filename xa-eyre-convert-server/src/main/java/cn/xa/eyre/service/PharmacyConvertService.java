@@ -160,7 +160,7 @@ public class PharmacyConvertService {
                 } else if (prescType == 1) {
                     emrOrder.setPrescriptionTypeCode("1");
                 }
-                emrOrder.setPrescriptionIssuanceDate(drugPrescMaster.getPrescDate());
+                emrOrder.setPrescriptionIssuanceDate(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD, drugPrescMaster.getPrescDate()));
                 R<Users> user = commFeignClient.getUserByName(drugPrescMaster.getPrescribedBy());
                 if (R.SUCCESS == user.getCode() && user.getData() != null) {
                     emrOrder.setPrescriptionIssuanceId(user.getData().getUserId());
