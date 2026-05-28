@@ -436,12 +436,12 @@ public class DataConvertService {
                     emrActivityInfo.setWmDiseaseCode(emrOutpatientRecord.getWmDiagnosisCode());
                     emrActivityInfo.setWmDiseaseName(emrOutpatientRecord.getWmDiagnosisName());
                     // 2026-05-06新增传染病诊断条件必填
-                    String[] codes = emrActivityInfo.getWmDiseaseCode().split("||");
+                    String[] codes = emrActivityInfo.getWmDiseaseCode().split("\\|\\|");
                     for (String code: codes) {
-                        DdDiseaseIcd icd10 = ddDiseaseIcdMapper.selectByCode(emrActivityInfo.getWmDiseaseCode());
+                        DdDiseaseIcd icd10 = ddDiseaseIcdMapper.selectByCode(code);
                         if(icd10 != null){
-                            emrActivityInfo.setDiseaseCode(StringUtils.isBlank(emrActivityInfo.getDiseaseCode()) ? code : "||" + code);
-                            emrActivityInfo.setDiseaseName(StringUtils.isBlank(emrActivityInfo.getDiseaseName()) ? icd10.getName() : "||" + icd10.getName());
+                            emrActivityInfo.setDiseaseCode(StringUtils.isBlank(emrActivityInfo.getDiseaseCode()) ? icd10.getCode() : emrActivityInfo.getDiseaseCode() + "||" + icd10.getCode());
+                            emrActivityInfo.setDiseaseName(StringUtils.isBlank(emrActivityInfo.getDiseaseName()) ? icd10.getName() : emrActivityInfo.getDiseaseName() + "||" + icd10.getName());
                         }
                     }
                 }else {
@@ -833,8 +833,10 @@ public class DataConvertService {
                     emrExLab.setActivityTypeName(HubCodeEnum.DIAGNOSIS_ACTIVITIES_HOSPITALIZATION.getName());
                     emrExLab.setSerialNumber(DigestUtil.md5Hex(labTestMaster.getPatientId() + labTestMaster.getVisitId()));
                     R<PatsInHospital> hospitalResult = inpadmFeignClient.getPatsInHospital(labTestMaster.getPatientId(), labTestMaster.getVisitId());
-                    emrExLab.setWardNo(hospitalResult.getData().getWardCode());
-                    emrExLab.setBedNo(String.valueOf(hospitalResult.getData().getBedNo()));
+                    if (R.SUCCESS == hospitalResult.getCode() && hospitalResult.getData() != null){
+                        emrExLab.setWardNo(hospitalResult.getData().getWardCode());
+                        emrExLab.setBedNo(String.valueOf(hospitalResult.getData().getBedNo()));
+                    }
                 }else {
                     logger.error("PATIENT_SOURCE:{}, 非门诊和住院，无法同步", labTestMaster.getPatientSource());
                     return false;

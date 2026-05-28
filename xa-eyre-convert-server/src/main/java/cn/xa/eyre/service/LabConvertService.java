@@ -120,8 +120,10 @@ public class LabConvertService {
                     emrExLab.setActivityTypeName(HubCodeEnum.DIAGNOSIS_ACTIVITIES_HOSPITALIZATION.getName());
                     emrExLab.setSerialNumber(DigestUtil.md5Hex(labTestMaster.getPatientId() + labTestMaster.getVisitId()));
                     R<PatsInHospital> hospitalResult = inpadmFeignClient.getPatsInHospital(labTestMaster.getPatientId(), labTestMaster.getVisitId());
-                    emrExLab.setWardNo(hospitalResult.getData().getWardCode());
-                    emrExLab.setBedNo(String.valueOf(hospitalResult.getData().getBedNo()));
+                    if (R.SUCCESS == hospitalResult.getCode() && hospitalResult.getData() != null) {
+                        emrExLab.setWardNo(hospitalResult.getData().getWardCode());
+                        emrExLab.setBedNo(String.valueOf(hospitalResult.getData().getBedNo()));
+                    }
                 }
                 emrExLab.setApplyOrgCode(HubCodeEnum.ORG_CODE.getCode());
                 emrExLab.setApplyOrgName(HubCodeEnum.ORG_CODE.getName());
@@ -306,8 +308,10 @@ public class LabConvertService {
                     emrExLab.setActivityTypeName(HubCodeEnum.DIAGNOSIS_ACTIVITIES_HOSPITALIZATION.getName());
                     emrExLab.setSerialNumber(DigestUtil.md5Hex(labTestMaster.getPatientId() + labTestMaster.getVisitId()));
                     R<PatsInHospital> hospitalResult = inpadmFeignClient.getPatsInHospital(labTestMaster.getPatientId(), labTestMaster.getVisitId());
-                    emrExLab.setWardNo(hospitalResult.getData().getWardCode());
-                    emrExLab.setBedNo(String.valueOf(hospitalResult.getData().getBedNo()));
+                    if (R.SUCCESS == hospitalResult.getCode() && hospitalResult.getData() != null) {
+                        emrExLab.setWardNo(hospitalResult.getData().getWardCode());
+                        emrExLab.setBedNo(String.valueOf(hospitalResult.getData().getBedNo()));
+                    }
                 }else {
                     logger.error("PATIENT_SOURCE:{}, 非门诊和住院，无法同步", labTestMaster.getPatientSource());
                     return;

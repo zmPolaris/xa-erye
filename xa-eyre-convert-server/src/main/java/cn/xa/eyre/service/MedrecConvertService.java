@@ -327,12 +327,12 @@ public class MedrecConvertService {
                 emrActivityInfo.setWmDiseaseCode(emrFirstCourse.getWmInitalDiagnosisCode());
                 emrActivityInfo.setWmDiseaseName(emrFirstCourse.getWmInitalDiagnosisName());
                 // 2026-05-06新增传染病诊断条件必填
-                String[] codes = emrActivityInfo.getWmDiseaseCode().split("||");
+                String[] codes = emrActivityInfo.getWmDiseaseCode().split("\\|\\|");
                 for (String code: codes) {
-                    DdDiseaseIcd icd10 = ddDiseaseIcdMapper.selectByCode(emrActivityInfo.getWmDiseaseCode());
+                    DdDiseaseIcd icd10 = ddDiseaseIcdMapper.selectByCode(code);
                     if(icd10 != null){
-                        emrActivityInfo.setDiseaseCode(StringUtils.isBlank(emrActivityInfo.getDiseaseCode()) ? code : "||" + code);
-                        emrActivityInfo.setDiseaseName(StringUtils.isBlank(emrActivityInfo.getDiseaseName()) ? icd10.getName() : "||" + icd10.getName());
+                        emrActivityInfo.setDiseaseCode(StringUtils.isBlank(emrActivityInfo.getDiseaseCode()) ? icd10.getCode() : emrActivityInfo.getDiseaseCode() + "||" + icd10.getCode());
+                        emrActivityInfo.setDiseaseName(StringUtils.isBlank(emrActivityInfo.getDiseaseName()) ? icd10.getName() : emrActivityInfo.getDiseaseName() + "||" + icd10.getName());
                     }
                 }
                 emrActivityInfo.setFillDoctor(patVisitResult.getData().getDoctorInCharge());
@@ -413,14 +413,14 @@ public class MedrecConvertService {
                 emrActivityInfo.setWmDiseaseCode(dictDiseaseIcd10.getHubCode());
                 emrActivityInfo.setWmDiseaseName(dictDiseaseIcd10.getHubName());
                 // 2026-05-06新增传染病诊断条件必填
-                String[] codes = emrActivityInfo.getWmDiseaseCode().split("||");
-                for (String code: codes) {
-                    DdDiseaseIcd icd10 = ddDiseaseIcdMapper.selectByCode(emrActivityInfo.getWmDiseaseCode());
-                    if(icd10 != null){
-                        emrActivityInfo.setDiseaseCode(StringUtils.isBlank(emrActivityInfo.getDiseaseCode()) ? code : "||" + code);
-                        emrActivityInfo.setDiseaseName(StringUtils.isBlank(emrActivityInfo.getDiseaseName()) ? icd10.getName() : "||" + icd10.getName());
+                String[] codes = emrActivityInfo.getWmDiseaseCode().split("\\|\\|");
+                    for (String code: codes) {
+                        DdDiseaseIcd icd10 = ddDiseaseIcdMapper.selectByCode(code);
+                        if(icd10 != null){
+                            emrActivityInfo.setDiseaseCode(StringUtils.isBlank(emrActivityInfo.getDiseaseCode()) ? icd10.getCode() : emrActivityInfo.getDiseaseCode() + "||" + icd10.getCode());
+                            emrActivityInfo.setDiseaseName(StringUtils.isBlank(emrActivityInfo.getDiseaseName()) ? icd10.getName() : emrActivityInfo.getDiseaseName() + "||" + icd10.getName());
+                        }
                     }
-                }
                 emrActivityInfo.setFillDoctor(patVisitResult.getData().getDoctorInCharge());
                 emrActivityInfo.setOperatorId(emrDailyCourse.getOperatorId());
                 if (StringUtils.isBlank(emrActivityInfo.getFillDoctor()))
@@ -670,12 +670,12 @@ public class MedrecConvertService {
                 emrActivityInfo.setWmDiseaseCode(emrDischargeInfo.getDischargeDiagnosisCode());
                 emrActivityInfo.setWmDiseaseName(emrDischargeInfo.getDischargeDiagnosisName());
                 // 2026-05-06新增传染病诊断条件必填
-                String[] codes = emrActivityInfo.getWmDiseaseCode().split("||");
+                String[] codes = emrActivityInfo.getWmDiseaseCode().split("\\|\\|");
                 for (String code: codes) {
-                    DdDiseaseIcd icd10 = ddDiseaseIcdMapper.selectByCode(emrActivityInfo.getWmDiseaseCode());
+                    DdDiseaseIcd icd10 = ddDiseaseIcdMapper.selectByCode(code);
                     if(icd10 != null){
-                        emrActivityInfo.setDiseaseCode(StringUtils.isBlank(emrActivityInfo.getDiseaseCode()) ? code : "||" + code);
-                        emrActivityInfo.setDiseaseName(StringUtils.isBlank(emrActivityInfo.getDiseaseName()) ? icd10.getName() : "||" + icd10.getName());
+                        emrActivityInfo.setDiseaseCode(StringUtils.isBlank(emrActivityInfo.getDiseaseCode()) ? icd10.getCode() : emrActivityInfo.getDiseaseCode() + "||" + icd10.getCode());
+                        emrActivityInfo.setDiseaseName(StringUtils.isBlank(emrActivityInfo.getDiseaseName()) ? icd10.getName() : emrActivityInfo.getDiseaseName() + "||" + icd10.getName());
                     }
                 }
                 emrActivityInfo.setFillDoctor(patVisit.getAttendingDoctor());
@@ -740,12 +740,12 @@ public class MedrecConvertService {
                             emrActivityInfo.setWmDiseaseCode(emrDeathInfo.getDeathDiagnosisCode());
                             emrActivityInfo.setWmDiseaseName(emrDeathInfo.getDeathDiagnosisName());
                             // 2026-05-06新增传染病诊断条件必填
-                            String[] codess = emrActivityInfo.getWmDiseaseCode().split("||");
+                            String[] codess = emrActivityInfo.getWmDiseaseCode().split("\\|\\|");
                             for (String codee: codess) {
-                                DdDiseaseIcd icd101 = ddDiseaseIcdMapper.selectByCode(emrActivityInfo.getWmDiseaseCode());
-                                if(icd101 != null){
-                                    emrActivityInfo.setDiseaseCode(StringUtils.isBlank(emrActivityInfo.getDiseaseCode()) ? codee : "||" + codee);
-                                    emrActivityInfo.setDiseaseName(StringUtils.isBlank(emrActivityInfo.getDiseaseName()) ? icd101.getName() : "||" + icd101.getName());
+                                DdDiseaseIcd icd101 = ddDiseaseIcdMapper.selectByCode(codee);
+                                if(icd10 != null){
+                                    emrActivityInfo.setDiseaseCode(StringUtils.isBlank(emrActivityInfo.getDiseaseCode()) ? icd101.getCode() : emrActivityInfo.getDiseaseCode() + "||" + icd101.getCode());
+                                    emrActivityInfo.setDiseaseName(StringUtils.isBlank(emrActivityInfo.getDiseaseName()) ? icd101.getName() : emrActivityInfo.getDiseaseName() + "||" + icd101.getName());
                                 }
                             }
                             synchroEmrRealService.syncEmrActivityInfo(emrActivityInfo, httpMethod);

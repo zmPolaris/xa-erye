@@ -35,6 +35,7 @@ import cn.xa.eyre.system.dict.mapper.DdDiseaseIcdMapper;
 import cn.xa.eyre.system.dict.mapper.DictDisDeptMapper;
 import cn.xa.eyre.system.dict.mapper.DictDiseaseIcd10Mapper;
 
+import com.alibaba.fastjson.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -302,12 +303,12 @@ public class OutpdoctConvertService {
                 emrActivityInfo.setWmDiseaseCode(emrOutpatientRecord.getWmDiagnosisCode());
                 emrActivityInfo.setWmDiseaseName(emrOutpatientRecord.getWmDiagnosisName());
                 // 2026-05-06新增传染病诊断条件必填
-                String[] codes = emrActivityInfo.getWmDiseaseCode().split("||");
+                String[] codes = emrActivityInfo.getWmDiseaseCode().split("\\|\\|");
                 for (String code: codes) {
-                    DdDiseaseIcd icd10 = ddDiseaseIcdMapper.selectByCode(emrActivityInfo.getWmDiseaseCode());
+                    DdDiseaseIcd icd10 = ddDiseaseIcdMapper.selectByCode(code);
                     if(icd10 != null){
-                        emrActivityInfo.setDiseaseCode(StringUtils.isBlank(emrActivityInfo.getDiseaseCode()) ? code : "||" + code);
-                        emrActivityInfo.setDiseaseName(StringUtils.isBlank(emrActivityInfo.getDiseaseName()) ? icd10.getName() : "||" + icd10.getName());
+                        emrActivityInfo.setDiseaseCode(StringUtils.isBlank(emrActivityInfo.getDiseaseCode()) ? icd10.getCode() : emrActivityInfo.getDiseaseCode() + "||" + icd10.getCode());
+                        emrActivityInfo.setDiseaseName(StringUtils.isBlank(emrActivityInfo.getDiseaseName()) ? icd10.getName() : emrActivityInfo.getDiseaseName() + "||" + icd10.getName());
                     }
                 }
             }else {
