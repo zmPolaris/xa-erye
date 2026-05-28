@@ -128,7 +128,7 @@ public class Lqt2024ConvertService {
             emrActivityInfo.setIdCardTypeName(emrDailyCourse.getIdCardTypeName());
             emrActivityInfo.setIdCard(emrDailyCourse.getIdCard());
             emrActivityInfo.setPatientName(emrDailyCourse.getPatientName());
-            emrActivityInfo.setDiagnoseTime(emrDailyCourse.getCreateDate());
+            emrActivityInfo.setDiagnoseTime(emrDailyCourse.getCreateTime());
             emrActivityInfo.setWmDiseaseCode(lqtCrbZd.getIcd10());
             emrActivityInfo.setWmDiseaseName(lqtCrbZd.getIcd10name());
             // 2026-05-06新增传染病诊断条件必填

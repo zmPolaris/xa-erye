@@ -316,14 +316,14 @@ public class MedrecConvertService {
                 emrActivityInfo.setActivityTypeCode(HubCodeEnum.DIAGNOSIS_ACTIVITIES_FIRST_COURSE.getCode());
                 emrActivityInfo.setActivityTypeName(HubCodeEnum.DIAGNOSIS_ACTIVITIES_FIRST_COURSE.getName());
                 emrActivityInfo.setSerialNumber(emrFirstCourse.getSerialNumber());
-                emrActivityInfo.setActivityTime(emrFirstCourse.getCreateDate());
+                emrActivityInfo.setActivityTime(emrFirstCourse.getCreateTime());
                 emrActivityInfo.setIdCardTypeCode(emrFirstCourse.getIdCardTypeCode());
                 emrActivityInfo.setIdCardTypeName(emrFirstCourse.getIdCardTypeName());
                 emrActivityInfo.setIdCard(emrFirstCourse.getIdCard());
                 emrActivityInfo.setPatientName(emrFirstCourse.getPatientName());
                 emrActivityInfo.setChiefComplaint(emrFirstCourse.getChiefComplaint());
                 emrActivityInfo.setPresentIllnessHis(emrFirstCourse.getPresentIllnessHis());
-                emrActivityInfo.setDiagnoseTime(emrFirstCourse.getCreateDate());
+                emrActivityInfo.setDiagnoseTime(emrFirstCourse.getCreateTime());
                 emrActivityInfo.setWmDiseaseCode(emrFirstCourse.getWmInitalDiagnosisCode());
                 emrActivityInfo.setWmDiseaseName(emrFirstCourse.getWmInitalDiagnosisName());
                 // 2026-05-06新增传染病诊断条件必填
@@ -404,12 +404,12 @@ public class MedrecConvertService {
                 emrActivityInfo.setActivityTypeCode(HubCodeEnum.DIAGNOSIS_ACTIVITIES_DAILY_COURSE.getCode());
                 emrActivityInfo.setActivityTypeName(HubCodeEnum.DIAGNOSIS_ACTIVITIES_DAILY_COURSE.getName());
                 emrActivityInfo.setSerialNumber(emrDailyCourse.getSerialNumber());
-                emrActivityInfo.setActivityTime(emrDailyCourse.getCreateDate());
+                emrActivityInfo.setActivityTime(emrDailyCourse.getCreateTime());
                 emrActivityInfo.setIdCardTypeCode(emrDailyCourse.getIdCardTypeCode());
                 emrActivityInfo.setIdCardTypeName(emrDailyCourse.getIdCardTypeName());
                 emrActivityInfo.setIdCard(emrDailyCourse.getIdCard());
                 emrActivityInfo.setPatientName(emrDailyCourse.getPatientName());
-                emrActivityInfo.setDiagnoseTime(emrDailyCourse.getCreateDate());
+                emrActivityInfo.setDiagnoseTime(emrDailyCourse.getCreateTime());
                 emrActivityInfo.setWmDiseaseCode(dictDiseaseIcd10.getHubCode());
                 emrActivityInfo.setWmDiseaseName(dictDiseaseIcd10.getHubName());
                 // 2026-05-06新增传染病诊断条件必填
