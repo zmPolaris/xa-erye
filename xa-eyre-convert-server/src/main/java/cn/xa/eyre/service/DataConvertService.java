@@ -941,12 +941,12 @@ public class DataConvertService {
                             emrExLabItem.setExaminationResultName(ddExQuantification.getName());
                         }
                     }else {
-                        if (labResult.getResult().equals("-")){
+                        if ("-".equals(labResult.getResult())){
                             emrExLabItem.setSourceExaminationResultCode(DigestUtil.md5Hex(labResult.getResult()));
                             emrExLabItem.setSourceExaminationResultCode(labResult.getResult());
                             emrExLabItem.setExaminationResultCode("02");
                             emrExLabItem.setExaminationResultName("阴性");
-                        }else if(labResult.getResult().equals("+")){
+                        }else if("+".equals(labResult.getResult())){
                             emrExLabItem.setSourceExaminationResultCode(DigestUtil.md5Hex(labResult.getResult()));
                             emrExLabItem.setSourceExaminationResultCode(labResult.getResult());
                             emrExLabItem.setExaminationResultCode("01");
@@ -955,9 +955,9 @@ public class DataConvertService {
                             // 定量
                             emrExLabItem.setExaminationQuantification(labResult.getResult());
                             emrExLabItem.setExaminationQuantificationUnit(labResult.getUnits());
-                            if (labResult.getAbnormalIndicator().equals("H")){
+                            if ("H".equals(labResult.getAbnormalIndicator())){
                                 emrExLabItem.setExaminationQuantificationRi("2");
-                            }else if (labResult.getAbnormalIndicator().equals("L")){
+                            }else if ("L".equals(labResult.getAbnormalIndicator())){
                                 emrExLabItem.setExaminationQuantificationRi("1");
                             }else {
                                 emrExLabItem.setExaminationQuantificationRi("0");
