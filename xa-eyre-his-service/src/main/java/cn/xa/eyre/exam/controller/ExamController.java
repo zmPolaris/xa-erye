@@ -25,6 +25,7 @@ public class ExamController {
 
     @GetMapping("/getExamMaster/{examNo}")
     public AjaxResult getExamMaster(@PathVariable("examNo") String examNo){
-        return AjaxResult.success("接口调用成功", examMasterMapper.selectByPrimaryKey(examNo));
+        // 保持原有行为：仅返回已确认（RESULT_STATUS='4'）的检查报告
+        return AjaxResult.success("接口调用成功", examMasterMapper.selectByExamNoWithResultStatus(examNo));
     }
 }

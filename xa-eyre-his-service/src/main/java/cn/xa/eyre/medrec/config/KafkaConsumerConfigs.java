@@ -58,6 +58,8 @@ public class KafkaConsumerConfigs {
         factory.setBatchListener(false);
         // 设置手动提交偏移量
         factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);
+        // 接入错误处理器：反序列化等不可重试异常直接跳过并记录，避免容器使用默认策略无限重试
+        factory.setCommonErrorHandler(errorHandler());
         return factory;
     }
 

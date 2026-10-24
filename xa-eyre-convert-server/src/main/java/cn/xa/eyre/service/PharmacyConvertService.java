@@ -115,7 +115,7 @@ public class PharmacyConvertService {
                 emrOrder.setPatientId(patientId);
                 Short prescSource = drugPrescMaster.getPrescSource();
                 String preNo = "";
-                if (prescSource == 0) {
+                if (prescSource != null && prescSource == 0) {
                     // 门诊
                     emrOrder.setActivityTypeName(HubCodeEnum.DIAGNOSIS_ACTIVITIES_OUTPATIENT.getName());
                     emrOrder.setActivityTypeCode(HubCodeEnum.DIAGNOSIS_ACTIVITIES_OUTPATIENT.getCode());
@@ -123,7 +123,7 @@ public class PharmacyConvertService {
                     outpMr.setPatientId(patientId);
                     outpMr.setVisitDateStr(DateUtils.dateTime(drugPrescMaster.getPrescDate()));
                     R<List<OutpMr>> mrResult = outpdoctFeignClient.getOutpMrByCondition(outpMr);
-                    if (R.SUCCESS == mrResult.getCode()) {
+                    if (R.SUCCESS == mrResult.getCode() && mrResult.getData() != null && !mrResult.getData().isEmpty()) {
                         outpMr = mrResult.getData().get(0);
                         emrOrder.setSerialNumber(DigestUtil.md5Hex(patientId + outpMr.getVisitNo()));
                     } else {
@@ -140,7 +140,7 @@ public class PharmacyConvertService {
                     PatVisit patVisit = new PatVisit();
                     patVisit.setPatientId(patientId);
                     R<PatVisit> patVisitR = medrecFeignClient.selectByPatientIdOrderByVisitIdLimit1(patVisit);
-                    if (R.SUCCESS == patVisitR.getCode()) {
+                    if (R.SUCCESS == patVisitR.getCode() && patVisitR.getData() != null) {
                         PatVisit pats = patVisitR.getData();
                         emrOrder.setSerialNumber(DigestUtil.md5Hex(patientId + pats.getVisitId()));
                     }else {
@@ -155,9 +155,9 @@ public class PharmacyConvertService {
                 emrOrder.setIdCard(patMasterIndex.getIdNo());
                 emrOrder.setPrescriptionNo(preNo);
                 Short prescType = drugPrescMaster.getPrescType();
-                if (prescType == 0) {
+                if (prescType != null && prescType == 0) {
                     emrOrder.setPrescriptionTypeCode("0");
-                } else if (prescType == 1) {
+                } else if (prescType != null && prescType == 1) {
                     emrOrder.setPrescriptionTypeCode("1");
                 }
                 emrOrder.setPrescriptionIssuanceDate(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD, drugPrescMaster.getPrescDate()));
@@ -229,7 +229,7 @@ public class PharmacyConvertService {
                         emrOrderItem.setOperatorId(emrOrder.getOperatorId());
                         emrOrderItem.setOperationTime(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD, DateUtils.getNowDate()));
                         DictDrugType drugType = dictDrugTypeMapper.selectByEmrCode(drugCode);
-                        if (StringUtils.isNotBlank(drugType.getHubCode())) {
+                        if (drugType != null && StringUtils.isNotBlank(drugType.getHubCode())) {
                             emrOrderItem.setDrugCode(drugType.getHubCode());
                             emrOrderItem.setDrugName(drugType.getHubName());
                         } else {

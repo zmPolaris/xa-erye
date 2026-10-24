@@ -68,20 +68,16 @@ public class Seq
 
     /**
      * 序列循环递增字符串[1, 10 的 (length)幂次方), 用0左补齐length位数
-     * 
+     *
      * @return 序列值
      */
-    private synchronized static String getSeq(AtomicInteger atomicInt, int length)
+    private static String getSeq(AtomicInteger atomicInt, int length)
     {
-        // 先取值再+1
-        int value = atomicInt.getAndIncrement();
-
-        // 如果更新后值>=10 的 (length)幂次方则重置为1
+        // 原子地完成“越界重置+递增”：原实现先getAndIncrement再判断重置，
+        // 竞态窗口内可能发出超过length位数的序号或重复序号
         int maxSeq = (int) Math.pow(10, length);
-        if (atomicInt.get() >= maxSeq)
-        {
-            atomicInt.set(1);
-        }
+        int value = atomicInt.updateAndGet(v -> v >= maxSeq ? 2 : v + 1) - 1;
+
         // 转字符串，用0左补齐
         return StringUtils.padl(value, length);
     }

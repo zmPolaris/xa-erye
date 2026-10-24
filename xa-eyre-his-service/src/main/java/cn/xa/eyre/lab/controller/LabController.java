@@ -21,7 +21,8 @@ public class LabController {
 
     @GetMapping("/getLabTestMaster/{testNo}")
     public AjaxResult getLabTestMaster(@PathVariable("testNo") String testNo){
-        return AjaxResult.success("接口调用成功", labTestMasterMapper.selectByPrimaryKey(testNo));
+        // 保持原有行为：仅返回已确认（RESULT_STATUS='4'）的检验报告
+        return AjaxResult.success("接口调用成功", labTestMasterMapper.selectByTestNoWithResultStatus(testNo));
     }
 
     @PostMapping("/getLabTestItems")

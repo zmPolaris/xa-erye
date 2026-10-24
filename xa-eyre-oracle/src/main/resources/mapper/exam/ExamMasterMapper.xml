@@ -76,6 +76,12 @@
     <include refid="Base_Column_List" />
     from EXAM_MASTER
     where EXAM_NO = #{examNo,jdbcType=VARCHAR}
+  </select>
+  <select id="selectByExamNoWithResultStatus" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from EXAM_MASTER
+    where EXAM_NO = #{examNo,jdbcType=VARCHAR}
     AND RESULT_STATUS ='4'
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String">

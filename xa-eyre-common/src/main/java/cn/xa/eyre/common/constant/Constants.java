@@ -62,6 +62,17 @@ public class Constants
     public static final String CONFIG_XA_ERYE_SAVE_API_LOG = "xa.erye.hub.save.api.log";
 
     /**
+     * Kafka数据推送时效天数配置键：数据创建时间距当前时间超过该天数则不再推送。
+     * 持久化于sys_config表（数据库），并经SysConfigServiceImpl同步到Redis缓存。
+     */
+    public static final String CONFIG_XA_ERYE_KAFKA_PUSH_EXPIRE_DAYS = "xa.erye.kafka.push.expire.days";
+
+    /**
+     * Kafka数据推送时效默认天数（配置缺失或非法时的兜底值）
+     */
+    public static final Integer KAFKA_PUSH_EXPIRE_DAYS_DEFAULT = 10;
+
+    /**
      * HTTP请求类型
      */
     public static final String HTTP_METHOD_POST = "POST";

@@ -136,13 +136,13 @@
       and VISIT_ID = #{visitId,jdbcType=NUMERIC}
   </select>
   <select id="selectByPatientIdOrderByVisitIdLimit1" resultMap="BaseResultMap">
-    select *
-    from (
-        select VISIT_ID
+    select * from (
+        select
+        <include refid="Base_Column_List" />,
+        ROW_NUMBER() OVER (ORDER BY VISIT_ID DESC) AS RN
         from PAT_VISIT
         where PATIENT_ID = #{patientId,jdbcType=VARCHAR}
-        order by VISIT_ID desc
-    ) WHERE ROWNUM = 1
+    ) WHERE RN = 1
   </select>
   <delete id="deleteByPrimaryKey" parameterType="cn.xa.eyre.medrec.domain.PatVisitKey">
     delete from PAT_VISIT

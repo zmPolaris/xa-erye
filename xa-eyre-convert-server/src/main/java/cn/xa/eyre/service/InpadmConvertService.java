@@ -156,7 +156,7 @@ public class InpadmConvertService {
             outpMr.setBeginVisitDate(DateUtils.addDays(patsInHospital.getAdmissionDateTime(), -7));
             outpMr.setEndVisitDate(patsInHospital.getAdmissionDateTime());
             R<List<OutpMr>> mrResult = outpdoctFeignClient.getOutpMrByCondition(outpMr);
-            if (R.SUCCESS == mrResult.getCode() &&mrResult.getData() != null) {
+            if (R.SUCCESS == mrResult.getCode() &&mrResult.getData() != null && !mrResult.getData().isEmpty()) {
                 outpMr = mrResult.getData().get(0);
                 emrAdmissionInfo.setChiefComplaint(outpMr.getIllnessDesc());
                 emrAdmissionInfo.setPresentIllnessHis(outpMr.getMedHistory());

@@ -25,20 +25,25 @@ public class DataUtil {
      * @param bytes 4���ֽڵ��ֽ����� 
      * @return һ��������� 
      */  
-    public static int byteToInt(byte[] bytes)   
-    {  
-        int num = 0;  
-        int temp;  
-        temp = (0x000000ff & (bytes[0])) << 0;  
-        num = num | temp;  
-        temp = (0x000000ff & (bytes[1])) << 8;  
-        num = num | temp;  
-        temp = (0x000000ff & (bytes[2])) << 16;  
-        num = num | temp;  
-        temp = (0x000000ff & (bytes[3])) << 24;  
-        num = num | temp;  
-        return num;  
-    }  
+    public static int byteToInt(byte[] bytes)
+    {
+        if (bytes == null || bytes.length < 4)
+        {
+            throw new IllegalArgumentException(
+                    "Argument bytes ( byte array ) is null or length < 4! ");
+        }
+        int num = 0;
+        int temp;
+        temp = (0x000000ff & (bytes[0])) << 0;
+        num = num | temp;
+        temp = (0x000000ff & (bytes[1])) << 8;
+        num = num | temp;
+        temp = (0x000000ff & (bytes[2])) << 16;
+        num = num | temp;
+        temp = (0x000000ff & (bytes[3])) << 24;
+        num = num | temp;
+        return num;
+    }
   
     /** 
      * ������ת�������紫����ֽ������ֽ����飩����� 
@@ -98,9 +103,14 @@ public class DataUtil {
      * @param b 
      * @return 
      */  
-    public static BigInteger byteConvertInteger(byte[] b)  
-    {  
-        if (b[0] < 0)  
+    public static BigInteger byteConvertInteger(byte[] b)
+    {
+        if (b == null || b.length == 0)
+        {
+            throw new IllegalArgumentException(
+                    "Argument b ( byte array ) is null or empty! ");
+        }
+        if (b[0] < 0)
         {  
             byte[] temp = new byte[b.length + 1];  
             temp[0] = 0;  
@@ -330,16 +340,16 @@ public class DataUtil {
      *            �ַ� 
      * @return ASCII�ַ� 
      */  
-    public static String StringToAsciiString(String content) {  
-        String result = "";  
-        int max = content.length();  
-        for (int i = 0; i < max; i++) {  
-            char c = content.charAt(i);  
-            String b = Integer.toHexString(c);  
-            result = result + b;  
-        }  
-        return result;  
-    }  
+    public static String StringToAsciiString(String content) {
+        StringBuilder result = new StringBuilder();
+        int max = content.length();
+        for (int i = 0; i < max; i++) {
+            char c = content.charAt(i);
+            String b = Integer.toHexString(c);
+            result.append(b);
+        }
+        return result.toString();
+    }
       
     /** 
      * ʮ�����ת�ַ� 
@@ -350,16 +360,16 @@ public class DataUtil {
      *            ��������4��Unicode��2����ͨ���� 
      * @return �ַ� 
      */  
-    public static String hexStringToString(String hexString, int encodeType) {  
-        String result = "";  
-        int max = hexString.length() / encodeType;  
-        for (int i = 0; i < max; i++) {  
-            char c = (char) hexStringToAlgorism(hexString  
-                    .substring(i * encodeType, (i + 1) * encodeType));  
-            result += c;  
-        }  
-        return result;  
-    }  
+    public static String hexStringToString(String hexString, int encodeType) {
+        StringBuilder result = new StringBuilder();
+        int max = hexString.length() / encodeType;
+        for (int i = 0; i < max; i++) {
+            char c = (char) hexStringToAlgorism(hexString
+                    .substring(i * encodeType, (i + 1) * encodeType));
+            result.append(c);
+        }
+        return result.toString();
+    }
       
     /** 
      * ʮ������ַ�װʮ���� 
@@ -498,17 +508,21 @@ public class DataUtil {
      *            byte[] 
      * @return String 
      */  
-    public static String byteToString(byte[] bytearray) {  
-        String result = "";  
-        char temp;  
-  
-        int length = bytearray.length;  
-        for (int i = 0; i < length; i++) {  
-            temp = (char) bytearray[i];  
-            result += temp;  
-        }  
-        return result;  
-    }  
+    public static String byteToString(byte[] bytearray) {
+        if (bytearray == null)
+        {
+            return "";
+        }
+        StringBuilder result = new StringBuilder();
+        char temp;
+
+        int length = bytearray.length;
+        for (int i = 0; i < length; i++) {
+            temp = (char) bytearray[i];
+            result.append(temp);
+        }
+        return result.toString();
+    }
       
     /** 
      * �������ַ�תʮ���� 
@@ -633,23 +647,23 @@ public class DataUtil {
      *            byte[] ��Ҫת�����ֽ����� 
      * @return String ʮ������ַ� 
      */  
-    public static String byteToHex(byte b[]) {  
-        if (b == null) {  
-            throw new IllegalArgumentException(  
-                    "Argument b ( byte array ) is null! ");  
-        }  
-        String hs = "";  
-        String stmp = "";  
-        for (int n = 0; n < b.length; n++) {  
-            stmp = Integer.toHexString(b[n] & 0xff);  
-            if (stmp.length() == 1) {  
-                hs = hs + "0" + stmp;  
-            } else {  
-                hs = hs + stmp;  
-            }  
-        }  
-        return hs.toUpperCase();  
-    }  
+    public static String byteToHex(byte b[]) {
+        if (b == null) {
+            throw new IllegalArgumentException(
+                    "Argument b ( byte array ) is null! ");
+        }
+        StringBuilder hs = new StringBuilder();
+        String stmp = "";
+        for (int n = 0; n < b.length; n++) {
+            stmp = Integer.toHexString(b[n] & 0xff);
+            if (stmp.length() == 1) {
+                hs.append("0").append(stmp);
+            } else {
+                hs.append(stmp);
+            }
+        }
+        return hs.toString().toUpperCase();
+    }
       
     public static byte[] subByte(byte[] input, int startIndex, int length) {  
         byte[] bt = new byte[length];  

@@ -2,6 +2,7 @@ package cn.xa.eyre.medrec.service;
 
 import cn.xa.eyre.common.constant.Constants;
 import cn.xa.eyre.common.utils.http.HttpClientUtils;
+import cn.xa.eyre.config.service.KafkaPushConfigService;
 import cn.xa.eyre.medrec.config.KafkaProperties;
 import cn.xa.eyre.common.core.kafka.DBMessage;
 import com.alibaba.fastjson.JSON;
@@ -9,6 +10,7 @@ import org.apache.avro.generic.GenericRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,8 @@ public class KafkaConsumerService {
 
     @Resource
     private KafkaProperties kafkaProperties;
+    @Autowired
+    private KafkaPushConfigService kafkaPushConfigService;
 
     // 监听多个主题（用逗号分隔）
     @KafkaListener(
@@ -45,6 +49,11 @@ public class KafkaConsumerService {
             if (null != msg && ("INSERT".equalsIgnoreCase(msg.getOperation()) ||
                     "UPDATE".equalsIgnoreCase(msg.getOperation()) ||
                     "DELETE".equalsIgnoreCase(msg.getOperation()))) {
+                // 推送时效预过滤：数据创建时间距当前超过阈值（默认15天）则不再转发给convert-server
+                if (kafkaPushConfigService.isExpired(msg)) {
+                    ack.acknowledge();
+                    return;
+                }
                 logger.info("处理消息: {}", JSON.toJSONString(msg));
                 String sent = HttpClientUtils.sendHttpClientPost(Constants.CONVERT_URL + "/convert/receiveKafkaData", JSON.toJSONString(msg));
                 logger.info("发送结果: {}", sent);
@@ -55,6 +64,8 @@ public class KafkaConsumerService {
             ack.acknowledge();
         } catch (Exception e) {
             logger.error("处理消息失败: {}", record, e);
+            // 失败也必须提交偏移量：MANUAL_IMMEDIATE模式下不ack会导致该消息在重平衡/重启后重复消费
+            ack.acknowledge();
         }
     }
 
@@ -65,9 +76,9 @@ public class KafkaConsumerService {
         GenericRecord valueRecord = record.value();
         DBMessage msg = new DBMessage();
         if (valueRecord == null) {
-            logger.error("这是一条脏数据");
+            logger.error("这是一条脏数据，value为空，跳过");
             logger.error("数据: {}", JSON.toJSONString(record));
-//            return null;
+            return null;
         }
 
         // 解析操作类型
@@ -75,6 +86,10 @@ public class KafkaConsumerService {
 
         // 解析源信息（数据库、表等）
         GenericRecord sourceRecord = (GenericRecord) valueRecord.get("source");
+        if (sourceRecord == null) {
+            logger.error("这是一条脏数据，source为空，跳过");
+            return null;
+        }
         String db = sourceRecord.get("db").toString();
         String schema = sourceRecord.get("schema").toString();
         String table = sourceRecord.get("table").toString();

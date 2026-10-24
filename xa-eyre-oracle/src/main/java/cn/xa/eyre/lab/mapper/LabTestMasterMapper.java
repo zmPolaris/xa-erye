@@ -11,6 +11,8 @@ public interface LabTestMasterMapper {
 
     LabTestMaster selectByPrimaryKey(String testNo);
 
+    LabTestMaster selectByTestNoWithResultStatus(String testNo);
+
     int updateByPrimaryKeySelective(LabTestMaster record);
 
     int updateByPrimaryKey(LabTestMaster record);

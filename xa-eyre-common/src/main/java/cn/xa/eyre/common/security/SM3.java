@@ -198,15 +198,14 @@ public class SM3 {
 		        return tmp;  
 		    }  
 		  
-		    private static int P0(int X)   
-		    {  
-		        int y = rotateLeft(X, 9);  
-		        y = bitCycleLeft(X, 9);  
-		        int z = rotateLeft(X, 17);  
-		        z = bitCycleLeft(X, 17);  
-		        int t = X ^ y ^ z;  
-		        return t;  
-		    }  
+		    private static int P0(int X)
+		    {
+		        // 原实现先rotateLeft赋值后立即被bitCycleLeft覆盖，前者为死代码，已移除
+		        int y = bitCycleLeft(X, 9);
+		        int z = bitCycleLeft(X, 17);
+		        int t = X ^ y ^ z;
+		        return t;
+		    }
 		  
 		    private static int P1(int X)   
 		    {  

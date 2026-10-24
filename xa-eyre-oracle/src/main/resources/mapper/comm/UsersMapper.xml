@@ -23,19 +23,22 @@
     <select id="selectUserByName" resultMap="BaseResultMap">
       select
       <include refid="Base_Column_List" />
+      from (select
+      <include refid="Base_Column_List" />
       from COMM.USERS u
       where u.USER_NAME = #{userName,jdbcType=VARCHAR}
       and (u.WORKING_STATUS != '离职' or u.WORKING_STATUS is null)
-      order by u.CREATE_DATE desc
+      order by u.CREATE_DATE desc)
+      WHERE ROWNUM = 1
     </select>
     <select id="selectUserList" resultMap="BaseResultMap">
       select
       <include refid="Base_Column_List" />
       from (select
-      <include refid="Base_Column_List" />
-      from COMM.USERS
-      ORDER BY CREATE_DATE DESC)
-      WHERE ROWNUM <![CDATA[ <= ]]> #{num,jdbcType=INTEGER}
+      <include refid="Base_Column_List" />,
+      ROW_NUMBER() OVER (ORDER BY CREATE_DATE DESC) AS RN
+      from COMM.USERS)
+      WHERE RN <![CDATA[ <= ]]> #{num,jdbcType=INTEGER}
     </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
     delete from USERS

@@ -66,10 +66,10 @@ public class OrdadmConvertService {
         }
         if (StringUtils.isNotBlank(orderText) && orderText.contains("重症监控")) {
             record.setCriticalCareCode("1");
-            record.setCriticalCareCode("是");
+            record.setCriticalCareName("是");
         } else {
             record.setCriticalCareCode("0");
-            record.setCriticalCareCode("否");
+            record.setCriticalCareName("否");
         }
     }
 
@@ -92,19 +92,22 @@ public class OrdadmConvertService {
                 R<PatMasterIndex> medrecResult = medrecFeignClient.getPatMasterIndex(patientId);
                 PatMasterIndex patMasterIndex = medrecResult.getData();
                 if (R.SUCCESS == medrecResult.getCode() && patMasterIndex != null) {
-                    if (StringUtils.isNotBlank(cache)) {
+                    // 依据最新医嘱重新构建记录，与缓存中的上一次记录比对，有变化才推送
+                    EmrVitalSignsRecord recordAfter = getEmrVitalSignsRecord(order, patientId, patMasterIndex);
+                    boolean needSync;
+                    if (StringUtils.isBlank(cache)) {
+                        needSync = true;
+                    } else {
                         EmrVitalSignsRecord recordBefore = JSONObject.parseObject(cache, EmrVitalSignsRecord.class);
-                        EmrVitalSignsRecord recordAfter = JSONObject.parseObject(cache, EmrVitalSignsRecord.class);
-                        extractedInfo(order, recordAfter);
-                        if (!recordBefore.equals(recordAfter)) {
-                            sendSynchroEmrInfo(order, key, recordAfter, patMasterIndex);
-                        } else {
-                            EmrVitalSignsRecord record = getEmrVitalSignsRecord(order, patientId, patMasterIndex);
-                            sendSynchroEmrInfo(order, key, record, patMasterIndex);
-                        }
+                        needSync = !recordBefore.equals(recordAfter);
+                    }
+                    if (needSync) {
+                        sendSynchroEmrInfo(order, key, recordAfter, patMasterIndex);
+                    } else {
+                        logger.debug("患者{}生命体征记录无变化，跳过同步", patientId);
                     }
                 } else {
-                    logger.error("患者ID查询失败", patientId);
+                    logger.error("患者ID查询失败，patientId:{}", patientId);
                 }
             }
 

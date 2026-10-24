@@ -62,6 +62,10 @@ public class MedrecService {
 
     public DrugPrescMaster selectDrugPrescMaster(DrugPrescMaster drugPrescMaster) {
         Date prescDate = drugPrescMaster.getPrescDate();
+        if (prescDate == null) {
+            logger.warn("处方日期为空，无法按处方日期查询，prescNo:{}", drugPrescMaster.getPrescNo());
+            return null;
+        }
         String prescDateStr = DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD, prescDate);
         logger.debug("prescDateStr:{}", prescDateStr);
         return drugPrescMasterMapper.selectDrugByPrescNoAndPrescDate(drugPrescMaster.getPrescNo(), prescDateStr);

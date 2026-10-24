@@ -35,7 +35,13 @@ public class XssFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        chain.doFilter(request, response);
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
+        if (handleExcludeURL(httpRequest, (HttpServletResponse) response)) {
+            chain.doFilter(request, response);
+        } else {
+            // 非排除链接：包装请求，对参数与请求头做XSS清洗
+            chain.doFilter(new XssHttpServletRequestWrapper(httpRequest), response);
+        }
     }
 
     private boolean handleExcludeURL(HttpServletRequest request, HttpServletResponse response) {

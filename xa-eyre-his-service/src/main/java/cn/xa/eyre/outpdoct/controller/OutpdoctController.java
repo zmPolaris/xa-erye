@@ -3,6 +3,7 @@ package cn.xa.eyre.outpdoct.controller;
 import cn.xa.eyre.common.core.domain.AjaxResult;
 import cn.xa.eyre.medrec.domain.OutpMrYbKey;
 import cn.xa.eyre.outpdoct.domain.OutpMr;
+import cn.xa.eyre.outpdoct.domain.OutpTreatRec;
 import cn.xa.eyre.outpdoct.domain.OutpWaitQueue;
 import cn.xa.eyre.outpdoct.domain.OutpWaitQueueKey;
 import cn.xa.eyre.outpdoct.mapper.OutpMrMapper;
@@ -52,6 +53,8 @@ public class OutpdoctController {
 
     @GetMapping("/getOutpTreatRec")
     public AjaxResult getOutpTreatRec(@RequestParam("appointNo") String appointNo){
-        return AjaxResult.success("接口调用成功", outpTreatRecMapper.selectOutpTreatRec(appointNo).get(0));
+        List<OutpTreatRec> outpTreatRecs = outpTreatRecMapper.selectOutpTreatRec(appointNo);
+        return AjaxResult.success("接口调用成功",
+                (outpTreatRecs == null || outpTreatRecs.isEmpty()) ? null : outpTreatRecs.get(0));
     }
 }

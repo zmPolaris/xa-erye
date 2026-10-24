@@ -11,6 +11,8 @@ public interface ExamMasterMapper {
 
     ExamMaster selectByPrimaryKey(String examNo);
 
+    ExamMaster selectByExamNoWithResultStatus(String examNo);
+
     int updateByPrimaryKeySelective(ExamMaster record);
 
     int updateByPrimaryKey(ExamMaster record);

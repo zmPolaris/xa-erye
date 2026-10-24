@@ -62,14 +62,13 @@
       and VISIT_ID = #{visitId,jdbcType=NUMERIC}
     </select>
   <select id="selectPatsInHospitalByPatientId" resultMap="BaseResultMap">
-    SELECT *
-    FROM (
-      SELECT <include refid="Base_Column_List" />
+    SELECT * FROM (
+      SELECT <include refid="Base_Column_List" />,
+        ROW_NUMBER() OVER (ORDER BY ADMISSION_DATE_TIME DESC) AS RN
         FROM INPADM.PATS_IN_HOSPITAL
         WHERE PATIENT_ID = #{patientId,jdbcType=VARCHAR}
-        ORDER BY time_column DESC
       )
-    WHERE ROWNUM = 1;
+    WHERE RN = 1;
   </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
     delete from PATS_IN_HOSPITAL

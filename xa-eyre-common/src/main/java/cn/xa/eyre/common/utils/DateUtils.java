@@ -6,9 +6,15 @@ import org.apache.commons.lang3.time.DateFormatUtils;
 import java.lang.management.ManagementFactory;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 时间工具类
@@ -34,7 +40,12 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
             "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", "yyyy-MM", 
             "yyyy/MM/dd", "yyyy/MM/dd HH:mm:ss", "yyyy/MM/dd HH:mm", "yyyy/MM",
             "yyyy.MM.dd", "yyyy.MM.dd HH:mm:ss", "yyyy.MM.dd HH:mm", "yyyy.MM"};
-    public static SimpleDateFormat  yyyymmddhhmmssstring = new SimpleDateFormat("yyyyMMddHHmmss");
+    /**
+     * yyyyMMddHHmmss格式化器。
+     * 原实现为静态共享的SimpleDateFormat，多线程并发format/parse会错乱，且validateDateTime还会调用setLenient修改共享状态；
+     * DateTimeFormatter不可变且线程安全。
+     */
+    private static final DateTimeFormatter YYYYMMDDHHMMSS_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
     /**
      * 获取当前Date型日期
      * 
@@ -81,7 +92,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
 
     public static final String parseDateToStr(final String format, final Date date)
     {
-        return new SimpleDateFormat(format).format(date);
+        return date.toInstant().atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern(format));
     }
 
     public static final Date dateTime(final String format, final String ts)
@@ -96,7 +107,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
         }
     }
     public static String getYyyyMMddHHmmssString(Date d){
-        return yyyymmddhhmmssstring.format(d);
+        return d.toInstant().atZone(ZoneId.systemDefault()).format(YYYYMMDDHHMMSS_FORMATTER);
     }
     /**
      * 日期路径 即年/月/日 如2018/08/08
@@ -243,9 +254,11 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
      * @param dateTime
      */
     public static boolean validateDateTime(String dateTime) {
-        yyyymmddhhmmssstring.setLenient(false);
+        if (StringUtils.isBlank(dateTime)) {
+            return false;
+        }
         try {
-            yyyymmddhhmmssstring.parse(dateTime);
+            LocalDateTime.parse(dateTime, YYYYMMDDHHMMSS_FORMATTER);
             return true;
         }catch (Exception e){
             return false;
@@ -254,7 +267,8 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
 
     public static Date getLongDate(String datetime){
         if (StringUtils.isNotBlank(datetime) && !"null".equalsIgnoreCase(datetime)){
-            return new Date(Long.valueOf(datetime) - 28800000);
+            // 数据库时间戳为UTC毫秒，减去8小时对齐东八区（原为魔法数字-28800000）
+            return new Date(Long.valueOf(datetime) - TimeUnit.HOURS.toMillis(8));
         }else return null;
     }
 

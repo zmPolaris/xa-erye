@@ -182,7 +182,9 @@ public class HubToolService {
             }
         }else {
             R<List<DeptDict>> deptsResult = commFeignClient.getDeptList(num);
-            if (R.SUCCESS == deptsResult.getCode() && !deptsResult.getData().isEmpty()){
+            if (R.SUCCESS == deptsResult.getCode() && deptsResult.getData() != null && !deptsResult.getData().isEmpty()){
+                // 转码表全量数据在循环外一次性查询，避免每个科室一次全表扫描（N+1）
+                List<DictDisDept> dictList = dictDisDeptMapper.selectAll();
                 for (DeptDict deptDict : deptsResult.getData()){
                     BaseDept baseDept = new BaseDept();
                     DictDisDept deptParam = new DictDisDept();
@@ -192,10 +194,9 @@ public class HubToolService {
                     DictDisDept dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
                     if(dictDisDept == null){
                         dictDisDept = new DictDisDept();
-                        List<DictDisDept> list = dictDisDeptMapper.selectAll();
                         boolean isExist = false;
-                        for (DictDisDept dict : list) {
-                            if(deptDict.getDeptName().contains(dict.getHubName())) {
+                        for (DictDisDept dict : dictList) {
+                            if (dict.getHubName() != null && deptDict.getDeptName() != null && deptDict.getDeptName().contains(dict.getHubName())) {
                                 dictDisDept.setHubCode(dict.getHubCode());
                                 dictDisDept.setHubName(dict.getHubName());
                                 isExist = true;
@@ -445,12 +446,26 @@ public class HubToolService {
             R<DeptDict> deptResult = commFeignClient.getDept(code);
             if (deptResult.getCode() == R.SUCCESS && deptResult.getData() != null){
                 // 转码表没有的直接传院内编码
+                if (dictDisDept == null) {
+                    dictDisDept = new DictDisDept();
+                    dictDisDept.setEmrCode(code);
+                }
                 dictDisDept.setHubCode(code);
                 dictDisDept.setHubName(deptResult.getData().getDeptName());
             }else {
                 deptParam.setEmrCode(null);
                 deptParam.setIsDefault(Constants.IS_DEFAULT);
-                dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
+                DictDisDept defaultDept = dictDisDeptMapper.selectByCondition(deptParam);
+                if (defaultDept != null) {
+                    dictDisDept = defaultDept;
+                } else if (dictDisDept == null) {
+                    // 兜底：无任何转码记录时返回院内编码本身，避免调用方NPE
+                    logger.warn("科室{}无转码记录且无默认记录，使用院内编码兜底", code);
+                    dictDisDept = new DictDisDept();
+                    dictDisDept.setEmrCode(code);
+                    dictDisDept.setHubCode(code);
+                    dictDisDept.setHubName(code);
+                }
             }
         }
         return dictDisDept;
@@ -458,7 +473,8 @@ public class HubToolService {
 
     public DictDiseaseIcd10 getDiseaseIcd10(String code, String name){
         DictDiseaseIcd10 dictDiseaseIcd10 = dictDiseaseIcd10Mapper.selectByEmrCode(code);
-        if(dictDiseaseIcd10 == null || dictDiseaseIcd10.getHubCode().equals(HubCodeEnum.DISEASE_ICD10_CODE.getCode())){
+        if(dictDiseaseIcd10 == null || dictDiseaseIcd10.getHubCode() == null
+                || HubCodeEnum.DISEASE_ICD10_CODE.getCode().equals(dictDiseaseIcd10.getHubCode())){
             dictDiseaseIcd10 = new DictDiseaseIcd10(code, name);
         }
         return dictDiseaseIcd10;

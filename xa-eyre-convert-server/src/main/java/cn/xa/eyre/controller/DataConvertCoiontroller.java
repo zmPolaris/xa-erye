@@ -43,6 +43,8 @@ public class DataConvertCoiontroller {
     private LabConvertService labConvertService;
     @Autowired
     private Lqt2024ConvertService lqt2024ConvertService;
+    @Autowired
+    private KafkaPushConfigService kafkaPushConfigService;
 
     /**
      * 部门信息转码
@@ -77,6 +79,10 @@ public class DataConvertCoiontroller {
     @PostMapping("/receiveKafkaData")
     public AjaxResult receiveKafkaData(@RequestBody DBMessage dbMessage, HttpServletRequest request, HttpServletResponse response){
         logger.debug("receiveKafkaData:{}", JSONUtil.toJsonStr(dbMessage));
+        // 推送时效兜底校验：数据创建时间距当前超过阈值（默认15天）则不再路由、不再推送
+        if (kafkaPushConfigService.isExpired(dbMessage)) {
+            return AjaxResult.success("数据已超过推送时效，已跳过");
+        }
         String schema = dbMessage.getSchema();
         String table = dbMessage.getTable();
         String dbName = (schema + "." + table).toLowerCase();

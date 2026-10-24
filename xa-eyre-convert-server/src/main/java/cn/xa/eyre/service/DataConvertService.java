@@ -2,7 +2,6 @@ package cn.xa.eyre.service;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.lang.Tuple;
-import cn.hutool.core.lang.UUID;
 import cn.hutool.core.lang.Validator;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.IdcardUtil;
@@ -47,7 +46,11 @@ import javax.annotation.Resource;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Service
 public class DataConvertService {
@@ -136,14 +139,15 @@ public class DataConvertService {
 
         // 把HIS中没有的写入
         List<DictDisDept> list = dictDisDeptMapper.selectAll();
-        for (DictTemp temp: hubList) {
-            boolean exist = false;
-            for (DictDisDept dept:list) {
-                if(dept.getHubCode().equals(temp.getCode())){
-                    exist = true;
-                    break;// 优先匹配第一个
-                }
+        // 一次性构建已存在的前置软件编码集合，避免双重循环逐条查找
+        Set<String> existHubCodes = new HashSet<>();
+        for (DictDisDept dept : list) {
+            if (dept.getHubCode() != null) {
+                existHubCodes.add(dept.getHubCode());
             }
+        }
+        for (DictTemp temp: hubList) {
+            boolean exist = existHubCodes.contains(temp.getCode());
             if (!exist){
                 dictDisDept.setRemark("在HIS中没有");
                 dictDisDept.setHubCode(temp.getCode());
@@ -168,26 +172,30 @@ public class DataConvertService {
     public boolean convertDiseaseIcd() {
         List<DdDiseaseIcd> hubIcds = ddDiseaseIcdMapper.selectAll();
         R<List<GysybIcd10>> icd10ListResult = insuranceFeignClient.getGysybIcd10List();
-        if (R.SUCCESS == icd10ListResult.getCode() && !icd10ListResult.getData().isEmpty()){
+        if (R.SUCCESS == icd10ListResult.getCode() && icd10ListResult.getData() != null && !icd10ListResult.getData().isEmpty()){
+            // 一次性构建按名称索引的前置软件诊断Map（保留首个同名记录），精准匹配走哈希查找
+            Map<String, DdDiseaseIcd> hubIcdMap = new HashMap<>();
+            for (DdDiseaseIcd hubicd : hubIcds) {
+                if (hubicd.getName() != null && !hubIcdMap.containsKey(hubicd.getName())) {
+                    hubIcdMap.put(hubicd.getName(), hubicd);
+                }
+            }
             for (GysybIcd10 emricd : icd10ListResult.getData()) {
                 DictDiseaseIcd10 dictDiseaseIcd10 = new DictDiseaseIcd10();
                 dictDiseaseIcd10.setEmrCode(emricd.getIcdCode());
                 dictDiseaseIcd10.setEmrName(emricd.getIcdName());
-                boolean match = false;
-                // 精准怕匹配
-                for (DdDiseaseIcd hubicd : hubIcds) {
-                    if (hubicd.getName().equals(emricd.getIcdName())){
-                        dictDiseaseIcd10.setRemark("精准匹配");
-                        dictDiseaseIcd10.setHubCode(hubicd.getCode());
-                        dictDiseaseIcd10.setHubName(hubicd.getName());
-                        match = true;
-                        break;
-                    }
+                DdDiseaseIcd exactIcd = hubIcdMap.get(emricd.getIcdName());
+                boolean match = exactIcd != null;
+                // 精准匹配
+                if (match) {
+                    dictDiseaseIcd10.setRemark("精准匹配");
+                    dictDiseaseIcd10.setHubCode(exactIcd.getCode());
+                    dictDiseaseIcd10.setHubName(exactIcd.getName());
                 }
                  if (!match){
                      // 模糊匹配
                      for (DdDiseaseIcd hubicd : hubIcds) {
-                         if (FuzzyMatcher.fuzzyMatch(hubicd.getName(), emricd.getIcdName())){
+                         if (hubicd.getName() != null && FuzzyMatcher.fuzzyMatch(hubicd.getName(), emricd.getIcdName())){
                              dictDiseaseIcd10.setRemark("模糊匹配");
                              dictDiseaseIcd10.setHubCode(hubicd.getCode());
                              dictDiseaseIcd10.setHubName(hubicd.getName());
@@ -212,21 +220,26 @@ public class DataConvertService {
     public boolean convertBb() {
         List<DictSpecimenCategory> dictSpecimenCategories = dictSpecimenCategoryMapper.selectAll();
         List<DictTemp> hubList = dictTempMapper.selectAll();
+        // 一次性构建按名称索引的前置软件字典Map（保留首个同名记录）
+        Map<String, DictTemp> hubTempMap = new HashMap<>();
+        for (DictTemp temp : hubList) {
+            if (temp.getName() != null && !hubTempMap.containsKey(temp.getName())) {
+                hubTempMap.put(temp.getName(), temp);
+            }
+        }
         for (DictSpecimenCategory sp : dictSpecimenCategories) {
             boolean match = false;
-            for (DictTemp temp: hubList) {
-                if (temp.getName().equals(sp.getEmrName())){
-                    sp.setRemark("精准匹配");
-                    sp.setHubCode(temp.getCode());
-                    sp.setHubName(temp.getName());
-                    match = true;
-                    break;
-                }
+            DictTemp exactTemp = hubTempMap.get(sp.getEmrName());
+            if (exactTemp != null) {
+                sp.setRemark("精准匹配");
+                sp.setHubCode(exactTemp.getCode());
+                sp.setHubName(exactTemp.getName());
+                match = true;
             }
             if (!match){
                 // 模糊匹配
                 for (DictTemp temp2: hubList) {
-                    if (FuzzyMatcher.fuzzyMatch(temp2.getName(), sp.getEmrName())){
+                    if (temp2.getName() != null && FuzzyMatcher.fuzzyMatch(temp2.getName(), sp.getEmrName())){
                         sp.setRemark("模糊匹配");
                         sp.setHubCode(temp2.getCode());
                         sp.setHubName(temp2.getName());
@@ -249,7 +262,12 @@ public class DataConvertService {
 
     public EmrActivityInfo pushOutpMr(OutpMr outpMrParam) {
         logger.info("补推门诊诊断...");
-        OutpMr outpMr = outpdoctFeignClient.getOutpMrByCondition(outpMrParam).getData().get(0);
+        R<List<OutpMr>> outpMrResult = outpdoctFeignClient.getOutpMrByCondition(outpMrParam);
+        if (R.SUCCESS != outpMrResult.getCode() || outpMrResult.getData() == null || outpMrResult.getData().isEmpty()) {
+            logger.error("未查询到门诊记录，无法补推，patientId:{}", outpMrParam.getPatientId());
+            return null;
+        }
+        OutpMr outpMr = outpMrResult.getData().get(0);
 
         if (StringUtils.isNotBlank(outpMr.getPatientId())){
             logger.debug("构造emrOutpatientRecord接口数据...");
@@ -807,6 +825,22 @@ public class DataConvertService {
             dept.setStatus(Constants.STATUS_NORMAL);
             dept.setIsDefault(Constants.IS_DEFAULT);
             DictDisDept dictDisDeptDefault = dictDisDeptMapper.selectByCondition(dept);
+            // 报告主记录级数据在循环外一次性查询，避免每个检验项目重复发起远程/DB调用（N+1）
+            R<PatsInHospital> hospitalResult = null;
+            if ("2".equals(labTestMaster.getPatientSource()) || labTestMaster.getVisitId() != null) {
+                hospitalResult = inpadmFeignClient.getPatsInHospital(labTestMaster.getPatientId(), labTestMaster.getVisitId());
+            }
+            DictDisDept orderingDept = null;
+            if (StringUtils.isNotBlank(labTestMaster.getOrderingDept())) {
+                orderingDept = hubToolService.getDept(labTestMaster.getOrderingDept());
+            }
+            R<Users> orderingProviderUser = commFeignClient.getUserByName(labTestMaster.getOrderingProvider());
+            DictSpecimenCategory dictSpecimenCategory = dictSpecimenCategoryMapper.selectByEmrName(labTestMaster.getSpecimen());
+            DictDisDept performedByDept = null;
+            if (StringUtils.isNotBlank(labTestMaster.getPerformedBy())) {
+                performedByDept = hubToolService.getDept(labTestMaster.getPerformedBy());
+            }
+            List<DdExQuantification> ddExQuantifications = ddExQuantificationMapper.selectAll();
 
             for (LabResultVo labResult : resultItemsResult.getData()) {
                 logger.debug("构造emrExLab接口数据...");
@@ -832,8 +866,7 @@ public class DataConvertService {
                     emrExLab.setActivityTypeCode(HubCodeEnum.DIAGNOSIS_ACTIVITIES_HOSPITALIZATION.getCode());
                     emrExLab.setActivityTypeName(HubCodeEnum.DIAGNOSIS_ACTIVITIES_HOSPITALIZATION.getName());
                     emrExLab.setSerialNumber(DigestUtil.md5Hex(labTestMaster.getPatientId() + labTestMaster.getVisitId()));
-                    R<PatsInHospital> hospitalResult = inpadmFeignClient.getPatsInHospital(labTestMaster.getPatientId(), labTestMaster.getVisitId());
-                    if (R.SUCCESS == hospitalResult.getCode() && hospitalResult.getData() != null){
+                    if (hospitalResult != null && R.SUCCESS == hospitalResult.getCode() && hospitalResult.getData() != null){
                         emrExLab.setWardNo(hospitalResult.getData().getWardCode());
                         emrExLab.setBedNo(String.valueOf(hospitalResult.getData().getBedNo()));
                     }
@@ -845,20 +878,17 @@ public class DataConvertService {
                 emrExLab.setApplyOrgName(HubCodeEnum.ORG_CODE.getName());
                 emrExLab.setOrgCode(HubCodeEnum.ORG_CODE.getCode());
                 emrExLab.setOrgName(HubCodeEnum.ORG_CODE.getName());
-                if(StringUtils.isNotBlank(labTestMaster.getOrderingDept())){
-                    DictDisDept dictDisDept = hubToolService.getDept(labTestMaster.getOrderingDept());
-                    emrExLab.setApplyDeptCode(dictDisDept.getHubCode());
-                    emrExLab.setApplyDeptName(dictDisDept.getHubName());
+                if(StringUtils.isNotBlank(labTestMaster.getOrderingDept()) && orderingDept != null){
+                    emrExLab.setApplyDeptCode(orderingDept.getHubCode());
+                    emrExLab.setApplyDeptName(orderingDept.getHubName());
                 }else {
                     emrExLab.setApplyDeptCode(HubCodeEnum.DEPT_CODE.getCode());
                     emrExLab.setApplyDeptName(HubCodeEnum.DEPT_CODE.getName());
                 }
-                R<Users> user = commFeignClient.getUserByName(labTestMaster.getOrderingProvider());
-                if (R.SUCCESS == user.getCode() && user.getData() != null){
-                    emrExLab.setApplyPhysicianId(user.getData().getUserId());
+                if (orderingProviderUser != null && R.SUCCESS == orderingProviderUser.getCode() && orderingProviderUser.getData() != null){
+                    emrExLab.setApplyPhysicianId(orderingProviderUser.getData().getUserId());
                 }
                 emrExLab.setExaminationReportDate(DateUtils.dateTime(labResult.getResultDateTime()));
-                DictSpecimenCategory dictSpecimenCategory = dictSpecimenCategoryMapper.selectByEmrName(labTestMaster.getSpecimen());
                 if(dictSpecimenCategory == null){
                     emrExLab.setSpecimenCategoryCode(HubCodeEnum.PAY_TYPE_OTHER.getCode());
                     emrExLab.setSpecimenCategoryName(labTestMaster.getSpecimen());
@@ -875,22 +905,24 @@ public class DataConvertService {
                     emrExLab.setSpecimenReceivingDate(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, labTestMaster.getSpcmReceivedDateTime()));
                 }
                 if(StringUtils.isNotBlank(labTestMaster.getTranscriptionist())){
-                    R<Users> usero = commFeignClient.getUserByName(labTestMaster.getOrderingProvider());
-                    if (R.SUCCESS == usero.getCode() && usero.getData() != null){
-                        emrExLab.setExaminationPhysicianId(usero.getData().getUserId());
-                        emrExLab.setExaminationReportId(usero.getData().getUserId());
-                        emrExLab.setOperatorId(usero.getData().getUserId());
+                    if (orderingProviderUser != null && R.SUCCESS == orderingProviderUser.getCode() && orderingProviderUser.getData() != null){
+                        emrExLab.setExaminationPhysicianId(orderingProviderUser.getData().getUserId());
+                        emrExLab.setExaminationReportId(orderingProviderUser.getData().getUserId());
+                        emrExLab.setOperatorId(orderingProviderUser.getData().getUserId());
                     }
                 }else {
                     emrExLab.setExaminationPhysicianId("-");
                     emrExLab.setExaminationReportId("-");
                     emrExLab.setOperatorId("-");
                 }
-                if (StringUtils.isNotBlank(labTestMaster.getPerformedBy())){
-                    DictDisDept dictDisDept = hubToolService.getDept(labTestMaster.getPerformedBy());
-                    emrExLab.setDeptCode(dictDisDept.getHubCode());
-                    emrExLab.setDeptName(dictDisDept.getHubName());
+                if (StringUtils.isNotBlank(labTestMaster.getPerformedBy()) && performedByDept != null){
+                    emrExLab.setDeptCode(performedByDept.getHubCode());
+                    emrExLab.setDeptName(performedByDept.getHubName());
                 }else {
+                    if (dictDisDeptDefault == null) {
+                        logger.error("默认科室转码记录不存在，无法同步");
+                        return false;
+                    }
                     emrExLab.setDeptCode(dictDisDeptDefault.getHubCode());
                     emrExLab.setDeptName(dictDisDeptDefault.getHubName());
                 }
@@ -918,11 +950,12 @@ public class DataConvertService {
                 if(StringUtils.isNotBlank(labResult.getResult())){
                     if (Validator.hasChinese(labResult.getResult())){
                         // 定性
-                        emrExLabItem.setSourceExaminationResultCode(DigestUtil.md5Hex(labResult.getResult()));
                         emrExLabItem.setSourceExaminationResultCode(labResult.getResult());
-                        List<DdExQuantification> ddExQuantifications = ddExQuantificationMapper.selectAll();
                         DdExQuantification ddExQuantification = null;
                         for (DdExQuantification dd : ddExQuantifications) {
+                            if (dd.getName() == null) {
+                                continue;
+                            }
                             if (labResult.getResult().equals(dd.getName())){
                                 ddExQuantification = dd;
                                 break;
@@ -942,12 +975,10 @@ public class DataConvertService {
                         }
                     }else {
                         if ("-".equals(labResult.getResult())){
-                            emrExLabItem.setSourceExaminationResultCode(DigestUtil.md5Hex(labResult.getResult()));
                             emrExLabItem.setSourceExaminationResultCode(labResult.getResult());
                             emrExLabItem.setExaminationResultCode("02");
                             emrExLabItem.setExaminationResultName("阴性");
                         }else if("+".equals(labResult.getResult())){
-                            emrExLabItem.setSourceExaminationResultCode(DigestUtil.md5Hex(labResult.getResult()));
                             emrExLabItem.setSourceExaminationResultCode(labResult.getResult());
                             emrExLabItem.setExaminationResultCode("01");
                             emrExLabItem.setExaminationResultName("阳性");
@@ -983,7 +1014,6 @@ public class DataConvertService {
                         }
                     }
                 }else {
-                    emrExLabItem.setSourceExaminationResultCode(UUID.fastUUID().toString());
                     emrExLabItem.setSourceExaminationResultCode("无");
                     emrExLabItem.setExaminationResultCode("07");
                     emrExLabItem.setExaminationResultName("未检出");

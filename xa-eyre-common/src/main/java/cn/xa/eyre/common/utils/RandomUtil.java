@@ -1,22 +1,18 @@
 package cn.xa.eyre.common.utils;
 
 
-import java.util.Random;
+import java.security.SecureRandom;
 
 public class RandomUtil {
-	private static Random rand;
-	static{
-		rand=new Random();
-	}
-	
+	/** 复用同一个安全随机数源（原实现每次new Random，既浪费又属弱随机） */
+	private static final SecureRandom RANDOM = new SecureRandom();
+
 	public static int randomInt(int seed){
-		Random r = new Random();
-		return r.nextInt(seed);
+		return RANDOM.nextInt(seed);
 	}
 	// 返回一个当前时间+随机数
 	public static String randomByTime(int seed){
-		Random r = new Random();
-		return DateUtils.dateTimeNow()+ String.valueOf(r.nextInt(seed));
+		return DateUtils.dateTimeNow()+ String.valueOf(RANDOM.nextInt(seed));
 	}
 
 	/**
@@ -24,18 +20,18 @@ public class RandomUtil {
 	 * @return
 	 */
 	public static String getNumbers(int number){
-		String str="";
+		StringBuilder str = new StringBuilder(number);
 		for(int i=0;i<number;i++){
-			str+=getRadomInt(0, 9);
+			str.append(getRadomInt(0, 9));
 		}
-		return str;
+		return str.toString();
 	}
 	/**
 	 * 获取一个范围内的随机数字
 	 * @return
 	 */
 	public static int getRadomInt(int min,int max){
-		return rand.nextInt(max-min+1)+min;
+		return RANDOM.nextInt(max-min+1)+min;
 	}
 
 
@@ -45,20 +41,19 @@ public class RandomUtil {
 	 * @return
 	 */
 	public static String generateRandomNumber(int length) {
-		String val = "";
-		Random random = new Random();
+		StringBuilder val = new StringBuilder(length);
 		// 参数length，表示生成几位随机数
 		for (int i = 0; i < length; i++) {
-			String charOrNum = random.nextInt(2) % 2 == 0 ? "char" : "num";
+			String charOrNum = RANDOM.nextInt(2) % 2 == 0 ? "char" : "num";
 			// 输出字母还是数字
 			if ("char".equalsIgnoreCase(charOrNum)) {
 				// 输出是大写字母还是小写字母
-				int temp = random.nextInt(2) % 2 == 0 ? 65 : 97;
-				val += (char) (random.nextInt(26) + temp);
+				int temp = RANDOM.nextInt(2) % 2 == 0 ? 65 : 97;
+				val.append((char) (RANDOM.nextInt(26) + temp));
 			} else if ("num".equalsIgnoreCase(charOrNum)) {
-				val += String.valueOf(random.nextInt(10));
+				val.append(RANDOM.nextInt(10));
 			}
 		}
-		return val;
+		return val.toString();
 	}
 }

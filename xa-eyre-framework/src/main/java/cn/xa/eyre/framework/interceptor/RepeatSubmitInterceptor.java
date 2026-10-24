@@ -4,7 +4,6 @@ import cn.xa.eyre.common.utils.ServletUtils;
 import cn.xa.eyre.common.annotation.RepeatSubmit;
 import cn.xa.eyre.common.core.domain.AjaxResult;
 import com.alibaba.fastjson2.JSON;
-import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -13,11 +12,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
 
 /**
- * 防止重复提交拦截器
+ * 防止重复提交拦截器（抽象基类，不注册为Bean；具体实现见SameUrlDataInterceptor）
  *
  * @author zm
  */
-@Component
 public abstract class RepeatSubmitInterceptor implements HandlerInterceptor
 {
     @Override

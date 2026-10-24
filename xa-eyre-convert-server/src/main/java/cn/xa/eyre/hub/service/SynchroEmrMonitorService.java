@@ -29,8 +29,11 @@ public class SynchroEmrMonitorService {
     private ISysConfigService sysConfigService;
     @Autowired
     private LogSynchroApiMapper logSynchroApiMapper;
-    private String serviceUrl;
-    private boolean isSaveLog = false;
+    /** 前置软件服务地址：启动时加载一次，避免每次同步都查配置库（原实现存在多线程字段竞争） */
+    private volatile String serviceUrl;
+    /** 是否保存接口日志：启动时加载一次，原实现只置true从不复位，一旦开启即永久生效 */
+    private volatile boolean isSaveLog = false;
+    private volatile boolean configLoaded = false;
 
     /**
      * 门（急）诊病历表数据操作 API 接口
@@ -44,11 +47,12 @@ public class SynchroEmrMonitorService {
         LogSynchroApiWithBLOBs log = new LogSynchroApiWithBLOBs();
         log.setUrl(apiUrl);
         log.setMethodName(method);
-        log.setInputParams(JSONUtil.toJsonStr(emrOutpatientRecord));
-        logger.info("->{},url:{},request:{},method:{}", "门（急）诊病历表数据操作 API 接口", apiUrl, JSONUtil.toJsonStr(emrOutpatientRecord), method);
+        String requestJson = JSONUtil.toJsonStr(emrOutpatientRecord);
+        log.setInputParams(requestJson);
+        logger.debug("->{},url:{},request:{},method:{}","门（急）诊病历表数据操作 API 接口", apiUrl, requestJson, method);
         try {
-            String result = HttpClientUtils.sendHttpRequest(apiUrl, JSONUtil.toJsonStr(emrOutpatientRecord), method);
-            logger.info("->{},response:{}", "门（急）诊病历表数据操作 API 接口", result);
+            String result = HttpClientUtils.sendHttpRequest(apiUrl, requestJson, method);
+            logger.debug("->{},response:{}","门（急）诊病历表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo = JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
             if (synchroResponseVo.isResult()){
@@ -56,8 +60,8 @@ public class SynchroEmrMonitorService {
             }else {
                 log.setResult(Constants.API_STATUS_FAIL);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error("同步接口调用失败，url:{}", apiUrl, e);
             log.setResult(Constants.API_STATUS_FAIL);
         }
         if(isSaveLog){
@@ -78,11 +82,12 @@ public class SynchroEmrMonitorService {
         LogSynchroApiWithBLOBs log = new LogSynchroApiWithBLOBs();
         log.setUrl(apiUrl);
         log.setMethodName(method);
-        log.setInputParams(JSONUtil.toJsonStr(emrOutpatientObs));
-        logger.info("->{},url:{},request:{},method:{}", "门（急）诊留观记录表数据操作 API 接口", apiUrl, JSONUtil.toJsonStr(emrOutpatientObs), method);
+        String requestJson = JSONUtil.toJsonStr(emrOutpatientObs);
+        log.setInputParams(requestJson);
+        logger.debug("->{},url:{},request:{},method:{}","门（急）诊留观记录表数据操作 API 接口", apiUrl, requestJson, method);
         try {
-            String result = HttpClientUtils.sendHttpRequest(apiUrl, JSONUtil.toJsonStr(emrOutpatientObs), method);
-            logger.info("->{},response:{}", "门（急）诊留观记录表数据操作 API 接口", result);
+            String result = HttpClientUtils.sendHttpRequest(apiUrl, requestJson, method);
+            logger.debug("->{},response:{}","门（急）诊留观记录表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo =  JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
             if (synchroResponseVo.isResult()){
@@ -90,8 +95,8 @@ public class SynchroEmrMonitorService {
             }else {
                 log.setResult(Constants.API_STATUS_FAIL);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error("同步接口调用失败，url:{}", apiUrl, e);
             log.setResult(Constants.API_STATUS_FAIL);
         }
         if(isSaveLog){
@@ -112,11 +117,12 @@ public class SynchroEmrMonitorService {
         LogSynchroApiWithBLOBs log = new LogSynchroApiWithBLOBs();
         log.setUrl(apiUrl);
         log.setMethodName(method);
-        log.setInputParams(JSONUtil.toJsonStr(emrAdmissionInfo));
-        logger.info("->{},url:{},request:{},method:{}", "入院记录表数据操作 API 接口", apiUrl, JSONUtil.toJsonStr(emrAdmissionInfo), method);
+        String requestJson = JSONUtil.toJsonStr(emrAdmissionInfo);
+        log.setInputParams(requestJson);
+        logger.debug("->{},url:{},request:{},method:{}","入院记录表数据操作 API 接口", apiUrl, requestJson, method);
         try {
-            String result = HttpClientUtils.sendHttpRequest(apiUrl, JSONUtil.toJsonStr(emrAdmissionInfo), method);
-            logger.info("->{},response:{}", "入院记录表数据操作 API 接口", result);
+            String result = HttpClientUtils.sendHttpRequest(apiUrl, requestJson, method);
+            logger.debug("->{},response:{}","入院记录表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo =  JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
             if (synchroResponseVo.isResult()){
@@ -124,8 +130,8 @@ public class SynchroEmrMonitorService {
             }else {
                 log.setResult(Constants.API_STATUS_FAIL);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error("同步接口调用失败，url:{}", apiUrl, e);
             log.setResult(Constants.API_STATUS_FAIL);
         }
         if(isSaveLog){
@@ -146,11 +152,12 @@ public class SynchroEmrMonitorService {
         LogSynchroApiWithBLOBs log = new LogSynchroApiWithBLOBs();
         log.setUrl(apiUrl);
         log.setMethodName(method);
-        log.setInputParams(JSONUtil.toJsonStr(emrFirstCourse));
-        logger.info("->{},url:{},request:{},method:{}", "住院首次病程记录表数据操作 API 接口", apiUrl, JSONUtil.toJsonStr(emrFirstCourse), method);
+        String requestJson = JSONUtil.toJsonStr(emrFirstCourse);
+        log.setInputParams(requestJson);
+        logger.debug("->{},url:{},request:{},method:{}","住院首次病程记录表数据操作 API 接口", apiUrl, requestJson, method);
         try {
-            String result = HttpClientUtils.sendHttpRequest(apiUrl, JSONUtil.toJsonStr(emrFirstCourse), method);
-            logger.info("->{},response:{}", "住院首次病程记录表数据操作 API 接口", result);
+            String result = HttpClientUtils.sendHttpRequest(apiUrl, requestJson, method);
+            logger.debug("->{},response:{}","住院首次病程记录表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo = JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
             if (synchroResponseVo.isResult()){
@@ -158,8 +165,8 @@ public class SynchroEmrMonitorService {
             }else {
                 log.setResult(Constants.API_STATUS_FAIL);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error("同步接口调用失败，url:{}", apiUrl, e);
             log.setResult(Constants.API_STATUS_FAIL);
         }
         if(isSaveLog){
@@ -180,11 +187,12 @@ public class SynchroEmrMonitorService {
         LogSynchroApiWithBLOBs log = new LogSynchroApiWithBLOBs();
         log.setUrl(apiUrl);
         log.setMethodName(method);
-        log.setInputParams(JSONUtil.toJsonStr(emrDailyCourse));
-        logger.info("->{},url:{},request:{},method:{}", "住院日常病程记录表数据操作 API 接口", apiUrl, JSONUtil.toJsonStr(emrDailyCourse), method);
+        String requestJson = JSONUtil.toJsonStr(emrDailyCourse);
+        log.setInputParams(requestJson);
+        logger.debug("->{},url:{},request:{},method:{}","住院日常病程记录表数据操作 API 接口", apiUrl, requestJson, method);
         try {
-            String result = HttpClientUtils.sendHttpRequest(apiUrl, JSONUtil.toJsonStr(emrDailyCourse), method);
-            logger.info("->{},response:{}", "住院日常病程记录表数据操作 API 接口", result);
+            String result = HttpClientUtils.sendHttpRequest(apiUrl, requestJson, method);
+            logger.debug("->{},response:{}","住院日常病程记录表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo =  JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
             if (synchroResponseVo.isResult()){
@@ -192,8 +200,8 @@ public class SynchroEmrMonitorService {
             }else {
                 log.setResult(Constants.API_STATUS_FAIL);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error("同步接口调用失败，url:{}", apiUrl, e);
             log.setResult(Constants.API_STATUS_FAIL);
         }
         if(isSaveLog){
@@ -214,11 +222,12 @@ public class SynchroEmrMonitorService {
         LogSynchroApiWithBLOBs log = new LogSynchroApiWithBLOBs();
         log.setUrl(apiUrl);
         log.setMethodName(method);
-        log.setInputParams(JSONUtil.toJsonStr(emrAdmissionRecord));
-        logger.info("->{},url:{},request:{},method:{}", "住院病案首页表数据操作 API 接口", apiUrl, JSONUtil.toJsonStr(emrAdmissionRecord), method);
+        String requestJson = JSONUtil.toJsonStr(emrAdmissionRecord);
+        log.setInputParams(requestJson);
+        logger.debug("->{},url:{},request:{},method:{}","住院病案首页表数据操作 API 接口", apiUrl, requestJson, method);
         try {
-            String result = HttpClientUtils.sendHttpRequest(apiUrl, JSONUtil.toJsonStr(emrAdmissionRecord), method);
-            logger.info("->{},response:{}", "住院病案首页表数据操作 API 接口", result);
+            String result = HttpClientUtils.sendHttpRequest(apiUrl, requestJson, method);
+            logger.debug("->{},response:{}","住院病案首页表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo =  JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
             if (synchroResponseVo.isResult()){
@@ -226,8 +235,8 @@ public class SynchroEmrMonitorService {
             }else {
                 log.setResult(Constants.API_STATUS_FAIL);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error("同步接口调用失败，url:{}", apiUrl, e);
             log.setResult(Constants.API_STATUS_FAIL);
         }
         if(isSaveLog){
@@ -248,11 +257,12 @@ public class SynchroEmrMonitorService {
         LogSynchroApiWithBLOBs log = new LogSynchroApiWithBLOBs();
         log.setUrl(apiUrl);
         log.setMethodName(method);
-        log.setInputParams(JSONUtil.toJsonStr(emrDischargeInfo));
-        logger.info("->{},url:{},request:{},method:{}", "出院记录表数据操作 API 接口", apiUrl, JSONUtil.toJsonStr(emrDischargeInfo), method);
+        String requestJson = JSONUtil.toJsonStr(emrDischargeInfo);
+        log.setInputParams(requestJson);
+        logger.debug("->{},url:{},request:{},method:{}","出院记录表数据操作 API 接口", apiUrl, requestJson, method);
         try {
-            String result = HttpClientUtils.sendHttpRequest(apiUrl, JSONUtil.toJsonStr(emrDischargeInfo), method);
-            logger.info("->{},response:{}", "出院记录表数据操作 API 接口", result);
+            String result = HttpClientUtils.sendHttpRequest(apiUrl, requestJson, method);
+            logger.debug("->{},response:{}","出院记录表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo = JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
             if (synchroResponseVo.isResult()){
@@ -260,8 +270,8 @@ public class SynchroEmrMonitorService {
             }else {
                 log.setResult(Constants.API_STATUS_FAIL);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error("同步接口调用失败，url:{}", apiUrl, e);
             log.setResult(Constants.API_STATUS_FAIL);
         }
         if(isSaveLog){
@@ -282,11 +292,12 @@ public class SynchroEmrMonitorService {
         LogSynchroApiWithBLOBs log = new LogSynchroApiWithBLOBs();
         log.setUrl(apiUrl);
         log.setMethodName(method);
-        log.setInputParams(JSONUtil.toJsonStr(emrExClinical));
-        logger.info("->{},url:{},request:{},method:{}", "检查报告表数据操作 API 接口", apiUrl, JSONUtil.toJsonStr(emrExClinical), method);
+        String requestJson = JSONUtil.toJsonStr(emrExClinical);
+        log.setInputParams(requestJson);
+        logger.debug("->{},url:{},request:{},method:{}","检查报告表数据操作 API 接口", apiUrl, requestJson, method);
         try {
-            String result = HttpClientUtils.sendHttpRequest(apiUrl, JSONUtil.toJsonStr(emrExClinical), method);
-            logger.info("->{},response:{}", "检查报告表数据操作 API 接口", result);
+            String result = HttpClientUtils.sendHttpRequest(apiUrl, requestJson, method);
+            logger.debug("->{},response:{}","检查报告表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo =  JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
             if (synchroResponseVo.isResult()){
@@ -294,8 +305,8 @@ public class SynchroEmrMonitorService {
             }else {
                 log.setResult(Constants.API_STATUS_FAIL);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error("同步接口调用失败，url:{}", apiUrl, e);
             log.setResult(Constants.API_STATUS_FAIL);
         }
         if(isSaveLog){
@@ -316,11 +327,12 @@ public class SynchroEmrMonitorService {
         LogSynchroApiWithBLOBs log = new LogSynchroApiWithBLOBs();
         log.setUrl(apiUrl);
         log.setMethodName(method);
-        log.setInputParams(JSONUtil.toJsonStr(emrExClinicalItem));
-        logger.info("->{},url:{},request:{},method:{}", "检查报告项目表数据操作 API 接口", apiUrl, JSONUtil.toJsonStr(emrExClinicalItem), method);
+        String requestJson = JSONUtil.toJsonStr(emrExClinicalItem);
+        log.setInputParams(requestJson);
+        logger.debug("->{},url:{},request:{},method:{}","检查报告项目表数据操作 API 接口", apiUrl, requestJson, method);
         try {
-            String result = HttpClientUtils.sendHttpRequest(apiUrl, JSONUtil.toJsonStr(emrExClinicalItem), method);
-            logger.info("->{},response:{}", "检查报告项目表数据操作 API 接口", result);
+            String result = HttpClientUtils.sendHttpRequest(apiUrl, requestJson, method);
+            logger.debug("->{},response:{}","检查报告项目表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo =  JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
             if (synchroResponseVo.isResult()){
@@ -328,8 +340,8 @@ public class SynchroEmrMonitorService {
             }else {
                 log.setResult(Constants.API_STATUS_FAIL);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error("同步接口调用失败，url:{}", apiUrl, e);
             log.setResult(Constants.API_STATUS_FAIL);
         }
         if(isSaveLog){
@@ -350,11 +362,12 @@ public class SynchroEmrMonitorService {
         LogSynchroApiWithBLOBs log = new LogSynchroApiWithBLOBs();
         log.setUrl(apiUrl);
         log.setMethodName(method);
-        log.setInputParams(JSONUtil.toJsonStr(emrExLab));
-        logger.info("->{},url:{},request:{},method:{}", "检验报告表数据操作 API 接口", apiUrl, JSONUtil.toJsonStr(emrExLab), method);
+        String requestJson = JSONUtil.toJsonStr(emrExLab);
+        log.setInputParams(requestJson);
+        logger.debug("->{},url:{},request:{},method:{}","检验报告表数据操作 API 接口", apiUrl, requestJson, method);
         try {
-            String result = HttpClientUtils.sendHttpRequest(apiUrl, JSONUtil.toJsonStr(emrExLab), method);
-            logger.info("->{},response:{}", "检验报告表数据操作 API 接口", result);
+            String result = HttpClientUtils.sendHttpRequest(apiUrl, requestJson, method);
+            logger.debug("->{},response:{}","检验报告表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo = JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
             if (synchroResponseVo.isResult()){
@@ -362,8 +375,8 @@ public class SynchroEmrMonitorService {
             }else {
                 log.setResult(Constants.API_STATUS_FAIL);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error("同步接口调用失败，url:{}", apiUrl, e);
             log.setResult(Constants.API_STATUS_FAIL);
         }
         if(isSaveLog){
@@ -384,11 +397,12 @@ public class SynchroEmrMonitorService {
         LogSynchroApiWithBLOBs log = new LogSynchroApiWithBLOBs();
         log.setUrl(apiUrl);
         log.setMethodName(method);
-        log.setInputParams(JSONUtil.toJsonStr(emrExLabItem));
-        logger.info("->{},url:{},request:{},method:{}", "检验报告项目表数据操作 API 接口", apiUrl, JSONUtil.toJsonStr(emrExLabItem), method);
+        String requestJson = JSONUtil.toJsonStr(emrExLabItem);
+        log.setInputParams(requestJson);
+        logger.debug("->{},url:{},request:{},method:{}","检验报告项目表数据操作 API 接口", apiUrl, requestJson, method);
         try {
-            String result = HttpClientUtils.sendHttpRequest(apiUrl, JSONUtil.toJsonStr(emrExLabItem), method);
-            logger.info("->{},response:{}", "检验报告项目表数据操作 API 接口", result);
+            String result = HttpClientUtils.sendHttpRequest(apiUrl, requestJson, method);
+            logger.debug("->{},response:{}","检验报告项目表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo =  JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
             if (synchroResponseVo.isResult()){
@@ -396,8 +410,8 @@ public class SynchroEmrMonitorService {
             }else {
                 log.setResult(Constants.API_STATUS_FAIL);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error("同步接口调用失败，url:{}", apiUrl, e);
             log.setResult(Constants.API_STATUS_FAIL);
         }
         if(isSaveLog){
@@ -418,11 +432,12 @@ public class SynchroEmrMonitorService {
         LogSynchroApiWithBLOBs log = new LogSynchroApiWithBLOBs();
         log.setUrl(apiUrl);
         log.setMethodName(method);
-        log.setInputParams(JSONUtil.toJsonStr(emrOrder));
-        logger.info("->{},url:{},request:{},method:{}", "医嘱处方信息表数据操作 API 接口", apiUrl, JSONUtil.toJsonStr(emrOrder), method);
+        String requestJson = JSONUtil.toJsonStr(emrOrder);
+        log.setInputParams(requestJson);
+        logger.debug("->{},url:{},request:{},method:{}","医嘱处方信息表数据操作 API 接口", apiUrl, requestJson, method);
         try {
-            String result = HttpClientUtils.sendHttpRequest(apiUrl, JSONUtil.toJsonStr(emrOrder), method);
-            logger.info("->{},response:{}", "医嘱处方信息表数据操作 API 接口", result);
+            String result = HttpClientUtils.sendHttpRequest(apiUrl, requestJson, method);
+            logger.debug("->{},response:{}","医嘱处方信息表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo =  JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
             if (synchroResponseVo.isResult()){
@@ -430,8 +445,8 @@ public class SynchroEmrMonitorService {
             }else {
                 log.setResult(Constants.API_STATUS_FAIL);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error("同步接口调用失败，url:{}", apiUrl, e);
             log.setResult(Constants.API_STATUS_FAIL);
         }
         if(isSaveLog){
@@ -452,11 +467,12 @@ public class SynchroEmrMonitorService {
         LogSynchroApiWithBLOBs log = new LogSynchroApiWithBLOBs();
         log.setUrl(apiUrl);
         log.setMethodName(method);
-        log.setInputParams(JSONUtil.toJsonStr(emrOrderItem));
-        logger.info("->{},url:{},request:{},method:{}", "医嘱处方条目表数据操作 API 接口", apiUrl, JSONUtil.toJsonStr(emrOrderItem), method);
+        String requestJson = JSONUtil.toJsonStr(emrOrderItem);
+        log.setInputParams(requestJson);
+        logger.debug("->{},url:{},request:{},method:{}","医嘱处方条目表数据操作 API 接口", apiUrl, requestJson, method);
         try {
-            String result = HttpClientUtils.sendHttpRequest(apiUrl, JSONUtil.toJsonStr(emrOrderItem), method);
-            logger.info("->{},response:{}", "医嘱处方条目表数据操作 API 接口", result);
+            String result = HttpClientUtils.sendHttpRequest(apiUrl, requestJson, method);
+            logger.debug("->{},response:{}","医嘱处方条目表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo = JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
             if (synchroResponseVo.isResult()){
@@ -464,8 +480,8 @@ public class SynchroEmrMonitorService {
             }else {
                 log.setResult(Constants.API_STATUS_FAIL);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error("同步接口调用失败，url:{}", apiUrl, e);
             log.setResult(Constants.API_STATUS_FAIL);
         }
         if(isSaveLog){
@@ -486,11 +502,12 @@ public class SynchroEmrMonitorService {
         LogSynchroApiWithBLOBs log = new LogSynchroApiWithBLOBs();
         log.setUrl(apiUrl);
         log.setMethodName(method);
-        log.setInputParams(JSONUtil.toJsonStr(emrDeathInfo));
-        logger.info("->{},url:{},request:{},method:{}", "死亡信息表数据操作 API 接口", apiUrl, JSONUtil.toJsonStr(emrDeathInfo), method);
+        String requestJson = JSONUtil.toJsonStr(emrDeathInfo);
+        log.setInputParams(requestJson);
+        logger.debug("->{},url:{},request:{},method:{}","死亡信息表数据操作 API 接口", apiUrl, requestJson, method);
         try {
-            String result = HttpClientUtils.sendHttpRequest(apiUrl, JSONUtil.toJsonStr(emrDeathInfo), method);
-            logger.info("->{},response:{}", "死亡信息表数据操作 API 接口", result);
+            String result = HttpClientUtils.sendHttpRequest(apiUrl, requestJson, method);
+            logger.debug("->{},response:{}","死亡信息表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo =  JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
             if (synchroResponseVo.isResult()){
@@ -498,8 +515,8 @@ public class SynchroEmrMonitorService {
             }else {
                 log.setResult(Constants.API_STATUS_FAIL);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error("同步接口调用失败，url:{}", apiUrl, e);
             log.setResult(Constants.API_STATUS_FAIL);
         }
         if(isSaveLog){
@@ -520,11 +537,12 @@ public class SynchroEmrMonitorService {
         LogSynchroApiWithBLOBs log = new LogSynchroApiWithBLOBs();
         log.setUrl(apiUrl);
         log.setMethodName(method);
-        log.setInputParams(JSONUtil.toJsonStr(emrVitalSignsRecord));
-        logger.info("->{},url:{},request:{},method:{}", "生命体征护理记录单数据操作 API 接口", apiUrl, JSONUtil.toJsonStr(emrVitalSignsRecord), method);
+        String requestJson = JSONUtil.toJsonStr(emrVitalSignsRecord);
+        log.setInputParams(requestJson);
+        logger.debug("->{},url:{},request:{},method:{}","生命体征护理记录单数据操作 API 接口", apiUrl, requestJson, method);
         try {
-            String result = HttpClientUtils.sendHttpRequest(apiUrl, JSONUtil.toJsonStr(emrVitalSignsRecord), method);
-            logger.info("->{},response:{}", "生命体征护理记录单数据操作 API 接口", result);
+            String result = HttpClientUtils.sendHttpRequest(apiUrl, requestJson, method);
+            logger.debug("->{},response:{}","生命体征护理记录单数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo =  JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
             if (synchroResponseVo.isResult()){
@@ -532,8 +550,8 @@ public class SynchroEmrMonitorService {
             }else {
                 log.setResult(Constants.API_STATUS_FAIL);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error("同步接口调用失败，url:{}", apiUrl, e);
             log.setResult(Constants.API_STATUS_FAIL);
         }
         if(isSaveLog){
@@ -543,10 +561,18 @@ public class SynchroEmrMonitorService {
     }
 
     private void init(){
-        serviceUrl = sysConfigService.selectConfigByKey(Constants.CONFIG_XA_ERYE_HUB_SERVICE_URL);
-        int saveLog = Integer.valueOf(sysConfigService.selectConfigByKey(Constants.CONFIG_XA_ERYE_SAVE_API_LOG));
-        if (saveLog == Constants.SAVE_API_LOG_YES){
-            isSaveLog = true;
+        if (configLoaded) {
+            return;
+        }
+        synchronized (this) {
+            if (configLoaded) {
+                return;
+            }
+            serviceUrl = sysConfigService.selectConfigByKey(Constants.CONFIG_XA_ERYE_HUB_SERVICE_URL);
+            int saveLog = Integer.valueOf(sysConfigService.selectConfigByKey(Constants.CONFIG_XA_ERYE_SAVE_API_LOG));
+            // 直接赋值：原实现只在等于YES时置true，关闭后无法复位
+            isSaveLog = saveLog == Constants.SAVE_API_LOG_YES;
+            configLoaded = true;
         }
     }
 }

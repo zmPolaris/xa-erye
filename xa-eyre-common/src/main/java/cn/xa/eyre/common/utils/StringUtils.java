@@ -25,6 +25,9 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils
 
     private static final Random RANDOM = new SecureRandom();
 
+    /** Ant路径匹配器：无匹配外可变状态，可安全共享，避免每次匹配重复创建 */
+    private static final AntPathMatcher ANT_PATH_MATCHER = new AntPathMatcher();
+
     public static final int RANDOM_LENGTH_16=16;
 
 
@@ -552,8 +555,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils
      */
     public static boolean isMatch(String pattern, String url)
     {
-        AntPathMatcher matcher = new AntPathMatcher();
-        return matcher.match(pattern, url);
+        return ANT_PATH_MATCHER.match(pattern, url);
     }
 
     @SuppressWarnings("unchecked")
@@ -618,20 +620,20 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils
      * @return
      */
     public static String generatePassword(int length){
-        String password ="";
-        Random random = new Random();
+        // 使用安全随机数源（原实现new Random弱随机，密码可预测）
+        StringBuilder password = new StringBuilder(length);
         for (int i = 0; i < length; i++) {
             // 随机生成0或1，用来确定是当前使用数字还是字母 (0则输出数字，1则输出字母)
-            int charOrNum = random.nextInt(2);
+            int charOrNum = RANDOM.nextInt(2);
             if(charOrNum==1){
-                int temp = random.nextInt(2)==1?65:97;
-                password+=(char)(temp+random.nextInt(26));
+                int temp = RANDOM.nextInt(2)==1?65:97;
+                password.append((char)(temp+RANDOM.nextInt(26)));
             }else{
                 // 生成随机数字
-                password += random.nextInt(10);
+                password.append(RANDOM.nextInt(10));
             }
         }
-        return password;
+        return password.toString();
     }
 
     /**
@@ -653,7 +655,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils
      */
     public static String bytesToHex(byte[] bytes)
     {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         if (bytes != null && bytes.length > 0)
         {
             for (int i = 0; i < bytes.length; i++) {
@@ -682,6 +684,12 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils
         return hexString.toUpperCase();
     }
     
+    /**
+     * 判断字符串为空。
+     * 注意：本方法有意覆盖父类org.apache.commons.lang3.StringUtils#isBlank，
+     * 将字符串"null"也视为空——因为Kafka消息映射（DBMessage）中null值会以字符串"null"承载，
+     * 业务上需要一并按空处理。调用方如需要标准语义请显式使用父类或其他工具。
+     */
     public static boolean isBlank(String text){
         if (text == null || text.isEmpty() || text.equals("null")){
             return true;

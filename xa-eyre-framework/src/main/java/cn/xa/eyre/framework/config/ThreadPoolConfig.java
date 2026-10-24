@@ -2,6 +2,7 @@ package cn.xa.eyre.framework.config;
 
 import cn.xa.eyre.common.utils.Threads;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -16,20 +17,25 @@ import java.util.concurrent.*;
 @Configuration
 public class ThreadPoolConfig
 {
-    // 核心线程池大小
-    private int corePoolSize = 50;
+    // 核心线程池大小（可通过thread.pool.corePoolSize配置覆盖，默认50）
+    @Value("${thread.pool.corePoolSize:50}")
+    private int corePoolSize;
 
-    // 最大可创建的线程数
-    private int maxPoolSize = 200;
+    // 最大可创建的线程数（可通过thread.pool.maxPoolSize配置覆盖，默认200）
+    @Value("${thread.pool.maxPoolSize:200}")
+    private int maxPoolSize;
 
-    // 线程空闲时间后回收
-    private long keepAliveTime = 60L;
+    // 线程空闲时间后回收（秒，可通过thread.pool.keepAliveTime配置覆盖，默认60）
+    @Value("${thread.pool.keepAliveTime:60}")
+    private long keepAliveTime;
 
-    // 队列最大长度
-    private int queueCapacity = 1000;
+    // 队列最大长度（可通过thread.pool.queueCapacity配置覆盖，默认1000）
+    @Value("${thread.pool.queueCapacity:1000}")
+    private int queueCapacity;
 
-    // 线程池维护线程所允许的空闲时间
-    private int keepAliveSeconds = 300;
+    // 线程池维护线程所允许的空闲时间（可通过thread.pool.keepAliveSeconds配置覆盖，默认300）
+    @Value("${thread.pool.keepAliveSeconds:300}")
+    private int keepAliveSeconds;
 
     @Bean(name = "threadPoolTaskExecutor")
     public ThreadPoolTaskExecutor threadPoolTaskExecutor()

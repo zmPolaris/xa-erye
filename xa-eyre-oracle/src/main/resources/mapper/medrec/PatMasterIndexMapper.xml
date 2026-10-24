@@ -71,10 +71,10 @@
       select
       <include refid="Base_Column_List" />
       from (select
-          <include refid="Base_Column_List" />
-          from MEDREC.PAT_MASTER_INDEX
-          ORDER BY CREATE_DATE DESC)
-      WHERE ROWNUM <![CDATA[ <= ]]> #{num,jdbcType=INTEGER}
+          <include refid="Base_Column_List" />,
+          ROW_NUMBER() OVER (ORDER BY CREATE_DATE DESC) AS RN
+          from MEDREC.PAT_MASTER_INDEX)
+      WHERE RN <![CDATA[ <= ]]> #{num,jdbcType=INTEGER}
     </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
     delete from MEDREC.PAT_MASTER_INDEX

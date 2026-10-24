@@ -44,10 +44,10 @@
       select
       <include refid="Base_Column_List" />
       from (select
-      <include refid="Base_Column_List" />
-      from OUTPDOCT.OUTP_MR
-      ORDER BY VISIT_DATE DESC)
-      WHERE ROWNUM <![CDATA[ <= ]]> #{num,jdbcType=INTEGER}
+      <include refid="Base_Column_List" />,
+      ROW_NUMBER() OVER (ORDER BY VISIT_DATE DESC) AS RN
+      from OUTPDOCT.OUTP_MR)
+      WHERE RN <![CDATA[ <= ]]> #{num,jdbcType=INTEGER}
     </select>
     <select id="selectOutpMrByCondition" parameterType="cn.xa.eyre.outpdoct.domain.OutpMr" resultMap="BaseResultMap">
       select
@@ -67,7 +67,7 @@
           and PATIENT_ID = #{patientId,jdbcType=VARCHAR}
         </if>
         <if test="doctor != null">
-          and VISIT_DATE = #{doctor,jdbcType=VARCHAR}
+          and DOCTOR = #{doctor,jdbcType=VARCHAR}
         </if>
         <if test="beginVisitDate != null and endVisitDate != null">
           and VISIT_DATE BETWEEN TO_DATE(#{beginVisitDate,jdbcType=TIMESTAMP}, 'YYYY/MM/DD')

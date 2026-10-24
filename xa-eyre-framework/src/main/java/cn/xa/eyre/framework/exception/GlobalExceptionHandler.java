@@ -68,7 +68,8 @@ public class GlobalExceptionHandler
     {
         String requestURI = request.getRequestURI();
         log.error("请求地址'{}',发生未知异常.", requestURI, e);
-        return AjaxResult.error(e.getMessage());
+        // 不向前端返回原始异常信息（可能泄露SQL/堆栈等内部细节），详情已记录日志
+        return AjaxResult.error("服务器内部错误，请联系管理员");
     }
 
     /**
@@ -79,7 +80,8 @@ public class GlobalExceptionHandler
     {
         String requestURI = request.getRequestURI();
         log.error("请求地址'{}',发生系统异常.", requestURI, e);
-        return AjaxResult.error(e.getMessage());
+        // 不向前端返回原始异常信息（可能泄露SQL/堆栈等内部细节），详情已记录日志
+        return AjaxResult.error("服务器内部错误，请联系管理员");
     }
 
     /**

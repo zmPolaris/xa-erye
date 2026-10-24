@@ -15,6 +15,7 @@ import cn.xa.eyre.hub.staticvalue.HubCodeEnum;
 import cn.xa.eyre.inpadm.domain.PatsInHospital;
 import cn.xa.eyre.system.dict.domain.DictDisDept;
 import cn.xa.eyre.system.dict.mapper.DictDisDeptMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +52,10 @@ public class CommConvertService {
                 deptParam.setEmrCode(null);
                 deptParam.setIsDefault(Constants.IS_DEFAULT);
                 dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
+                if (dictDisDept == null){
+                    logger.error("科室{}未配置转码关系且无默认转码记录，无法同步", deptDict.getDeptCode());
+                    return;
+                }
                 dictDisDept.setEmrCode(deptDict.getDeptCode());
                 dictDisDept.setEmrName(deptDict.getDeptName());
             }else {
@@ -76,15 +81,23 @@ public class CommConvertService {
             if(dictDisDept == null){
                 List<DictDisDept> list = dictDisDeptMapper.selectAll();
                 boolean isExist = false;
-                for (DictDisDept dict : list) {
-                    // 获取转码表中不存在的院内编码并包含科室名称的
-                   if(dict.getHubName().contains(deptDict.getDeptName()) && !dict.getEmrCode().equals(deptDict.getDeptCode())) {
-                       dictDisDept.setHubCode(dict.getHubCode());
-                       dictDisDept.setHubName(dict.getHubName());
-                       dictDisDept.setUpdateTime(DateUtils.getNowDate());
-                       dictDisDeptMapper.updateByPrimaryKey(dictDisDept);
-                       isExist = true;
-                   }
+                if (StringUtils.isNotBlank(deptDict.getDeptName())) {
+                    for (DictDisDept dict : list) {
+                        if (dict == null || dict.getHubName() == null || dict.getEmrCode() == null) {
+                            continue;
+                        }
+                        // 获取转码表中不存在的院内编码并包含科室名称的
+                        if (dict.getHubName().contains(deptDict.getDeptName()) && !dict.getEmrCode().equals(deptDict.getDeptCode())) {
+                            // 将匹配到的转码记录绑定到当前院内编码
+                            dict.setEmrCode(deptDict.getDeptCode());
+                            dict.setEmrName(deptDict.getDeptName());
+                            dict.setUpdateTime(DateUtils.getNowDate());
+                            dictDisDeptMapper.updateByPrimaryKey(dict);
+                            dictDisDept = dict;
+                            isExist = true;
+                            break;
+                        }
+                    }
                 }
                 // 不存在则获取默认前置软件代码
                 if (!isExist){
@@ -103,6 +116,10 @@ public class CommConvertService {
                 dictDisDept.setEmrName(deptDict.getDeptName());
                 dictDisDept.setUpdateTime(DateUtils.getNowDate());
                 dictDisDeptMapper.updateByPrimaryKey(dictDisDept);
+            }
+            if (dictDisDept == null){
+                logger.error("科室{}未匹配到转码关系且无默认转码记录，无法同步", deptDict.getDeptCode());
+                return;
             }
             baseDept.setDeptCode(dictDisDept.getEmrCode());
             baseDept.setDeptName(dictDisDept.getEmrName());
@@ -146,6 +163,10 @@ public class CommConvertService {
                 deptParam.setEmrCode(null);
                 deptParam.setIsDefault(Constants.IS_DEFAULT);
                 dictDisDept = dictDisDeptMapper.selectByCondition(deptParam);
+            }
+            if (dictDisDept == null){
+                logger.error("用户{}所在科室{}未配置转码关系且无默认转码记录，无法同步", users.getUserId(), deptCode);
+                return;
             }
             baseUser.setDeptCode(dictDisDept.getHubCode());
             baseUser.setId(users.getUserId());

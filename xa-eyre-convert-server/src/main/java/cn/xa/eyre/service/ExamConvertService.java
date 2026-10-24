@@ -99,6 +99,10 @@ public class ExamConvertService {
                     emrExClinical.setActivityTypeCode(HubCodeEnum.DIAGNOSIS_ACTIVITIES_OUTPATIENT.getCode());
                     emrExClinical.setActivityTypeName(HubCodeEnum.DIAGNOSIS_ACTIVITIES_OUTPATIENT.getName());
                     R<OutpTreatRec> outpTreatRecResult = outpdoctFeignClient.getOutpTreatRec(examMaster.getExamNo());
+                    if (R.SUCCESS != outpTreatRecResult.getCode() || outpTreatRecResult.getData() == null) {
+                        logger.error("examNo:{} 未获取到门诊序列号，无法同步", examMaster.getExamNo());
+                        return;
+                    }
                     emrExClinical.setSerialNumber(DigestUtil.md5Hex(examMaster.getPatientId() + outpTreatRecResult.getData().getVisitNo()));
                 }else if("2".equals(examMaster.getPatientSource())){
                     emrExClinical.setActivityTypeCode(HubCodeEnum.DIAGNOSIS_ACTIVITIES_HOSPITALIZATION.getCode());
@@ -270,6 +274,10 @@ public class ExamConvertService {
                 emrExClinical.setActivityTypeCode(HubCodeEnum.DIAGNOSIS_ACTIVITIES_OUTPATIENT.getCode());
                 emrExClinical.setActivityTypeName(HubCodeEnum.DIAGNOSIS_ACTIVITIES_OUTPATIENT.getName());
                 R<OutpTreatRec> outpTreatRecResult = outpdoctFeignClient.getOutpTreatRec(examMaster.getExamNo());
+                if (R.SUCCESS != outpTreatRecResult.getCode() || outpTreatRecResult.getData() == null) {
+                    logger.error("examNo:{} 未获取到门诊序列号，无法同步", examMaster.getExamNo());
+                    return;
+                }
                 emrExClinical.setSerialNumber(DigestUtil.md5Hex(examMaster.getPatientId() + outpTreatRecResult.getData().getVisitNo()));
             }else {
                 logger.error("PATIENT_SOURCE:{}, 非门诊和住院，无法同步", examMaster.getPatientSource());

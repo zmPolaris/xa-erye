@@ -31,8 +31,11 @@ public class SynchroBaseService {
     private ISysConfigService sysConfigService;
     @Autowired
     private LogSynchroApiMapper logSynchroApiMapper;
-    private String serviceUrl;
-    private boolean isSaveLog = false;
+    /** 前置软件服务地址：启动时加载一次，避免每次同步都查配置库（原实现存在多线程字段竞争） */
+    private volatile String serviceUrl;
+    /** 是否保存接口日志：启动时加载一次，原实现只置true从不复位，一旦开启即永久生效 */
+    private volatile boolean isSaveLog = false;
+    private volatile boolean configLoaded = false;
 
     /**
      * 医院信息系统用户信息表数据操作 API 接口
@@ -46,11 +49,12 @@ public class SynchroBaseService {
         LogSynchroApiWithBLOBs log = new LogSynchroApiWithBLOBs();
         log.setUrl(apiUrl);
         log.setMethodName(method);
-        log.setInputParams(JSONUtil.toJsonStr(baseUser));
-        logger.info("->{},url:{},request:{},method:{}", "医院信息系统用户信息表数据操作 API 接口", apiUrl, JSONUtil.toJsonStr(baseUser), method);
+        String requestJson = JSONUtil.toJsonStr(baseUser);
+        log.setInputParams(requestJson);
+        logger.debug("->{},url:{},request:{},method:{}", "医院信息系统用户信息表数据操作 API 接口", apiUrl, requestJson, method);
         try {
-            String result = HttpClientUtils.sendHttpRequest(apiUrl, JSONUtil.toJsonStr(baseUser), method);
-            logger.info("->{},response:{}", "医院信息系统用户信息表数据操作 API 接口", result);
+            String result = HttpClientUtils.sendHttpRequest(apiUrl, requestJson, method);
+            logger.debug("->{},response:{}", "医院信息系统用户信息表数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo = JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
             if (synchroResponseVo.isResult()){
@@ -58,8 +62,8 @@ public class SynchroBaseService {
             }else {
                 log.setResult(Constants.API_STATUS_FAIL);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error("同步接口调用失败，url:{}", apiUrl, e);
             log.setResult(Constants.API_STATUS_FAIL);
         }
         if(isSaveLog){
@@ -80,11 +84,12 @@ public class SynchroBaseService {
         LogSynchroApiWithBLOBs log = new LogSynchroApiWithBLOBs();
         log.setUrl(apiUrl);
         log.setMethodName(method);
-        log.setInputParams(JSONUtil.toJsonStr(baseDept));
-        logger.info("->{},url:{},request:{},method:{}", "医院信息系统科室信息数据操作 API 接口", apiUrl, JSONUtil.toJsonStr(baseDept), method);
+        String requestJson = JSONUtil.toJsonStr(baseDept);
+        log.setInputParams(requestJson);
+        logger.debug("->{},url:{},request:{},method:{}", "医院信息系统科室信息数据操作 API 接口", apiUrl, requestJson, method);
         try {
-            String result = HttpClientUtils.sendHttpRequest(apiUrl, JSONUtil.toJsonStr(baseDept), method);
-            logger.info("->{},response:{}", "医院信息系统科室信息数据操作 API 接口", result);
+            String result = HttpClientUtils.sendHttpRequest(apiUrl, requestJson, method);
+            logger.debug("->{},response:{}", "医院信息系统科室信息数据操作 API 接口", result);
             SynchroResponseVo synchroResponseVo =  JSONObject.parseObject(result, new TypeReference<SynchroResponseVo>(){});
             log.setOutputParams(JSONUtil.toJsonStr(synchroResponseVo));
             if (synchroResponseVo.isResult()){
@@ -92,8 +97,8 @@ public class SynchroBaseService {
             }else {
                 log.setResult(Constants.API_STATUS_FAIL);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error("同步接口调用失败，url:{}", apiUrl, e);
             log.setResult(Constants.API_STATUS_FAIL);
         }
         if(isSaveLog){
@@ -104,10 +109,18 @@ public class SynchroBaseService {
 
 
     private void init(){
-        serviceUrl = sysConfigService.selectConfigByKey(Constants.CONFIG_XA_ERYE_HUB_SERVICE_URL);
-        int saveLog = Integer.valueOf(sysConfigService.selectConfigByKey(Constants.CONFIG_XA_ERYE_SAVE_API_LOG));
-        if (saveLog == Constants.SAVE_API_LOG_YES){
-            isSaveLog = true;
+        if (configLoaded) {
+            return;
+        }
+        synchronized (this) {
+            if (configLoaded) {
+                return;
+            }
+            serviceUrl = sysConfigService.selectConfigByKey(Constants.CONFIG_XA_ERYE_HUB_SERVICE_URL);
+            int saveLog = Integer.valueOf(sysConfigService.selectConfigByKey(Constants.CONFIG_XA_ERYE_SAVE_API_LOG));
+            // 直接赋值：原实现只在等于YES时置true，关闭后无法复位
+            isSaveLog = saveLog == Constants.SAVE_API_LOG_YES;
+            configLoaded = true;
         }
     }
 
